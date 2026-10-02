@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matematica 1 — Hub v6</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#10151c;--panel:#18202b;--line:#2a3646;--tx:#e8edf3;--mut:#93a1b3;--new:#f0b35a;--ok:#5ec49a;--part:#6cb4ee;--bad:#ef7b7b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Crimson Pro',Georgia,serif;font-size:19px;line-height:1.5;padding-bottom:60px}
+h1,h2,h3{font-family:'JetBrains Mono',monospace;margin:0}
+header{padding:22px 16px 10px}
+h1{font-size:21px}
+.sub{color:var(--mut);font-size:16px;margin-top:4px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);z-index:5}
+nav button{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mut);background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:6px;white-space:nowrap;cursor:pointer}
+nav button.on{color:var(--bg);background:var(--tx);border-color:var(--tx)}
+section{display:none;padding:14px 14px}
+section.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px}
+.card h3{font-size:15px;margin-bottom:6px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.t-new{background:var(--new);color:#10151c}.t-ok{background:var(--ok);color:#10151c}.t-part{background:var(--part);color:#10151c}.t-miss{background:var(--bad);color:#10151c}
+.mut{color:var(--mut);font-size:16px}
+ul{padding-left:20px;margin:6px 0}
+li{margin:3px 0}
+label.chk{display:flex;gap:8px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;margin:5px 0;cursor:pointer}
+label.chk input{width:20px;height:20px;accent-color:var(--ok)}
+details{border-top:1px solid var(--line);margin-top:8px;padding-top:6px}
+summary{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--part);cursor:pointer}
+table{border-collapse:collapse;width:100%;font-size:16px}
+td,th{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}
+th{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);font-weight:400}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--ok);width:0}
+.warn{border-left:3px solid var(--bad);padding-left:10px}
+.katex{font-size:1.05em}
+.hint{font-size:14px;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+<h1>Matematica 1 — Hub v6</h1>
+<div class="sub">FAO · Prof. Manicone · slide + i tuoi 9 mesi di errori e metodo</div>
+<div class="bar"><i id="gbar"></i></div>
+<div class="hint" id="gtxt"></div>
+</header>
+<nav id="nav"></nav>
+<section id="s-piano"></section>
+<section id="s-lezioni"></section>
+<section id="s-regole"></section>
+<section id="s-gate"></section>
+<section id="s-sync"></section>
+<section id="s-cal"></section>
+<section id="s-errori"></section>
+<section id="s-file"></section>
+<section id="s-trappole"></section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+(function(){
+
+/* Fix: i simboli < dentro $...$ venivano letti come tag HTML */
+function fx(h){return h.replace(/\$([^$]*?)\$/g,function(m,a){return '$'+a.replace(/</g,'\\lt ')+'$';});}
+(function(){
+ var d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+ Object.defineProperty(Element.prototype,'innerHTML',{get:d.get,set:function(v){d.set.call(this,fx(String(v)));},configurable:true});
+})();
+
+var LS='mat1hub_v1';
+var state={};
+try{state=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){state={}}
+function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+
+var TAG={new:['NUOVO','t-new'],ok:['GIÀ FATTO','t-ok'],part:['IN PARTE','t-part'],miss:['PDF MANCANTE','t-miss']};
+
+/* ---------- LEZIONI ---------- */
+var L=[
+{id:'U1L1',u:1,t:`Retta e parabola, eq./diseq. razionali`,st:'ok',
+ key:[`Retta $y=mx+q$; eq. 1° grado $x=-b/a$ (intersezione con asse x)`,`2° grado: $\\Delta=b^2-4ac$, vertice $V\\left(-\\tfrac{b}{2a},-\\tfrac{\\Delta}{4a}\\right)$`,`Disequazioni 2° grado: concavità + radici → segno`],
+ err:`#3 (lettura tabella segni al contrario). Attenzione: la slide scrive "soluzione $x=-b/a$" per $ax+b>0$: in realtà è una semiretta, il verso dipende dal segno di $a$.`,
+ chk:`Risolvi $x^2-5x+6\\ge0$ e scrivi l'insieme soluzione con le parentesi giuste.`},
+{id:'U1L2',u:1,t:`Equazioni e disequazioni esponenziali`,st:'ok',
+ key:[`Stessa base: $a^x=a^n\\Rightarrow x=n$; base $>1$ mantieni il verso, base $\\in(0,1)$ inverti`,`Incognita ausiliaria $z=a^x$ con vincolo $z>0$`,`Esempio slide: $6\\cdot3^x-3^{2-x}=15$ → $z=3^x$ → solo $z=3$ vale → $x=1$`],
+ err:`A (ritorno da $t$ a $x$), B (sottrae esponenti con il meno in mezzo), C (si ferma a metà). Nella diseq. $4^x+2^x-2<0$: scartare $z<0$ perché $2^x>0$.`,
+ chk:`Risolvi $3^{2x}-3^x=6$. Scrivi $x$ numerico, non $t$.`},
+{id:'U1L3',u:1,t:`Equazioni e disequazioni logaritmiche`,st:'ok',
+ key:[`C.E.: argomento $>0$ (sempre per primo)`,`$\\log_aA=\\log_aB\\Rightarrow A=B$; diseq.: base $>1$ stesso verso, base $<1$ verso opposto`,`Ausiliaria $z=\\log_2x$; esponenziali non riducibili → $\\ln$ a entrambi i membri`],
+ err:`#32 (C.E. dimenticata, RECIDIVO). Nell'esempio con $z<-1\\lor0<z<4$ ricordati di tornare alla $x$ e intersecare con $x>0$.`,
+ chk:`Risolvi $3\\cdot2^x+2^{x+1}=19$ e lascia il risultato in forma $\\frac{\\ln19-\\ln5}{\\ln2}$.`},
+{id:'U1L4',u:1,t:`Equazioni e disequazioni irrazionali`,st:'part',
+ key:[`Indice dispari: nessuna C.E., si eleva e si accetta tutto`,`Indice pari, equazione: sistema $f\\ge0,\\ g\\ge0,\\ f=g^n$`,`Diseq. $>$: DUE sistemi uniti; diseq. $<$: UN sistema (vedi tab Regole)`],
+ err:`#8 (un sistema invece di due), #67, #68 (radicando $\\ge0$ al numeratore), #45 (radice al denominatore → $>0$).`,
+ chk:`Risolvi $\\sqrt{x+2}>x$ con i due sistemi. Poi $\\sqrt{x+2}<x$ con uno solo.`},
+{id:'U1L5',u:1,t:`Cenni di trigonometria`,st:'part',
+ key:[`Tabella angoli $30^\\circ,45^\\circ,60^\\circ$ (seno, coseno, tangente) e riduzione al 1° quadrante`,`$\\sin^2x+\\cos^2x=1$, $\\tan x=\\sin x/\\cos x$`,`Esempi della slide: $7\\sin^2x-\\sin x\\cos x+3\\cos^2x=0$ (omogenea), $4\\sin^2x-7+10\\cos^2x=0$, $2\\sin^2x+\\sqrt3\\sin x\\ge0$`],
+ err:`Errori 09/04: $\\sin30^\\circ$ e $\\cos60^\\circ$ scambiati con valori di $45^\\circ/60^\\circ$; simulazione OFA: $\\tan x=1$ confuso con $\\tan x=0$. Tabella da sapere a memoria, non da ricostruire.`,
+ chk:`Scrivi senza guardare la tabella di $\\sin,\\cos,\\tan$ a $30^\\circ,45^\\circ,60^\\circ$. Poi risolvi $\\tan x=1$ in $[0,2\\pi)$.`},
+
+{id:'U2L1',u:2,t:`Insiemi N e R, simbologia, estremi`,st:'new',
+ key:[`Notazione insiemistica $A=\\{x\\in\\mathbb N\\mid x\\ge5\\}$: minimo sì, massimo no`,`Unione, intersezione, differenza; De Morgan: $(A\\cap B)^C=A^C\\cup B^C$ e $(A\\cup B)^C=A^C\\cap B^C$`,`Limitato inf./sup., estremo inferiore (max dei minoranti) / superiore (min dei maggioranti); se appartiene all'insieme è min/max`],
+ err:`Nessun errore catalogato (argomento nuovo). Vedi tab Trappole: la definizione di "numerabile" nella slide è imprecisa.`,
+ chk:`Per $D=(-1.4;\\,4.4)$: ha min? ha max? quali sono inf e sup?`},
+{id:'U2L2',u:2,t:`Relazioni d'ordine e di equivalenza`,st:'new',
+ key:[`Proprietà: riflessiva, antiriflessiva, simmetrica, antisimmetrica, transitiva`,`Equivalenza = riflessiva + simmetrica + transitiva (classi di equivalenza)`,`Ordine stretto = antiriflessiva + antisimmetrica + transitiva; ordine largo = riflessiva + antisimmetrica + transitiva`],
+ err:`Argomento nuovo. Trucco: per ogni relazione, fai una tabellina con le 5 proprietà e un controesempio per ogni "no".`,
+ chk:`$x\\,\\mathcal R\\,y\\iff x\\le y$ su $\\mathbb R$: quali delle 5 proprietà ha? È ordine stretto o largo?`},
+{id:'U2L3',u:2,t:`Il principio di induzione`,st:'new',
+ key:[`Passo base: $P_1$ vera. Passo induttivo: $P_n\\Rightarrow P_{n+1}$`,`Esempi slide: $1+2+\\dots+n=\\frac{n(n+1)}{2}$ e $1+3+\\dots+(2n-1)=n^2$`,`Induzione empirica ≠ dimostrazione: $127$ non è $2^k+p$ con $p$ primo`],
+ err:`Argomento nuovo. Pattern da evitare: fermarsi senza scrivere l'ultima uguaglianza (stesso difetto del "non scrivere la risposta finale").`,
+ chk:`Dimostra per induzione che $2+4+\\dots+2n=n(n+1)$. Scrivi base, ipotesi, passo, conclusione.`},
+{id:'U2L4',u:2,t:`Il campo complesso`,st:'new',
+ key:[`$i^2=-1$; potenze di $i$ cicliche di periodo 4: $i,-1,-i,1$`,`Somma/prodotto come polinomi; divisione: moltiplica per il coniugato del denominatore`,`Forma trigonometrica $z=\\rho(\\cos\\theta+i\\sin\\theta)$, $\\rho=\\sqrt{a^2+b^2}$, $\\tan\\theta=b/a$; piano di Gauss`],
+ err:`Nuovo e molto calcolo: qui contano gli esercizi. Con potenze alte: dividi l'esponente per 4 e guarda il resto ($i^{101}=i$).`,
+ chk:`Calcola $\\frac{1-i}{1+i}$ e scrivi il risultato come $a+ib$ numerico.`},
+{id:'U2L5',u:2,t:`Campo complesso: esercizi, De Moivre, potenze e radici n-esime (titolo dal calendario)`,st:'miss',key:[],err:`PDF non caricato. Dal calendario: la sincrona del 15/10 la copre. Mandami il PDF per la scheda completa.`,chk:``},
+{id:'U2L6',u:2,t:`Funzioni e applicazioni`,st:'part',
+ key:[`Funzione: a OGNI elemento del dominio UNO e un solo elemento del codominio; altrimenti è una relazione`,`Iniettiva (una freccia al più), suriettiva (almeno una), biunivoca = entrambe`,`Crescente/decrescente in senso stretto e largo; monotona`],
+ err:`Collega a U3L3: iniettiva ⇔ $\\ker f=\\{0\\}$ per le applicazioni lineari.`,
+ chk:`$y=x^2$ da $\\mathbb R$ a $\\mathbb R$: iniettiva? suriettiva? E da $[0,+\\infty)$ a $[0,+\\infty)$?`},
+
+{id:'U3L1',u:3,t:`Introduzione ai vettori`,st:'new',
+ key:[`Vettore riga/colonna, somma componente per componente`,`Prodotto scalare = NUMERO: $\\sum a_ib_i$; norma $\\|v\\|=\\sqrt{v_1^2+\\dots+v_n^2}$`,`Versori $i,j,k$: $v=ai+bj+ck$`],
+ err:`Argomento nuovo. Ponte con la programmazione: un vettore è un array.`,
+ chk:`Calcola $[1,2,3]\\cdot[4,-1,2]$ e la norma di $(3,4)$.`},
+{id:'U3L2',u:3,t:`Le matrici`,st:'new',
+ key:[`Prodotto righe per colonne: $(m\\times n)(n\\times p)=m\\times p$; non commutativo, associativo`,`Identità $I$, trasposta $A^T$, nulla, opposta`,`Inversa 2×2: $A^{-1}=\\frac1\\Delta\\begin{pmatrix}d&-b\\\\-c&a\\end{pmatrix}$ con $\\Delta=ad-bc\\neq0$`],
+ err:`La slide scrive il determinante come $ab-bc$: è un refuso, la formula giusta è $ad-bc$ (vedi Trappole).`,
+ chk:`Calcola $AB$ e $BA$ per $A=\\begin{pmatrix}1&2\\\\0&1\\end{pmatrix}$, $B=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$ e verifica che sono diversi.`},
+{id:'U3L3',u:3,t:`Applicazioni lineari`,st:'new',
+ key:[`Lineare: $f(x+y)=f(x)+f(y)$ e $f(\\alpha x)=\\alpha f(x)$`,`Nucleo $\\ker f=\\{x\\mid f(x)=0\\}$; immagine $\\operatorname{Im}f$`,`Suriettiva ⇔ $\\operatorname{Im}f=B$; iniettiva ⇔ $\\ker f=\\{0\\}$; matrice = colonne $L(e_1),L(e_2),L(e_3)$; indipendenza lineare`],
+ err:`Esercizio lasciato dalla slide: $L(x,y,z)=(x+y;\\,x+y;\\,z+x;\\,x+z)$ è iniettiva/suriettiva? (Fallo tu prima di guardare la soluzione qui sotto.)`,
+ chk:`Trova la matrice di $L$, poi $\\ker L$ e se è iniettiva/suriettiva.`,
+ sol:`Colonne: $(1,1,1,1)$, $(1,1,0,0)$, $(0,0,1,1)$. La prima è somma delle altre due → rango 2. Nucleo: $(1,-1,-1)\\ne0$ ($L=0$). Quindi NON iniettiva (nucleo non banale) e NON suriettiva (immagine di dimensione 2 in $\\mathbb R^4$).`},
+{id:'U3L4',u:3,t:`Sistemi lineari`,st:'new',
+ key:[`$Ax=b$; matrice completa $A|b$`,`Operazioni lecite sulle righe: scambio, moltiplicazione per costante non nulla, somma di multiplo di un'altra riga, eliminazione righe nulle`,`Gauss-Jordan: soluzione unica / nessuna ($0=d\\neq0$) / infinite con $n-m$ parametri`],
+ err:`Argomento nuovo ad alto volume di calcolo: errori attesi di segno e di dimenticanza dell'ultima colonna. Fai ogni riduzione scrivendo l'operazione accanto alla riga ($R_2\\to R_2-2R_1$).`,
+ chk:`Risolvi $\\begin{cases}x+y=3\\\\2x-y=0\\end{cases}$ con la matrice completa e scrivi la coppia numerica.`},
+{id:'U3L5',u:3,t:`Tecniche di risoluzione dei sistemi lineari (titolo dal calendario)`,st:'miss',key:[],err:`PDF non caricato. Dal calendario: sincrona del 22/10. Probabilmente completa U3L4 (Gauss-Jordan) con altre tecniche. Mandami il PDF.`,chk:``},
+{id:'U3L6',u:3,t:`Cenni di geometria dello spazio`,st:'new',
+ key:[`Retta per $Q(a,b,c)$ con direzione $v=(r,s,t)$: $x=a+kr,\\ y=b+ks,\\ z=c+kt$`,`Parallele: $v=hu$; perpendicolari: $v\\cdot u=0$`,`Piano: $a(x-m)+b(y-n)+c(z-p)=0$, con $(a,b,c)$ perpendicolare al piano`],
+ err:`Estensione della retta che già conosci: si aggiunge la terza componente. Esempio slide: parallela a $r$ per l'origine → $(-k,\\,k,\\,-k)$.`,
+ chk:`Scrivi il piano per $P(1,2,3)$ perpendicolare a $v=(2,-1,4)$.`},
+
+{id:'U4L1',u:4,t:`Simmetrie e periodicità`,st:'part',
+ key:[`Pari: $f(-x)=f(x)$ (simmetria asse y); dispari: $f(-x)=-f(x)$ (simmetria origine)`,`Né pari né dispari = semplicemente non simmetrica`,`Periodica: $f(x+kT)=f(x)$; $\\sin,\\cos$: $2\\pi$; $\\tan$: $\\pi$`],
+ err:`Si studia SOLO se il dominio è simmetrico. Ricorda: $y=\\sin x-1$ non è dispari.`,
+ chk:`$f(x)=\\frac{x^3}{x^2-1}$: dominio, pari o dispari?`},
+{id:'U4L2',u:4,t:`Funzioni razionali e irrazionali`,st:'ok',
+ key:[`Razionale intera: dominio $\\mathbb R$; fratta: escludi gli zeri del denominatore`,`Irrazionale = incognita SOTTO radice (la sola presenza di numeri irrazionali non basta)`,`Es. slide: $\\sqrt{\\frac{2x-1}{x+2}}$ → $(-\\infty,-2)\\cup[\\tfrac12,+\\infty)$`],
+ err:`#46 (RECIDIVO): $\\frac ND\\ge0$ con UNA tabella segni, mai due condizioni separate. #64/#67: radici del numeratore ≠ esclusioni.`,
+ chk:`Dominio di $\\sqrt{\\frac{x-3}{x+1}}$ con tabella segni unica.`},
+{id:'U4L3',u:4,t:`Funzioni trigonometriche e trasformazioni`,st:'part',
+ key:[`$y=f(x)+k$ sposta in verticale; $y=f(x+k)$ sposta in orizzontale (verso SINISTRA se $k>0$)`,`$y=kf(x)$ dilata in verticale; $y=f(kx)$ comprime in orizzontale (periodo $T/k$)`,`$y=-f(x)$, $y=f(-x)$, $y=|f(x)|$, $y=f(|x|)$`],
+ err:`Nuovo tipo di ragionamento: parti sempre dal grafico base e applica UNA trasformazione alla volta, dall'interno all'esterno.`,
+ chk:`Per $y=2\\sin\\left(x+\\tfrac\\pi2\\right)-1$: immagine, periodo, traslazione orizzontale.`},
+{id:'U4L4',u:4,t:`Funzioni logaritmiche ed esponenziali, dominio di composte`,st:'ok',
+ key:[`Log: dominio $(0,+\\infty)$, immagine $\\mathbb R$; esp: dominio $\\mathbb R$, immagine $(0,+\\infty)$; esp e log sono simmetriche rispetto a $y=x$`,`Dominio di una composta = SISTEMA di tutte le C.E.`,`Esempi slide: $\\ln\\frac{1+x}{1-x}$, $\\ln(x^2)$, $e^x+e^{-x}$, $e^{\\cos x}$ (dominio, immagine, simmetrie)`],
+ err:`#46 sul primo esempio ($\\ln\\frac{1+x}{1-x}$: tabella unica, risultato $(-1,1)$). Verifica anche la parità.`,
+ chk:`$f(x)=\\ln\\frac{1+x}{1-x}$: dominio e parità.`},
+{id:'U4L5',u:4,t:`Zeri e segno`,st:'ok',
+ key:[`Zeri: $f(x)=0$ dentro il dominio; segno: $f(x)>0$`,`Esempi con composte: $\\frac{e^{2x}-3e^x+2}{e^x-4}$, $\\frac{|x-1|-2}{x^2-25}$, $2\\sin2x-\\sqrt3$ in $[0,\\pi]$`,`Segno con prodotto/rapporto: tabella segni complessiva`],
+ err:`#3 (lettura tabella), #63 (limite fuori dal dominio quando poi passi al grafico). Metodo fisso: C.E. → intersezioni → segno → limiti → asintoti → grafico.`,
+ chk:`Zeri di $\\frac{e^{2x}-3e^x+2}{e^x-4}$: attenzione a escludere $x=\\ln4$.`}
+];
+
+
+var MAT={
+ U1L1:`maxi_libro cap. 2–3 (disequazioni, retta); report 15/03 cap. 1 (grafico dei segni); riepilogo_errori (b², 2a)`,
+ U1L2:`esponenziali_elegante (es. 217: 9^x−3^x=6; es. 211: scomposizione); maxi_libro cap. 5; esponenziali_tolcs (Loescher p. 613–616)`,
+ U1L3:`maxi_libro cap. 6 (bivio, #32, #23, strategia "togli le fratte dai log")`,
+ U1L4:`report 15/03 cap. 2–6 (√A>B, √A<B, √A>√B, semplificare prima); guida_completa; riepilogo_errori (es. 706, 707); guida_equazioni`,
+ U1L5:`maxi_libro cap. 7–9 (angoli notevoli, archi associati, addizione); formulario_triangoli e trig_triangoli (non per la sincrona: servono ai triangoli, non a questa lezione)`,
+ U4L2:`maxi_libro cap. 2 (#22, C.E. razionali); metodo fisso studio funzione (memoria di progetto)`,
+ U4L4:`#46, #32; maxi_libro cap. 6`,
+ U4L5:`metodo fisso: C.E. → intersezioni → segno → limiti → asintoti → grafico`
+};
+
+
+var RIP={
+U1L1:[`<b>Retta</b>: $y=mx+q$, con $m=\\frac{\\Delta y}{\\Delta x}$ (prima le $y$). <b>Parabola</b> $y=ax^2+bx+c$: con $a>0$ sorride ($\\cup$), vertice in $x_V=-\\frac b{2a}$. <b>Disequazioni di 2° grado</b>: trova le radici, guarda la concavità e leggi il segno: con $a>0$, "$>0$" vuol dire FUORI dalle radici e "$<0$" vuol dire TRA (il tuo errore #3). Un quadrato $(x-a)^2$ è sempre $\\ge0$.`,`Retta e parabola come base per tutto il resto: ti chiedono di risolvere disequazioni in modo rapido e di scrivere l'insieme soluzione con le parentesi giuste.`],
+U1L2:[`$a^x$ con $a>0$ è SEMPRE positiva. Con $a>1$ cresce; con $0<a<1$ decresce e nelle disequazioni il verso si inverte. Stessa base → uguagli gli esponenti. Se compaiono $a^{2x}$ e $a^x$ → sostituisci $z=a^x$, risolvi, scarta $z\\le0$ e torna alla $x$ (errori A, B, C). I termini separati da $+$ o $-$ NON si fondono: $3^{2x}-3^x\\ne3^{2x-x}$.`,`Negli esempi della slide il passaggio chiave è scrivere "$z>0$, quindi la soluzione negativa è impossibile". Scrivilo sempre.`],
+U1L3:[`$\\log_aA=x\\iff a^x=A$: il logaritmo è l'esponente. PRIMA di tutto la C.E.: argomento $>0$ (errore #32). Somma di log = log del prodotto; differenza = log del quoziente (NON quoziente di log, #23). Equazione: porta a $\\log A=\\log B\\Rightarrow A=B$ e poi controlla la C.E. Disequazione: base $>1$ stesso verso, base $<1$ verso opposto. Esponenziale con basi diverse: logaritmo di entrambi i membri.`,`C.E. scritta all'inizio e intersezione alla fine: è ciò che il professore guarda per primo.`],
+U1L4:[`<b>Indice dispari</b>: nessuna C.E., elevi entrambi i membri. <b>Indice pari</b>, equazione: $f\\ge0,\\ g\\ge0,\\ f=g^n$. <b>$\\sqrt f>g$</b>: DUE sistemi uniti, $\\{g\\ge0,\\ f>g^2\\}\\cup\\{f\\ge0,\\ g<0\\}$. <b>$\\sqrt f<g$</b>: UN sistema $\\{f\\ge0,\\ g>0,\\ f<g^2\\}$. Il motivo: una radice è $\\ge0$, quindi se $g<0$ il caso "$>$" è automatico, mentre il caso "$<$" è impossibile.`,`Lo schema a sistemi della slide va scritto esattamente così. Distinguere $>$ da $<$ è la domanda tipica.`],
+U1L5:[`Circonferenza di raggio 1: $\\cos$ = ascissa, $\\sin$ = ordinata, $\\tan=\\frac{\\sin}{\\cos}$. $\\sin,\\cos$ hanno periodo $2\\pi$, $\\tan$ ha periodo $\\pi$. Valori notevoli: $30^\\circ$ → $\\sin=\\frac12$; $60^\\circ$ → $\\cos=\\frac12$; $45^\\circ$ → $\\frac{\\sqrt2}2$. Archi associati: base sempre rispetto all'ASSE X (#43), segno dal quadrante. $\\sin^2x+\\cos^2x=1$. Equazioni omogenee: dividi per $\\cos^2x$.`,`Tabella degli angoli a memoria e equazioni riconducibili a una sola funzione sono le richieste tipiche della slide.`],
+U2L1:[`$\\mathbb N\\subset\\mathbb Q\\subset\\mathbb R$. Unione, intersezione, complementare; De Morgan: il complementare dell'intersezione è l'unione dei complementari (e viceversa). <b>Estremi</b>: massimo e minimo APPARTENGONO all'insieme; estremo superiore/inferiore no necessariamente. Esempio: $(0,1)$ ha inf $0$ e sup $1$, ma né min né max.`,`Distinguere minimo da estremo inferiore con intervalli aperti e chiusi. Attenzione ai refusi della slide (tab "Slide: refusi").`],
+U2L2:[`Una relazione su $A$ è un sottoinsieme di $A\\times A$. Proprietà: riflessiva ($xRx$), simmetrica, antisimmetrica, transitiva. <b>Equivalenza</b> = riflessiva + simmetrica + transitiva (divide l'insieme in classi). <b>Ordine largo</b> = riflessiva + antisimmetrica + transitiva. Esempi: $\\le$ è ordine; "stesso resto nella divisione per 3" è equivalenza.`,`Ti chiedono di verificare le proprietà una per una, con un controesempio per ogni "no", non a parole.`],
+U2L3:[`Per dimostrare "$P_n$ vale per ogni $n$": <b>1)</b> base: $P_1$ è vera. <b>2)</b> ipotesi: $P_n$ vera. <b>3)</b> tesi: scrivi esplicita $P_{n+1}$. <b>4)</b> partendo dal lato sinistro di $P_{n+1}$ usi l'ipotesi e arrivi al lato destro. <b>5)</b> conclusione scritta. Verificare "qualche caso" NON è una dimostrazione: nella slide, $127$ è il controesempio.`,`Lo schema in 5 blocchi scritto per intero. Fermarti senza la conclusione è il tuo errore di sempre.`],
+U2L4:[`$i^2=-1$, $z=a+ib$. Coniugato $\\bar z=a-ib$; $z\\bar z=a^2+b^2=|z|^2$. Divisione: moltiplica numeratore e denominatore per il coniugato. Potenze di $i$: ciclo di 4 ($i,-1,-i,1$). Forma trigonometrica $z=\\rho(\\cos\\theta+i\\sin\\theta)$, $\\rho=|z|$, $\\theta$ in base al quadrante. È ampiezza e fase di un segnale: lo stesso ragionamento del piano di Gauss.`,`Calcoli espliciti, risultato finale in forma $a+ib$ con numeri veri.`],
+U2L5:[`<i>Dalla teoria standard, non dalla slide (non l'ho vista).</i> De Moivre: $z^n=\\rho^n(\\cos n\\theta+i\\sin n\\theta)$. Radici $n$-esime: $\\sqrt[n]\\rho\\left(\\cos\\frac{\\theta+2k\\pi}n+i\\sin\\frac{\\theta+2k\\pi}n\\right)$, $k=0,\\dots,n-1$: sono i vertici di un poligono regolare.`,`Sincrona del 15/10: esercizi con potenze e radici n-esime.`],
+U2L6:[`Funzione: a OGNI elemento del dominio corrisponde UNO e un solo elemento del codominio, altrimenti è una semplice relazione. Iniettiva: una freccia al più per ogni $y$. Suriettiva: almeno una. Biunivoca: entrambe. Esempio: $y=x^2$ da $\\mathbb R$ a $\\mathbb R$ non è né iniettiva né suriettiva; ristretta a $[0,+\\infty)$ diventa biunivoca. Monotona: stesso verso su tutto il dominio.`,`La domanda stimolo: "non basta che corrispondano elementi, serve l'unicità". Aspettati esempi con grafico.`],
+U3L1:[`Un vettore è una lista ordinata di numeri, come un array. Somma e prodotto per uno scalare componente per componente. <b>Prodotto scalare</b> $\\sum a_ib_i$: è un NUMERO, e vale 0 se i vettori sono perpendicolari. Norma $\\|v\\|=\\sqrt{v_1^2+\\dots+v_n^2}$. Versori $i,j,k$: $v=ai+bj+ck$.`,`Prodotto scalare e perpendicolarità: ti servono di nuovo nella geometria dello spazio.`],
+U3L2:[`Una matrice $m\\times n$ ha $m$ righe e $n$ colonne. <b>Prodotto righe per colonne</b>: l'elemento $(i,j)$ è la riga $i$ di $A$ per la colonna $j$ di $B$; le colonne di $A$ devono essere uguali alle righe di $B$ e il risultato è $m\\times p$. Non è commutativo. Trasposta, identità. Inversa $2\\times2$: $\\frac1\\Delta\\begin{pmatrix}d&-b\\\\-c&a\\end{pmatrix}$ con $\\Delta=ad-bc\\ne0$.`,`Prima di calcolare, scrivi le dimensioni del risultato.`],
+U3L3:[`$f$ è lineare se somme e scalari "passano dentro": $f(\\alpha x+\\beta y)=\\alpha f(x)+\\beta f(y)$. La matrice di $f$ ha per colonne $f(e_1),f(e_2),\\dots$. Nucleo = vettori che vanno in 0; immagine = combinazioni delle colonne. Iniettiva $\\iff\\ker f=\\{0\\}$; suriettiva $\\iff\\operatorname{Im}f=B$. Vettori linearmente indipendenti: solo la combinazione banale dà 0. Come un circuito lineare: vale la sovrapposizione.`,`Procedura: matrice → riduzione a scalini → rango → nucleo e immagine → iniettiva/suriettiva. La slide chiude con un esercizio in questo stile.`],
+U3L4:[`Il sistema $Ax=b$ si scrive come matrice completa $A|b$. Operazioni lecite sulle righe: scambiare, moltiplicare per una costante non nulla, sommare un multiplo di un'altra riga. Con Gauss-Jordan arrivi a una forma a scalini e leggi: <b>soluzione unica</b>, <b>nessuna</b> (riga $0=d\\ne0$), <b>infinite</b> con $n-\\text{rango}$ parametri.`,`Scrivi accanto a ogni riga l'operazione fatta ($R_2\\to R_2-2R_1$) e chiudi con la soluzione numerica esplicita.`],
+U3L5:[`<i>Non ho la slide.</i> Dal titolo del calendario completa la lezione precedente con altre tecniche per i sistemi lineari.`,`Sincrona del 22/10.`],
+U3L6:[`Retta nello spazio: punto $Q$ + vettore direzione $v$ → $P=Q+kv$, cioè $x=a+kr,\\ y=b+ks,\\ z=c+kt$. Parallele: direzioni proporzionali. Perpendicolari: prodotto scalare 0. Piano per $P$ con vettore normale $(a,b,c)$: $a(x-m)+b(y-n)+c(z-p)=0$. È la retta del piano con una componente in più.`,`Passare da parametriche a simmetriche e viceversa; esercizi di parallela e perpendicolare come nelle slide.`],
+U4L1:[`Pari: $f(-x)=f(x)$ (simmetrica rispetto all'asse $y$). Dispari: $f(-x)=-f(x)$ (simmetrica rispetto all'origine). Prima controlla che il dominio sia simmetrico, poi sostituisci $-x$. Né pari né dispari = non simmetrica. Periodica: $f(x+T)=f(x)$; $\\sin,\\cos$ hanno $T=2\\pi$, $\\tan$ ha $T=\\pi$.`,`Verifica algebrica sostituendo $-x$; esempi come $\\frac{x^3}{x^2-1}$ (dispari) e $\\sin x-1$ (non dispari).`],
+U4L2:[`Razionale intera: dominio $\\mathbb R$. Fratta: denominatore $\\ne0$. Irrazionale (incognita sotto radice): radicando $\\ge0$ per indice pari. Con una frazione sotto radice o log: UNA tabella segni su $\\frac ND$ (#46). Le radici del numeratore non sono esclusioni (#64, #67).`,`Dominio come unione di intervalli, scritto correttamente.`],
+U4L3:[`Dal grafico base, una trasformazione alla volta: $f(x)+k$ sposta in verticale; $f(x+k)$ sposta in orizzontale verso SINISTRA se $k>0$; $kf(x)$ dilata in verticale; $f(kx)$ cambia il periodo in $T/k$; $|f|$ ribalta le parti negative. Per $A\\sin(\\omega x+\\varphi)+c$: ampiezza $A$, periodo $\\frac{2\\pi}\\omega$. Come le onde che conosci.`,`Disegnare il grafico partendo dalla funzione base, indicando immagine e periodo.`],
+U4L4:[`Esponenziale: dominio $\\mathbb R$, immagine $(0,+\\infty)$. Logaritmo: dominio $(0,+\\infty)$, immagine $\\mathbb R$; i due grafici sono simmetrici rispetto a $y=x$. Dominio di una composta = SISTEMA di tutte le C.E. Esempio: $e^{\\cos x}$ ha immagine $[e^{-1},e]$.`,`Dominio, immagine e simmetrie per ogni esempio della slide.`],
+U4L5:[`Zeri: $f(x)=0$ dentro il dominio. Segno: tabella con zeri del numeratore e del denominatore. Per le composte usa una sostituzione ($z=e^x$) e poi torna alla $x$. Controlla che gli zeri trovati stiano nel dominio. È il tuo metodo fisso: C.E. → intersezioni → segno.`,`Zeri e segno anche di funzioni con esponenziali, valore assoluto e trigonometriche in un intervallo.`]
+};
+
+/* ---------- PIANO ---------- */
+var P=[
+{id:'s0',t:`Fase 0 — Test d'ingresso su ciò che già sai (2 → 4 ottobre)`,d:`Sei fermo da fine agosto dopo 8 mesi con Zappulla: prima di ripassare, misura. Un blocco da 20 minuti per volta, vedi tab "Test d'ingresso".`,
+ steps:[`G1 (retta, parabola, disequazioni di 2° grado) e G2 (esponenziali).`,
+ `G3 (logaritmi) e G4 (irrazionali).`,
+ `G5 (trigonometria di base). Poi guarda quanti blocchi hai superato.`]},
+{id:'s1',t:`Fase 1 — Ripasso mirato, solo dove non hai passato (5 → 8 ottobre)`,d:`Ripassi solo i blocchi sotto soglia, con i tuoi materiali (vedi "I tuoi materiali" in ogni scheda). Se li hai superati tutti, questa fase la salti e passi alla Fase 2 in anticipo.`,
+ steps:[`Per ogni blocco non superato: rifai gli esercizi dai tuoi file + il recidivo collegato (#3, #32, #46, A/B/C).`,
+ `Rifai il test cambiando i numeri: se ora passa, vai avanti.`,
+ `Activity di Unità 1 e 2 domande per la sincrona del 9/10 (17:00).`]},
+{id:'s2',t:`Fase 2 — Contenuti NUOVI: video/slide veloci + palestra (da subito, fino al 29 ottobre)`,d:`Qui spendi il tempo risparmiato. Le sincrone M1 sono il 15/10 (U2), 22/10 (U3) e 29/10 (U4): guarda video e slide prima, con 2 domande pronte. Ogni giorno 5 esercizi, mai meno.`,
+ steps:[`10–15 ott → Unità 2: insiemi, relazioni, induzione, complessi.`,
+ `16–22 ott → Unità 3: vettori, matrici, applicazioni lineari, sistemi, geometria dello spazio (settimana più pesante).`,
+ `23–29 ott → Unità 4: fai G6 PRIMA. Se lo superi, U4 è solo ascolto della sincrona del 29/10.`,
+ `Entro il 1 nov → G7 (M2 già fatto con Zappulla). Se lo superi, di M2 restano da fare solo gli integrali (nuovi) e qualche richiamo.`]},
+{id:'s3',t:`Fase 3 — Esercizi sui contenuti nuovi (30 ottobre → 29 novembre)`,d:`Ordine per rendimento: prima ciò che è nuovo e di calcolo. La settimana 2–8 novembre è di lavoro per te: modalità mantenimento.`,
+ steps:[`30 ott – 1 nov → Unità 3 esercizi (L1–L2: vettori, matrici).`,
+ `2 – 8 nov → SETTIMANA DI LAVORO: solo palestra, almeno 3 giorni da 5 esercizi, niente argomenti nuovi, niente video. Salti senza sensi di colpa le sincrone di Prog (4/11) e M2 (6/11).`,
+ `9 – 15 nov → Unità 3 esercizi (L3–L6: applicazioni lineari, sistemi, geometria dello spazio).`,
+ `16 – 22 nov → Unità 2 esercizi (induzione, complessi con De Moivre, relazioni, insiemi).`,
+ `23 – 27 nov → simulazione M1 cronometrata + solo recidivi (se l'appello fosse davvero il 28/11, un sabato). U4 solo se G6 non superato.`]},
+{id:'s4',t:`Tre moduli insieme — come ripartisco`,d:`Matematica I, Matematica II e Programmazione I vanno all'appello insieme. Non conosco la data né il formato. Proposta di partenza, da rivedere appena li sai.`,
+ steps:[`M1: è il blocco più pesante (U2 e U3 nuovi). Tempo maggiore.`,
+ `Programmazione I: parti con meno base che su M2. Almeno 2 sessioni a settimana dal 12 ottobre, rispettando il tuo piano già impostato; sincrone 21/10, 28/10, 11/11, 18/11, 25/11.`,
+ `M2: il più leggero, grazie ai test G7 e a Zappulla. Sincrone 12/11, 19/11 da ascoltare; integrali (26/11) da vedere con calma.`,
+ `PUNTO DI DECISIONE, entro il 15 novembre: se Programmazione è troppo indietro, scenario B = al primo appello solo M1 e M2, Programmazione a un appello successivo. Prima VERIFICA sul regolamento: i moduli si possono dare separati? I voti già presi si mantengono? Per Programmazione conta il migliore, come ti hanno detto?`,
+ `Verifica anche dove e come si svolge l'esame: dai documenti del corso gli esami sono in presenza.`,
+ `Appena hai la data del primo appello e il formato (scritto/orale, modulo per modulo), riscrivo il piano con le ore reali.`]}
+];
+
+var ERR=[
+{c:`#3`,r:true,t:`Lettura del grafico dei segni al contrario`,rule:`$a>0$: cerchi $>0$ → FUORI dalle radici; cerchi $<0$ → TRA le radici. Parabola $\\cup$ con $a>0$. Prima di scrivere: "sto cercando sopra o sotto l'asse?"`,l:`U1L1, U1L4, U4L5`},
+{c:`#24`,r:true,t:`Coefficiente non elevato`,rule:`$(3x)^2=9x^2$, $(3x)^3=27x^3$`,l:`U1L4, U2L4`},
+{c:`#32`,r:true,t:`C.E. del logaritmo dimenticata (3+ volte)`,rule:`Argomento $>0$ PRIMA di ogni altro passaggio, poi intersecare alla fine`,l:`U1L3, U4L4`},
+{c:`#43`,r:true,t:`Angolo base trig rispetto all'asse sbagliato`,rule:`Base sempre rispetto a $0,\\pi,2\\pi$, mai a $3\\pi/2$. $\\sin210^\\circ$: base $30^\\circ$, non $60^\\circ$`,l:`U1L5`},
+{c:`#46`,r:true,t:`Dominio di $\\ln(N/D)$ o $\\sqrt{N/D}$ con condizioni separate`,rule:`UNA tabella segni su $N/D$; mai $N>0$ e $D\\ne0$ in due disequazioni indipendenti`,l:`U4L2, U4L4, U4L5`},
+{c:`#65`,r:true,t:`Segno mancante sui limiti laterali vicino all'asintoto`,rule:`Il segno si deduce dalla tabella segni, non si ricalcola per sostituzione`,l:`U4L5 (quando passi al grafico)`},
+{c:`#8`,r:false,t:`Un sistema invece di due per $\\sqrt A>B$`,rule:`$\\sqrt A>B$ (o $\\ge$): DUE sistemi uniti. $\\sqrt A<B$ (o $\\le$): UN sistema. Se $B<0$ nel primo caso basta $A\\ge0$`,l:`U1L4`},
+{c:`#20`,r:false,t:`Eccentricità ellisse`,rule:`$e=c/\\text{semiasse maggiore}$; $c^2=a^2-b^2$ (ellisse), $c^2=a^2+b^2$ (iperbole). Coniche non sono nelle slide di Matematica 1`,l:`(non in M1)`},
+{c:`#21/#22`,r:false,t:`$|x-3|$ al numeratore trattato con segno variabile; C.E. imposta sul numeratore`,rule:`C.E. solo sul denominatore`,l:`U4L2`},
+{c:`#23`,r:false,t:`Differenza di log = fratta di log`,rule:`$\\log A-\\log B=\\log\\frac AB$. Strategia: togli subito le fratte dai log`,l:`U1L3`},
+{c:`#25/#27/#28/#29/#36`,r:false,t:`Altri errori sui log e sulle disequazioni`,rule:`#25: $\\frac{A}{B+C}\\ne\\frac AB+\\frac AC$ · #27: se $a>b>0$ allora $-a<-b$ · #28: $\\log A=\\log B\\Rightarrow A=B$ · #29: stesso log ripetuto → sostituzione · #36: base $<1$ inverte il verso`,l:`U1L3`},
+{c:`#44`,r:false,t:`tan come prodotto`,rule:`$\\tan=\\sin/\\cos$. Valori: $\\tan30^\\circ=\\frac{\\sqrt3}{3}$, $\\tan45^\\circ=1$, $\\tan60^\\circ=\\sqrt3$`,l:`U1L5`},
+{c:`#45`,r:false,t:`Denominatore: ">0" vs "≠0"`,rule:`Radice al denominatore → $>0$; espressione/log → $\\ne0$`,l:`U1L4, U4L2`},
+{c:`#47`,r:false,t:`Proprietà vera ma non caratterizzante`,rule:`Se la domanda dice "caratterizza", controlla che sia FALSA per i casi vicini`,l:`U2L2 (relazioni e proprietà)`},
+{c:`#63/#64/#67/#68`,r:false,t:`Limiti fuori dominio; radici del numeratore come esclusioni; radicando al numeratore dimenticato`,rule:`Radici del numeratore NON sono esclusioni; radicando al numeratore $\\ge0$`,l:`U4L2, U4L5`},
+{c:`#66`,r:false,t:`Forme $f^g$: non guardare base ed esponente separatamente`,rule:`Controlla dove tendono base ED esponente prima di scegliere la tecnica`,l:`(limiti, non in M1)`},
+{c:`A / B / C`,r:true,t:`Esponenziali: ritorno t→x, fusione esponenti con il meno, risposta a metà`,rule:`A: finisci sempre con $x=\\dots$ · B: $3^{2x}-3^x\\ne3^{2x-x}$ · C: completa la semplificazione prima di fermarti`,l:`U1L2`},
+{c:`R-cubo / R-cubica`,r:false,t:`Cubare un solo membro; C.E. su radice cubica`,rule:`$\\sqrt[3]A=B\\Rightarrow A=B^3$ (entrambi i lati); indice dispari = nessuna C.E.`,l:`U1L4`},
+{c:`R-b² / R-2a / R-Δ`,r:false,t:`$(a\\pm b)^2$ senza $b^2$; denominatore $2$ al posto di $2a$; segno di $\\Delta$ con $c<0$`,rule:`3 termini sempre; $x=\\frac{-b\\pm\\sqrt\\Delta}{2a}$; se $c<0$ allora $-4ac>0$`,l:`U1L1, U2L4`},
+{c:`R-9`,r:false,t:`$(x-a)^2\\ge0$ scritto come $x\\ge a$`,rule:`Un quadrato è $\\ge0$ sempre; $x^2\\le0$ solo $x=0$; $x^2<0$ impossibile`,l:`U1L1`},
+{c:`RETTA-1/2/3`,r:false,t:`Legge $m$ dalla forma implicita; parallela/perpendicolare confuse; salta il fascio`,rule:`Prima $y=mx+q$, poi $m$; $\\parallel$: $m'=m$; $\\perp$: $m'=-1/m$; fascio $y-y_0=m(x-x_0)$`,l:`U1L1, U3L6 (retta nello spazio: stessa logica con i vettori)`},
+{c:`TOLC-1/2`,r:true,t:`Aritmetica di base; fermarsi prima della risposta`,rule:`$100\\%-79\\%=21\\%$. Ogni esercizio finisce con un numero o una coppia di coordinate, MAI in forma simbolica`,l:`Tutte (soprattutto U2L4 complessi, U3L2 matrici, U3L4 sistemi)`},
+{c:`TRI-1`,r:false,t:`$\\sin A$, $\\cos A$, $\\tan A$ come rapporti di lati in un triangolo non rettangolo`,rule:`Valgono solo nel triangolo rettangolo; nel generico: teorema dei seni o Carnot`,l:`(triangoli, non in M1)`}
+];
+
+/* ---------- RENDER helpers ---------- */
+function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild}
+function key(a,b){return a+'|'+b}
+
+
+function ds(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function palHTML(){
+ var t=new Date(),k='pal_'+ds(t),n=state[k]||0;
+ var days='';
+ for(var i=6;i>=0;i--){var d=new Date();d.setDate(t.getDate()-i);var v=state['pal_'+ds(d)]||0;
+  days+='<span title="'+ds(d)+'" style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;margin:2px;border-radius:5px;font-family:JetBrains Mono,monospace;font-size:12px;background:'+(v>=5?'var(--ok)':(v>0?'var(--new)':'var(--line)'))+';color:'+(v>0?'#10151c':'var(--mut)')+'">'+v+'</span>';}
+ return '<div class="card"><h3>Palestra di oggi: '+n+' / 5 esercizi</h3><div class="mut">Minimo 5. Più sono meglio, ma 5 non si saltano.</div><div style="margin:8px 0"><button data-pal="-1" style="font-size:20px;width:46px;height:40px">−</button> <button data-pal="1" style="font-size:20px;width:46px;height:40px">+1</button></div><div class="hint">Ultimi 7 giorni (verde = almeno 5):</div><div>'+days+'</div></div>';
+}
+
+function renderPiano(){
+ var s=document.getElementById('s-piano');var h=palHTML();
+ h+='<div class="card"><h3>Come lavoriamo</h3><ul><li>Test d\'ingresso: se superi un blocco (4/4 o 3/4), lo salti e vai a ciò che è nuovo.</li><li>ESERCIZI OGNI GIORNO, anche solo 5. Non si salta mai: all\'appello conta la mano, non aver capito il video.</li><li>Due passate: PASSATA 1 = video e slide veloci, SEMPRE con la palestra quotidiana. PASSATA 2 = volume di esercizi (novembre).</li><li>2 sere feriali da 1–1,5 h + 2 sessioni nel weekend, mai oltre 1,5 h di fila. Max 15 esercizi al giorno.</li><li>Regola 60/40 nella passata 2: almeno 60% esercizi. Un esercizio è chiuso solo con il risultato esplicito scritto.</li><li>Il primo appello vale per M1, M2 e Programmazione; la data circolante è il 28/11 (un sabato), NON confermata. Se serve, scenario B: prima M1+M2, poi Programmazione (da verificare sul regolamento).</li></ul></div>';
+ P.forEach(function(p){
+  h+='<div class="card"><h3>'+p.t+'</h3><div class="mut">'+p.d+'</div>';
+  p.steps.forEach(function(t,i){
+   var k=key(p.id,i);
+   h+='<label class="chk"><input type="checkbox" data-k="'+k+'"'+(state[k]?' checked':'')+'><span style="font-family:Crimson Pro,serif;font-size:17px">'+t+'</span></label>';
+  });
+  h+='</div>';
+ });
+ s.innerHTML=h;
+}
+
+function renderLezioni(){
+ var s=document.getElementById('s-lezioni');var h='<div class="card"><h3>Segnalibro</h3><div id="bm"></div></div>';var cu=0;
+ L.forEach(function(l){
+  if(l.u!==cu){cu=l.u;h+='<h2 style="font-size:14px;color:var(--mut);margin:16px 2px 8px">Unità '+cu+'</h2>';}
+  var tg=TAG[l.st];
+  h+='<div class="card" id="card-'+l.id+'"><h3>'+l.id+' · '+l.t+'<span class="tag '+tg[1]+'">'+tg[0]+'</span><span id="gt-'+l.id+'"></span></h3>';
+  if(l.st!=='miss'){
+   h+=['video','esercizi','activity'].map(function(n){var k=key(l.id,n);return '<label class="chk"><input type="checkbox" data-k="'+k+'"'+(state[k]?' checked':'')+'>'+n+'</label>'}).join('');
+   if(RIP[l.id])h+='<details><summary>Ripasso in breve</summary><div>'+RIP[l.id][0]+'</div><div class="hint" style="margin-top:6px"><b>Cosa si aspetta il prof:</b> '+RIP[l.id][1]+'</div></details>';
+   h+='<details><summary>Cosa devi sapere</summary><ul>'+l.key.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></details>';
+   h+='<details><summary>Errori e attenzioni</summary><div>'+l.err+'</div></details>';
+   if(MAT[l.id])h+='<details><summary>I tuoi materiali</summary><div>'+MAT[l.id]+'</div></details>';
+   h+='<details><summary>Domanda di verifica</summary><div>'+l.chk+'</div>'+(l.sol?'<details><summary>Soluzione (dopo averci provato)</summary><div>'+l.sol+'</div></details>':'')+'</details>';
+  } else {
+   h+='<div class="mut">'+l.err+'</div>';
+   if(RIP[l.id])h+='<details><summary>Ripasso in breve</summary><div>'+RIP[l.id][0]+'</div><div class="hint" style="margin-top:6px"><b>Cosa si aspetta il prof:</b> '+RIP[l.id][1]+'</div></details>';
+  }
+  h+='</div>';
+ });
+ s.innerHTML=h;
+}
+
+
+function renderErrori(){
+ var s=document.getElementById('s-errori');
+ var h='<div class="card"><h3>Catalogo errori unificato</h3><div class="mut">Recidivi in cima. La numerazione #n è quella del catalogo ufficiale; le voci del report del 15/03 hanno prefisso R- perché usavano una numerazione propria (1–12) che si sovrapponeva alla tua. Rileggilo prima di ogni sessione di esercizi.</div></div>';
+ var rec=ERR.filter(function(e){return e.r}), oth=ERR.filter(function(e){return !e.r});
+ function card(e){return '<div class="card"><h3>'+e.c+(e.r?'<span class="tag t-miss">RECIDIVO</span>':'')+'</h3><b>'+e.t+'</b><div style="margin-top:4px">'+e.rule+'</div><div class="hint" style="margin-top:4px">Dove ti serve: '+e.l+'</div></div>'}
+ h+='<h2 style="font-size:14px;color:var(--mut);margin:12px 2px 8px">Recidivi</h2>'+rec.map(card).join('');
+ h+='<h2 style="font-size:14px;color:var(--mut);margin:12px 2px 8px">Altri errori catalogati</h2>'+oth.map(card).join('');
+ s.innerHTML=h;
+}
+function renderFile(){
+ var s=document.getElementById('s-file');
+ s.innerHTML=`<div class="card"><h3>Dove sono finiti i tuoi materiali</h3><div class="mut">Stato onesto: cosa ho letto per intero e cosa no.</div></div>
+ <div class="card"><h3>Letti e integrati qui</h3><ul>
+ <li>maxi_libro_davide: ancoraggi, bivii, catalogo errori → tab Errori e schede Lezioni</li>
+ <li>riepilogo_errori_regole, guida_completa_matematica, guida_equazioni_disequazioni, report_matematica 15/03: errori R- e schemi irrazionali → U1L4</li>
+ <li>esponenziali_elegante: metodi (stessa base, sostituzione, scomposizione), es. 211 e 217 → U1L2</li>
+ <li>formulario_triangoli_davide (stampa): letto, ma i triangoli non sono in Matematica 1</li>
+ <li>dettagli TOLC-S: servono come storia, non cambiano il piano (FAO non richiede il TOLC)</li></ul></div>
+ <div class="card"><h3>Non ancora spulciati nel dettaglio</h3><ul>
+ <li>tolc_corso, esponenziali_tolcs, formule.html, quiz_formule_regole (quiz e esercizi nei dati JS), trig_triangoli, formulario_geometria_analitica, formulario_esteso, matematica_definitivo_13capitoli, piano_settimanale 26/03</li>
+ <li>Prossimo passo: estrarre da questi gli esercizi per unità (banco esercizi). Gran parte di geometria analitica, coniche e triangoli non serve a Matematica 1: resta archiviata.</li></ul></div>
+ <div class="card warn"><h3>Cose da sistemare nei tuoi vecchi file</h3><ul>
+ <li><b>report_matematica 15/03</b>: scrive "$a>0$ (parabola ∩)" e "sorriso (∩)". Errore: con $a>0$ la parabola è ∪ (sorriso). Le regole sono giuste, i simboli no. Succede proprio sul tuo errore #3.</li>
+ <li><b>guida_equazioni_disequazioni</b>: la tabella dice "C.E.: NO" per equazioni e disequazioni "normali". Va letta come "niente radicando", perché con frazioni e logaritmi la C.E. serve eccome, e nelle disequazioni irrazionali serve (la stessa guida usa $A\\ge0$ più avanti).</li>
+ <li><b>numerazione errori</b>: report 15/03 usa #1–#12 propri. Qui sono R-.</li></ul></div>`;
+}
+
+
+var CAL=[
+['09/10','ven','M1','1.6 Esercizi di riepilogo','Unità 1'],
+['15/10','gio','M1','2.5 Campo complesso: esercizi, De Moivre, potenze e radici n-esime','Unità 2'],
+['21/10','mer','Prog','1.3 Semantica, grammatica, algoritmo, indecidibilità, flusso','—'],
+['22/10','gio','M1','3.5 Tecniche di risoluzione dei sistemi lineari','Unità 3'],
+['28/10','mer','Prog','2.3 Input, switch e cicli','—'],
+['29/10','gio','M1','4.6 Funzioni: caratteristiche generali e classificazione','Unità 4'],
+['04/11','mer','Prog','3.3 Call and return','—'],
+['06/11','ven','M2','1.6 Ricerca asintoti, gli asintotici','già con Zappulla'],
+['11/11','mer','Prog','4.3 Puntatori a funzione','—'],
+['12/11','gio','M2','2.5 Calcolo derivate di funzioni composte','già con Zappulla'],
+['18/11','mer','Prog','5.4 Approfondimenti astrazione','—'],
+['19/11','gio','M2','3.5 Studio di una funzione','già con Zappulla'],
+['25/11','mer','Prog','6.3 Algoritmi di ordinamento e ricerca avanzata','—'],
+['26/11','gio','M2','4.5 Tecniche di risoluzione con integrazione','nuovo']
+];
+function renderCal(){
+ var s=document.getElementById('s-cal');
+ var h='<div class="card"><h3>Sincrone 9 ottobre – 26 novembre</h3><div class="mut">Ogni sincrona dura 2 ore. Orario noto solo per il 9/10 (17:00). Non so se sono registrate o se la presenza è obbligatoria.</div></div>';
+ h+='<div class="card"><table><tr><th>Data</th><th>Modulo</th><th>Argomento</th><th>Per te</th></tr>';
+ CAL.forEach(function(r){
+  var c=r[2]==='M1'?'var(--ok)':(r[2]==='M2'?'var(--part)':'var(--mut)');
+  h+='<tr><td style="white-space:nowrap">'+r[0]+' '+r[1]+'</td><td style="color:'+c+'">'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';
+ });
+ h+='</table></div>';
+ s.innerHTML=h;
+}
+
+
+var GATES=[
+{id:'G1',t:`Retta, parabola, disequazioni di 2° grado`,u:['U1L1'],q:[
+ {q:`Risolvi $x^2-5x+6\\ge0$.`,a:`$x\\le2\\ \\lor\\ x\\ge3$, cioè $(-\\infty,2]\\cup[3,+\\infty)$`},
+ {q:`Vertice di $y=-x^2+4x-3$.`,a:`$x_V=-\\frac b{2a}=2$, $y_V=-4+8-3=1$ → $V(2,1)$`},
+ {q:`Risolvi $(x-2)^2>0$ (trabocchetto).`,a:`Un quadrato è sempre $\\ge0$ e vale 0 solo in $x=2$ → $x\\ne2$`},
+ {q:`Risolvi $6x^2\\le5x-1$.`,a:`$6x^2-5x+1\\le0$, radici $\\frac13$ e $\\frac12$, parabola con $a>0$ e cerchi $\\le0$ → TRA le radici: $\\frac13\\le x\\le\\frac12$`}]},
+{id:'G2',t:`Equazioni e disequazioni esponenziali`,u:['U1L2'],q:[
+ {q:`Risolvi $2^{3x-1}=16$.`,a:`$16=2^4$ → $3x-1=4$ → $x=\\frac53$`},
+ {q:`Risolvi $3^{2x}-3^x=6$ (scrivi $x$ numerico).`,a:`$z=3^x>0$: $z^2-z-6=0$ → $z=3$ (scartata $z=-2$) → $3^x=3$ → $x=1$`},
+ {q:`Risolvi $\\left(\\tfrac13\\right)^x>9$ (base $<1$).`,a:`$9=3^2$ e $\\left(\\frac13\\right)^x=3^{-x}$ → $-x>2$ → $x<-2$`},
+ {q:`Risolvi $12^x-8\\cdot6^x-2^x+8=0$ (scomposizione).`,a:`Raccogli: $(6^x-1)(2^x-8)=0$ → $6^x=1\\Rightarrow x=0$ ; $2^x=8\\Rightarrow x=3$`}]},
+{id:'G3',t:`Equazioni e disequazioni logaritmiche`,u:['U1L3'],q:[
+ {q:`Risolvi $\\log_2(x-1)=3$, con C.E.`,a:`C.E. $x>1$. $x-1=8$ → $x=9$ ✓`},
+ {q:`Risolvi $\\log x+\\log(x-3)=1$ (base 10).`,a:`C.E. $x>3$. $x(x-3)=10$ → $x^2-3x-10=0$ → $x=5$ oppure $x=-2$ → solo $x=5$ rispetta la C.E.`},
+ {q:`Risolvi $(\\log_2x)^2-3\\log_2x+2<0$.`,a:`$z=\\log_2x$: $z^2-3z+2<0$ → $1<z<2$ → $2<x<4$ (C.E. $x>0$ rispettata)`},
+ {q:`Risolvi $3\\cdot2^x+2^{x+1}=19$, risultato con i logaritmi.`,a:`$5\\cdot2^x=19$ → $2^x=\\frac{19}5$ → $x=\\log_2\\frac{19}5=\\frac{\\ln19-\\ln5}{\\ln2}\\approx1{,}93$`}]},
+{id:'G4',t:`Equazioni e disequazioni irrazionali`,u:['U1L4'],q:[
+ {q:`Risolvi $\\sqrt{3x+4}=2+x$.`,a:`C.E. $x\\ge-\\frac43$ e $2+x\\ge0$. Quadrato: $3x+4=x^2+4x+4$ → $x^2+x=0$ → $x=0$, $x=-1$, entrambe ok → $S=\\{-1,0\\}$`},
+ {q:`Risolvi $\\sqrt{x+2}>x$ (due sistemi).`,a:`Sist.1: $x+2\\ge0,\\ x<0$ → $[-2,0)$. Sist.2: $x\\ge0,\\ x+2>x^2$ → $x^2-x-2<0$ → $0\\le x<2$. Unione: $[-2,2)$`},
+ {q:`Risolvi $\\sqrt{x+2}<x$ (un sistema).`,a:`$x+2\\ge0,\\ x>0,\\ x+2<x^2$ → $x^2-x-2>0$ → $x<-1\\lor x>2$; con $x>0$: $x>2$`},
+ {q:`Risolvi $\\sqrt[3]{x(x^2+5)-1}=x$.`,a:`Indice dispari: niente C.E. Cubo ENTRAMBI i membri: $x^3+5x-1=x^3$ → $5x=1$ → $x=\\frac15$`}]},
+{id:'G5',t:`Trigonometria di base`,u:['U1L5'],q:[
+ {q:`Senza tabella: $\\sin30^\\circ$, $\\cos60^\\circ$, $\\tan45^\\circ$, $\\tan60^\\circ$.`,a:`$\\frac12$, $\\frac12$, $1$, $\\sqrt3$`},
+ {q:`Calcola $4\\sin\\frac{5\\pi}6-2\\cos\\frac{4\\pi}3+\\sqrt3\\tan\\frac{2\\pi}3$.`,a:`$4\\cdot\\frac12-2\\cdot(-\\frac12)+\\sqrt3\\cdot(-\\sqrt3)=2+1-3=0$ (angoli base rispetto all'asse x, #43)`},
+ {q:`Risolvi $4\\sin^2x-7+10\\cos^2x=0$.`,a:`$\\sin^2=1-\\cos^2$: $4+6\\cos^2x-7=0$ → $\\cos^2x=\\frac12$ → $x=\\frac\\pi4+k\\frac\\pi2$`},
+ {q:`Risolvi $\\sin x=-\\frac12$ in $[0,2\\pi)$.`,a:`$x=\\frac{7\\pi}6$ e $x=\\frac{11\\pi}6$ (III e IV quadrante, base $\\frac\\pi6$)`}]},
+{id:'G6',t:`Funzioni: dominio, parità, zeri e segno`,u:['U4L1','U4L2','U4L4','U4L5'],q:[
+ {q:`Dominio di $\\sqrt{\\dfrac{x-3}{x+1}}$ (tabella segni unica).`,a:`$\\frac{x-3}{x+1}\\ge0$ → $x<-1\\lor x\\ge3$`},
+ {q:`$f(x)=\\ln\\dfrac{1+x}{1-x}$: dominio e parità.`,a:`$\\frac{1+x}{1-x}>0$ → $(-1,1)$. $f(-x)=\\ln\\frac{1-x}{1+x}=-f(x)$ → dispari`},
+ {q:`Zeri e segno di $\\dfrac{e^{2x}-3e^x+2}{e^x-4}$.`,a:`$z=e^x$: numeratore $(z-1)(z-2)$, denominatore $z-4$. Zeri: $x=0$, $x=\\ln2$ ($x=\\ln4$ escluso). $f>0$ per $0<x<\\ln2$ oppure $x>\\ln4$`},
+ {q:`Dominio di $\\dfrac{\\sqrt{x-2}}{x-5}$ (trabocchetto #64/#67).`,a:`$x\\ge2$ e $x\\ne5$ → $[2,5)\\cup(5,+\\infty)$`}]},
+{id:'G7',t:`Matematica II: già fatto con Zappulla`,u:[],q:[
+ {q:`Asintoti di $f(x)=\\dfrac{x^2-1}{x-2}$.`,a:`Verticale $x=2$. Obliquo: $m=1$, $q=\\lim(f-x)=2$ → $y=x+2$`},
+ {q:`Deriva $\\sin(x^2)$ e $e^{3x+1}$.`,a:`$2x\\cos(x^2)$ ; $3e^{3x+1}$ (regola della catena: $f'(g(x))\\cdot g'(x)$)`},
+ {q:`Deriva $\\ln(x^2+1)$ e $(x^2+1)^5$.`,a:`$\\frac{2x}{x^2+1}$ ; $10x(x^2+1)^4$`},
+ {q:`Massimi e minimi di $f(x)=x^3-3x$.`,a:`$f'=3x^2-3=0$ → $x=\\pm1$. Max in $x=-1$ ($f=2$), min in $x=1$ ($f=-2$)`}]}
+];
+
+function gVerdict(g){
+ var ok=0,tot=0;
+ g.q.forEach(function(_,i){var v=state['g_'+g.id+'_'+i];if(v){tot++;if(v==='ok')ok++;}});
+ if(tot<g.q.length)return{k:null,ok:ok,tot:tot};
+ return{k:ok===g.q.length?'skip':(ok===g.q.length-1?'skip3':'redo'),ok:ok,tot:tot};
+}
+function gText(v){
+ if(!v.k)return `In corso: ${v.tot} / 4 valutati.`;
+ if(v.k==='skip')return `4 / 4 → PASSA AVANTI. Salta il ripasso di questo blocco.`;
+ if(v.k==='skip3')return `3 / 4 → passa avanti, ma rifai l'esercizio sbagliato e guarda l'errore collegato.`;
+ return `${v.ok} / 4 → RIPASSA con i tuoi materiali, poi rifai il test tra 2 giorni (cambia i numeri).`;
+}
+function gColor(v){return !v.k?'var(--mut)':(v.k==='redo'?'var(--bad)':'var(--ok)');}
+function updateGate(id){
+ var g=GATES.filter(function(x){return x.id===id})[0];
+ var v=gVerdict(g);
+ var el=document.getElementById('gv-'+id);
+ if(el){el.textContent=gText(v);el.style.color=gColor(v);}
+ Array.prototype.forEach.call(document.querySelectorAll('button[data-g^="'+id+'|"]'),function(b){
+  var pr=b.getAttribute('data-g').split('|');
+  var sel=state['g_'+id+'_'+pr[1]]===pr[2];
+  b.style.background=sel?(pr[2]==='ok'?'var(--ok)':'var(--bad)'):'var(--panel)';
+  b.style.color=sel?'#10151c':'var(--tx)';
+ });
+ g.u.forEach(function(l){
+  var t=document.getElementById('gt-'+l);
+  if(t)t.innerHTML=(v.k==='skip'||v.k==='skip3')?'<span class="tag t-ok">GATE OK · SALTA</span>':(v.k==='redo'?'<span class="tag t-miss">DA RIPASSARE</span>':'');
+ });
+ var done=GATES.filter(function(x){var k=gVerdict(x).k;return k==='skip'||k==='skip3'}).length;
+ var gs=document.getElementById('gsum');if(gs)gs.textContent='Test superati: '+done+' / '+GATES.length;
+}
+function renderGates(){
+ var s=document.getElementById('s-gate');
+ var h=`<div class="card"><h3>Come funziona</h3><ul><li>Carta e penna, 20 minuti per blocco, SENZA aprire la soluzione.</li><li>Poi apri la soluzione e valuta ogni esercizio: ✓ solo se l'hai fatto sereno e con il risultato esplicito scritto (TOLC-2). Un esercizio lasciato a metà vale ✗.</li><li>4/4: passa avanti. 3/4: passa avanti ma rifai l'esercizio sbagliato. 2 o meno: ripassa e rifai il test cambiando i numeri.</li><li>Sei fermo da fine agosto: se qualcosa non va, è normale. Il test serve proprio a vedere dove ripassare e dove no.</li></ul><div id="gsum" style="font-family:JetBrains Mono,monospace;font-size:13px;margin-top:6px"></div></div>`;
+ GATES.forEach(function(g){
+  h+=`<div class="card"><h3>${g.id} · ${g.t}</h3>`;
+  g.q.forEach(function(it,i){
+   h+=`<div style="margin:10px 0;padding-top:8px;border-top:1px solid var(--line)"><b>${i+1}.</b> ${it.q}<details><summary>Soluzione</summary><div>${it.a}</div></details><div style="margin-top:6px"><button class="gb" data-g="${g.id}|${i}|ok" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:13px;background:var(--panel);color:var(--tx);cursor:pointer">✓ sereno</button> <button class="gb" data-g="${g.id}|${i}|ko" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:13px;background:var(--panel);color:var(--tx);cursor:pointer">✗ no</button></div></div>`;
+  });
+  h+=`<div id="gv-${g.id}" style="font-family:JetBrains Mono,monospace;font-size:13px;margin-top:8px"></div></div>`;
+ });
+ s.innerHTML=h;
+ GATES.forEach(function(g){updateGate(g.id)});var bm0=document.getElementById('bm');if(bm0)bm0.innerHTML=bmHTML();if(state._tab&&document.getElementById('s-'+state._tab))show(state._tab);
+}
+
+
+function bmHTML(){
+ var l=state._last;
+ return l?('Ultima lezione toccata: <b>'+l+'</b> <button data-go="'+l+'" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:13px;background:var(--panel);color:var(--tx);cursor:pointer">vai</button>'):'Nessuna lezione ancora: si imposta da sola quando spunti video, esercizi o activity.';
+}
+function renderSync(){
+ var s=document.getElementById('s-sync');
+ s.innerHTML=`<div class="card"><h3>Come funziona il salvataggio</h3><ul><li>I progressi si salvano nel browser di QUEL dispositivo (localStorage). Telefono e computer non si sincronizzano da soli: sono due archivi separati.</li><li>Per passare da un dispositivo all'altro: qui sotto "Genera", copia il testo, aprilo sull'altro dispositivo, incolla in "Importa". Fallo ogni tanto, ad esempio a fine settimana.</li><li>Il segnalibro (ultima lezione e ultima tab) funziona sullo stesso dispositivo.</li><li>Una sincronizzazione automatica vera richiede un servizio esterno: la valutiamo quando il sito sarà modulare.</li></ul></div>
+ <div class="card"><h3>Esporta</h3><button data-act="gen" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:13px;background:var(--panel);color:var(--tx)">Genera</button> <button data-act="copy" style="padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:13px;background:var(--panel);color:var(--tx)">Copia</button><textarea id="sy-out" readonly style="width:100%;height:110px;margin-top:8px;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:11px"></textarea></div>
+ <div class="card"><h3>Importa</h3><textarea id="sy-in" placeholder="Incolla qui il testo generato sull'altro dispositivo" style="width:100%;height:110px;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:11px"></textarea><button data-act="imp" style="padding:8px 12px;margin-top:8px;border:1px solid var(--line);border-radius:6px;font-family:JetBrains Mono,monospace;font-size:13px;background:var(--panel);color:var(--tx)">Importa e ricarica</button><div id="sy-msg" class="hint" style="margin-top:6px"></div></div>`;
+}
+
+function renderRegole(){
+ var s=document.getElementById('s-regole');
+ s.innerHTML=`<div class="card"><h3>Equazione vs disequazione: la differenza che ti manda in crisi</h3>
+ <ul><li><b>Equazione</b>: imposti le C.E., risolvi, poi controlli che le soluzioni le rispettino.</li>
+ <li><b>Disequazione</b>: le C.E. entrano NEL SISTEMA con la disequazione e la soluzione finale è l'intersezione. Non c'è "verifica" a posteriori.</li></ul></div>
+ <div class="card"><h3>Irrazionali (indice pari)</h3><table>
+ <tr><th>Forma</th><th>Schema</th></tr>
+ <tr><td>$\\sqrt{f}=g$</td><td>$g\\ge0,\\ f=g^2$ (equivale a $f\\ge0,g\\ge0,f=g^2$)</td></tr>
+ <tr><td>$\\sqrt f>g$</td><td>DUE sistemi uniti: $\\{g\\ge0,\\ f>g^2\\}\\cup\\{f\\ge0,\\ g<0\\}$ (#8)</td></tr>
+ <tr><td>$\\sqrt f<g$</td><td>UN sistema: $\\{f\\ge0,\\ g>0,\\ f<g^2\\}$</td></tr>
+ <tr><td>indice dispari</td><td>nessuna C.E.: si eleva e si tiene il verso</td></tr></table>
+ <div class="hint" style="margin-top:6px">Per $\\le$ e $\\ge$ cambiano solo gli estremi: $\\sqrt f\\le g$ → $g\\ge0$.</div></div>
+ <div class="card"><h3>Esponenziali e logaritmi</h3><table>
+ <tr><th>Caso</th><th>Regola</th></tr>
+ <tr><td>$a^x>a^n$</td><td>$a>1$: $x>n$ · $0<a<1$: $x<n$</td></tr>
+ <tr><td>ausiliaria $z=a^x$</td><td>vincolo $z>0$; torna a $x$ con $a^x=z_0$ (errori A, B, C)</td></tr>
+ <tr><td>$\\log_aA$</td><td>C.E. $A>0$ SEMPRE per prima (#32)</td></tr>
+ <tr><td>$\\log_aA>\\log_aB$</td><td>$a>1$: $A>B$ · $0<a<1$: $A<B$ · più C.E. $A>0,B>0$</td></tr></table></div>
+ <div class="card"><h3>Denominatori e radici (dominio)</h3><table>
+ <tr><th>Situazione</th><th>Condizione</th></tr>
+ <tr><td>denominatore algebrico o log</td><td>$\\ne0$ (#45)</td></tr>
+ <tr><td>radice al denominatore</td><td>radicando $>0$ (#45)</td></tr>
+ <tr><td>radice al numeratore</td><td>radicando $\\ge0$ (#68)</td></tr>
+ <tr><td>$\\ln\\frac ND$ o $\\sqrt{\\frac ND}$</td><td>UNA tabella segni su $N/D$ (#46)</td></tr>
+ <tr><td>radici del numeratore</td><td>NON sono esclusioni del dominio (#64, #67)</td></tr>
+ <tr><td>funzione composta</td><td>sistema di tutte le C.E.</td></tr></table></div>`;
+}
+
+function renderTrappole(){
+ var s=document.getElementById('s-trappole');
+ s.innerHTML=`<div class="card warn"><h3>Imprecisioni nelle slide</h3>
+ <div class="mut">Le segnalo perché studi da lì: se all'esame/activity il prof usa la sua formulazione, usa la sua; ma sappi qual è la versione corretta.</div></div>
+ <div class="card"><h3>U3L2 · Determinante 2×2</h3>La slide scrive $\\Delta=ab-bc$. Corretto: $\\Delta=ad-bc$.</div>
+ <div class="card"><h3>U1L1 · Disequazione di 1° grado</h3>Per $ax+b>0$ la slide dice che la soluzione è "$x=-b/a$". È una semiretta: $x>-b/a$ se $a>0$, $x<-b/a$ se $a<0$.</div>
+ <div class="card"><h3>U3L3 · "La retta è l'esempio più comune di applicazione lineare"</h3>$y=mx+q$ è lineare nel senso stretto solo se $q=0$ (perché $f(0)=0$). Se $q\\ne0$ è un'applicazione AFFINE. Nella forma implicita il prof fa un'analogia, non una definizione.</div>
+ <div class="card"><h3>U2L1 · "Numerabile"</h3>La slide lo definisce come "elementi separati da un numero finito di altri elementi": è più una proprietà di discretezza. Corretto: un insieme è numerabile se si può mettere in corrispondenza biunivoca con $\\mathbb N$. (Per esempio $\\mathbb Q$ è numerabile pur non essendo discreto.) Conclusione della slide ($\\mathbb N$ sì, $\\mathbb R$ no) corretta.</div>
+ <div class="card"><h3>U2L1 · Estremo superiore</h3>Nel riepilogo, la definizione di estremo superiore è scritta con "limitato inferiormente" e "estremo inferiore": è un copia-incolla. Sup = minimo dei maggioranti, per insiemi limitati SUPERIORMENTE.</div>
+ <div class="card"><h3>U2L3 · Esempio 2 di induzione</h3>Nell'ipotesi induttiva compare "$1+2+3+\\dots+n+(2n-1)$": è un refuso, la somma giusta è $1+3+5+\\dots+(2n-1)$.</div>`;
+}
+
+/* ---------- navigazione ---------- */
+var tabs=[['piano','Piano'],['gate','Test d\'ingresso'],['cal','Calendario'],['sync','Sincronizza'],['lezioni','Lezioni'],['errori','Errori'],['regole','C.E. e regole'],['file','I tuoi file'],['trappole','Slide: refusi']];
+var nav=document.getElementById('nav');
+tabs.forEach(function(t,i){
+ var b=document.createElement('button');b.textContent=t[1];b.setAttribute('data-t',t[0]);
+ if(i===0)b.className='on';
+ b.addEventListener('click',function(){show(t[0])});nav.appendChild(b);
+});
+function show(id){
+ Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){s.classList.remove('on')});
+ document.getElementById('s-'+id).classList.add('on');state._tab=id;save();
+ Array.prototype.forEach.call(nav.children,function(b){b.classList.toggle('on',b.getAttribute('data-t')===id)});
+ window.scrollTo(0,0);
+}
+document.getElementById('s-piano').classList.add('on');
+
+/* ---------- progresso globale ---------- */
+function progress(){
+ var tot=0,done=0;
+ L.forEach(function(l){if(l.st==='miss')return;['video','esercizi','activity'].forEach(function(n){tot++;if(state[key(l.id,n)])done++;})});
+ var pct=tot?Math.round(done/tot*100):0;
+ document.getElementById('gbar').style.width=pct+'%';
+ document.getElementById('gtxt').textContent='Lezioni: '+done+' / '+tot+' passi completati ('+pct+'%)';
+}
+
+/* delega eventi sulle checkbox */
+document.addEventListener('click',function(e){
+ var go=e.target.getAttribute&&e.target.getAttribute('data-go');
+ if(go){show('lezioni');var c=document.getElementById('card-'+go);if(c)c.scrollIntoView();return;}
+ var act=e.target.getAttribute&&e.target.getAttribute('data-act');
+ if(act==='gen'){document.getElementById('sy-out').value=JSON.stringify(state);return;}
+ if(act==='copy'){var o=document.getElementById('sy-out');if(!o.value)o.value=JSON.stringify(state);o.select();try{document.execCommand('copy');}catch(er){}return;}
+ if(act==='imp'){
+  var m=document.getElementById('sy-msg');
+  try{var n=JSON.parse(document.getElementById('sy-in').value);if(typeof n!=='object'||n===null)throw 0;
+   Object.keys(n).forEach(function(k){state[k]=n[k]});save();m.textContent='Importato. Ricarico...';setTimeout(function(){location.reload()},500);}
+  catch(er){m.textContent='Testo non valido. Controlla di aver copiato tutto.';}
+  return;}
+ var gg=e.target.getAttribute&&e.target.getAttribute('data-g');
+ if(gg){var pr=gg.split('|');state['g_'+pr[0]+'_'+pr[1]]=pr[2];save();updateGate(pr[0]);return;}
+ var d=e.target.getAttribute&&e.target.getAttribute('data-pal');
+ if(!d)return;
+ var k='pal_'+ds(new Date());
+ state[k]=Math.max(0,(state[k]||0)+parseInt(d,10));save();renderPiano();math();
+});
+document.addEventListener('change',function(e){
+ var k=e.target.getAttribute&&e.target.getAttribute('data-k');
+ if(!k)return;
+ state[k]=e.target.checked;
+ var lid=k.split('|')[0];if(/^U\d/.test(lid)){state._last=lid;var bm=document.getElementById('bm');if(bm)bm.innerHTML=bmHTML();}
+ save();progress();
+});
+
+renderPiano();renderGates();renderCal();renderSync();renderLezioni();renderErrori();renderFile();renderRegole();renderTrappole();progress();GATES.forEach(function(g){updateGate(g.id)});
+function math(){
+ if(window.renderMathInElement){
+  renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false,strict:false});
+ } else { setTimeout(math,200); }
+}
+window.addEventListener('load',math);
+})();
+</script>
+</body>
+</html>
