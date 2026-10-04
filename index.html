@@ -19,13 +19,13 @@ details.sy button{padding:10px 14px;margin:6px 6px 6px 0;border:1px solid var(--
 details.sy button:hover{border-color:var(--ac)}
 #sy-msg{color:var(--ac);font-size:16px;margin-top:6px;white-space:pre-line}
 </style></head><body>
-<h1>Università · Menu</h1><div class="sub">Quattro pagine per Matematica I. Le altre arrivano dopo.</div>
-<a class="b" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Piano giorno per giorno: teoria da leggere, esercizi dal più semplice, errore di oggi.</div></a>
+<h1>Università · Menu</h1><div class="sub">Matematica I, e il Tutor che segue anche Matematica II e Programmazione I.</div>
+<a class="b" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Si adatta ai tuoi ✓/✗: ripasso degli errori, argomenti nuovi, giudizio e calendario fino al 27/11.</div></a>
 <a class="b" href="matematica1.html"><div class="t">Piano e calendario</div><div class="d">Il tuo hub: piano a fasi, test d'ingresso, lezioni, calendario.</div></a>
-<a class="b" href="palestra_u1.html"><div class="t">Esercizi</div><div class="d">Allenamento: esercizi dal più facile al più difficile, per argomento.</div></a>
+<a class="b" href="palestra_u1.html"><div class="t">Esercizi</div><div class="d">Allenamento per argomento. Segna ✓/✗: ogni esercizio ricorda se l'hai già fatto e quante volte. Tab Errori: cosa è emerso da FAO.</div></a>
 <a class="b" href="archivio_zappulla.html"><div class="t">Teoria</div><div class="d">Procedure dalla A alla Z, formule, Ruffini, cerchio goniometrico, funzioni.</div></a>
-<a class="b s"><div class="t">Matematica II</div><div class="d">In arrivo.</div></a>
-<a class="b s"><div class="t">Programmazione I</div><div class="d">In arrivo.</div></a>
+<a class="b" href="quiz.html"><div class="t">Quiz</div><div class="d">Mettiti alla prova sui concetti; l'esito va al Tutor da solo.</div></a>
+<a class="b s"><div class="t">Matematica II · Programmazione I</div><div class="d">Per ora si seguono dal Tutor (piano e scadenze). Pagine dedicate: dopo aver caricato le slide.</div></a>
 
 <details class="sy" id="sy"><summary>Salva e trasferisci i progressi</summary>
 <p>Copia TUTTO (✓/✗ degli esercizi, Tutor, Piano) da un dispositivo e incollalo sull'altro. Si uniscono ai dati che ci sono già: non si cancella niente.</p>
@@ -38,7 +38,7 @@ details.sy button:hover{border-color:var(--ac)}
 <div id="sy-msg"></div></details>
 <script>
 (function(){
-var K=['palestra_u1_v1','tutor_v1','mat1hub_v1'];
+var K=['palestra_u1_v1','tutor_v1','tutor_v2','mat1hub_v1','fao_custom_v1','fao_quiz_v1'];
 function rd(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return {};}}
 function wr(k,o){try{localStorage.setItem(k,JSON.stringify(o));}catch(e){}}
 function $(i){return document.getElementById(i);}
@@ -55,13 +55,31 @@ $('sy-imp').addEventListener('click',function(){
   if(raw.indexOf('FAO1:')!==0)throw 0;
   var n=JSON.parse(raw.slice(5));
   var p=rd('palestra_u1_v1');if(!p.r)p.r={};if(!p.d)p.d={};var np=n.palestra_u1_v1||{};
+  if(!p.h)p.h={};
   Object.keys(np.r||{}).forEach(function(i){p.r[i]=np.r[i];});
+  Object.keys(np.h||{}).forEach(function(i){var a=p.h[i]||[],b=np.h[i]||[];var la=a.length?(a[a.length-1].n||0):0,lb=b.length?(b[b.length-1].n||0):0;if(b.length>a.length||(b.length===a.length&&lb>la)){p.h[i]=b;if(b.length)p.r[i]=b[b.length-1].r;}});
+  p.n=Math.max(p.n||0,np.n||0);
   Object.keys(np.d||{}).forEach(function(d){p.d[d]=Math.max(p.d[d]||0,np.d[d]);});
   wr('palestra_u1_v1',p);
   var t=rd('tutor_v1');if(!t.c)t.c={};var nt=n.tutor_v1||{};
   Object.keys(nt.c||{}).forEach(function(k){t.c[k]=!!(t.c[k]||nt.c[k]);});
   Object.keys(nt).forEach(function(k){if(k!=='c')t[k]=nt[k];});
   wr('tutor_v1',t);
+  var t2=rd('tutor_v2');['c','f','av','sl'].forEach(function(q){if(!t2[q])t2[q]={};});var nt2=n.tutor_v2||{};
+  ['c','f','sl'].forEach(function(q){Object.keys(nt2[q]||{}).forEach(function(k){t2[q][k]=!!(t2[q][k]||nt2[q][k]);});});
+  Object.keys(nt2.av||{}).forEach(function(k){t2.av[k]=nt2.av[k];});
+  wr('tutor_v2',t2);
+  var cu=rd('fao_custom_v1');['ex','errs','oss','notes','free','imp','quiz'].forEach(function(q){if(!cu[q])cu[q]=[];});['areas','rec','cal','units'].forEach(function(q){if(!cu[q])cu[q]={};});var nc=n.fao_custom_v1||{};
+  (nc.ex||[]).forEach(function(e){if(!cu.ex.some(function(x){return x.id===e.id;}))cu.ex.push(e);});
+  (nc.errs||[]).forEach(function(e){if(!cu.errs.some(function(x){return x.c===e.c;}))cu.errs.push(e);});
+  (nc.oss||[]).forEach(function(o){var k=o.d+'|'+o.c+'|'+(o.ex||'')+'|'+(o.n||'');if(!cu.oss.some(function(x){return x.d+'|'+x.c+'|'+(x.ex||'')+'|'+(x.n||'')===k;}))cu.oss.push(o);});
+  (nc.notes||[]).forEach(function(o){if(!cu.notes.some(function(x){return x.d===o.d&&x.t===o.t;}))cu.notes.push(o);});
+  (nc.free||[]).forEach(function(o){if(!cu.free.some(function(x){return x.d===o.d&&x.q===o.q&&x.n===o.n;}))cu.free.push(o);});
+  (nc.imp||[]).forEach(function(h){if(cu.imp.indexOf(h)<0)cu.imp.push(h);});
+  (nc.quiz||[]).forEach(function(q){if(!cu.quiz.some(function(x){return x.id===q.id;}))cu.quiz.push(q);});
+  var qr=rd('fao_quiz_v1'),nq=n.fao_quiz_v1||{};Object.keys(nq).forEach(function(id){var e=qr[id]||(qr[id]={h:[]});if(!e.h)e.h=[];((nq[id]&&nq[id].h)||[]).forEach(function(x){if(!e.h.some(function(y){return y.d===x.d&&y.s===x.s&&y.nq===x.nq;}))e.h.push(x);});e.h.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0;});});wr('fao_quiz_v1',qr);
+  ['areas','rec','cal','units'].forEach(function(q){Object.assign(cu[q],nc[q]||{});});
+  wr('fao_custom_v1',cu);
   var h=rd('mat1hub_v1'),nh=n.mat1hub_v1||{};Object.keys(nh).forEach(function(k){h[k]=nh[k];});wr('mat1hub_v1',h);
   m.textContent='Importato. Ora qui ci sono: '+summ(p)+'.';
  }catch(e){m.textContent='Testo non valido: deve iniziare con FAO1: e va copiato per intero.';}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tutor · piano giorno per giorno</title>
+<title>Tutor · si adatta a te</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -26,112 +26,743 @@ a.pill,button.pill{border:1px solid var(--line);background:var(--card);color:var
 .st.ok{color:var(--ok)}.st.ko{color:var(--ko)}.st.no{color:var(--mut)}
 .q{overflow-x:auto}
 a.lnk{color:var(--bl)}
-.warn{border-left:3px solid var(--ko);padding-left:10px;color:var(--tx)}
+.warn{border-left:3px solid var(--ko);padding-left:10px;margin:6px 0}
 .mut{color:var(--mut);font-size:16px}
-.go{display:inline-block;margin-top:10px;background:var(--ac);color:#0f1115;text-decoration:none;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+.go{display:inline-block;margin-top:10px;background:var(--ac);color:#0f1115;text-decoration:none;padding:10px 14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:0;cursor:pointer}
 label.chk{display:flex;gap:8px;align-items:center;font-size:17px;margin:6px 0;cursor:pointer}
-label.chk input{width:20px;height:20px;accent-color:var(--ok)}
-.dot{display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;margin:2px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid var(--line);background:var(--card);color:var(--mut);cursor:pointer}
-.dot.done{background:var(--ok);color:#0f1115;border-color:var(--ok)}
-.dot.sel{outline:2px solid var(--ac)}
-.dot.sinc{border-color:var(--bl);color:var(--bl)}
+label.chk input,td input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok)}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;margin-right:6px;border:1px solid var(--line);color:var(--mut)}
+.tag.ok{border-color:var(--ok);color:var(--ok)}.tag.ko{border-color:var(--ko);color:var(--ko)}.tag.ac{border-color:var(--ac);color:var(--ac)}.tag.bl{border-color:var(--bl);color:var(--bl)}
+.bdg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;margin-left:6px;border:1px solid var(--ok);color:var(--ok);background:#14221b}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{border-top:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+th{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);font-weight:500;border-top:0}
+ul{margin:6px 0;padding-left:20px}li{margin:4px 0}
+textarea{width:100%;min-height:150px;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.tw{overflow-x:auto}
+details{margin:8px 0}summary{cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ac);padding:6px 0}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 </style>
 </head>
 <body>
-<div class="bar" style="margin-top:0"><a class="pill" href="index.html">← Menu</a><a class="pill" href="palestra_u1.html">Esercizi</a><a class="pill" href="archivio_zappulla.html">Teoria</a><a class="pill" href="matematica1.html">Piano e calendario</a></div>
-<h1>Tutor · cosa fare oggi</h1>
-<div class="sub">Ogni giorno: teoria da leggere, esercizi dal più semplice al più difficile, l'errore da tenere d'occhio. 6–7 esercizi, sessione al massimo 1,5 h.</div>
-<div class="bar" id="nav"></div>
-<div id="day"></div>
-<div class="card"><h2>Regole del piano</h2><div class="mut">Se salti un giorno non recuperarlo: riparti da quello di oggi. Mai più di 15 esercizi al giorno. Un esercizio è ✓ solo se arrivi a un valore esplicito, senza guardare la soluzione.</div></div>
-<div class="card"><h2>Tutti i giorni</h2><div id="all"></div><div class="mut" style="margin-top:6px">Verde = giorno completato (tutti gli esercizi segnati nella palestra o nell'hub). Bordo azzurro = sincrona.</div></div>
-<div class="card"><h2>Dopo il 29 ottobre (da confermare)</h2><div id="after"></div><div class="mut">Quando conosci la data dell'appello e il formato, rigenero il piano con le ore reali.</div></div>
+<div class="bar" style="margin-top:0"><a class="pill" href="index.html">← Menu</a><a class="pill" href="palestra_u1.html">Esercizi</a><a class="pill" href="quiz.html">Quiz</a><a class="pill" href="archivio_zappulla.html">Teoria</a><a class="pill" href="matematica1.html">Piano e calendario</a></div>
+<h1>Tutor · il tuo punto di riferimento</h1>
+<div class="sub">Matematica I, Matematica II e Programmazione I verso il primo appello del cluster. Ragiona in ore, come Ariel: legge ✓/✗, quiz, video, slide, e-tivity e compiti, e ricalcola il piano ogni volta che apri la pagina.</div>
+<div class="card"><div class="meta" id="today-meta"></div><div class="mut" style="margin-top:6px">Quanto tempo hai oggi?</div><div class="bar" id="avail"></div><div class="mut">Impostazioni del tuo ritmo</div><div class="bar" id="sett"></div></div>
+<div class="card today" id="judge"></div>
+<div class="card" id="goal"></div>
+<div id="plan"></div>
+<div id="donetoday"></div>
+<div class="card"><h2>Riepilogo materiali e compiti finali</h2><div id="mats"></div></div>
+<div class="card"><h2>Stato per argomento</h2><div id="topics"></div></div>
+<div class="card"><h2>Rotta fino al 27 novembre</h2><div id="route"></div></div>
+<div class="card"><h2>Quiz</h2><div id="quiz"></div></div>
+<div class="card"><h2>Chat e prompt</h2><div class="mut">Le chat si riempiono: da qui generi il prompt giusto, già completo del tuo stato, da incollare in una chat nuova.</div><div class="bar" id="ptype"></div><div id="popt"></div><textarea id="pout" readonly placeholder="Scegli un tipo di chat"></textarea><div class="bar"><button class="pill" id="pcopy">Copia</button></div><div class="mut" id="pmsg"></div></div>
+<div class="card"><h2>Importa dalla chat</h2><div class="mut">A fine chat chiedi «CHIUDI»: ti restituisco una riga che inizia con FAO2:. Incollala qui e ✓/✗, errori, appunti ed esercizi nuovi entrano nel sito.</div><textarea id="iin" placeholder="Incolla qui la riga FAO2:{...}"></textarea><div class="bar"><button class="pill" id="iokb">Importa</button></div><div class="mut" id="imsg"></div></div>
+<div class="card"><h2>Come decide il Tutor</h2><ul class="mut" id="how"></ul></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script>
-var DAYS=[{"d": "2026-10-04", "t": "Esponenziali · riscaldamento", "min": "60–75′", "th": [["Procedure → equazione esponenziale", "archivio_zappulla.html#t=proc&q=esponenziale"], ["Malizie → esponenziali", "archivio_zappulla.html#t=mal&q=esponenziali"]], "es": ["G2-1", "G2-2", "G2-q1", "G2-3", "G2-q2", "G2-q5", "G2-4"], "hx": [], "att": "Errore B: gli esponenti non si toccano con + e −. Base minore di 1 inverte il verso.", "note": "Parti dal più semplice: i primi tre devono venire in due minuti."}, {"d": "2026-10-05", "t": "Esponenziali con ausiliaria", "min": "60–75′", "th": [["Guidati → esponenziale con ausiliaria", "archivio_zappulla.html#t=gui&q=ausiliaria"], ["Procedure → equazione esponenziale", "archivio_zappulla.html#t=proc&q=esponenziale"]], "es": ["G2-5", "G2-q7", "G2-q8", "G2-6", "G2-q10", "G2-q11"], "hx": [], "att": "Errore A: torna sempre a x. Scarta le t minori o uguali a 0.", "note": "Compito «Equazioni esponenziali»: oggi scrivi a mano l'Esercizio 1 da solo, in bella copia; poi manda la foto per la correzione."}, {"d": "2026-10-06", "t": "Logaritmi I", "min": "60–75′", "th": [["Procedure → equazione e disequazione logaritmica", "archivio_zappulla.html#t=proc&q=logaritmic"], ["Guidati → logaritmi: la C.E. decide", "archivio_zappulla.html#t=gui&q=log"]], "es": ["G3-1", "G3-2", "G3-3", "G3-4", "G3-q1", "G3-5", "G3-6"], "hx": [], "att": "#32: la C.E. si scrive per prima, sul testo originale. Base minore di 1 inverte.", "note": ""}, {"d": "2026-10-07", "t": "Logaritmi II + esponenziali difficili", "min": "75′", "th": [["Malizie → logaritmi", "archivio_zappulla.html#t=mal&q=logaritmi"]], "es": ["G3-7", "G3-8", "G3-9", "G3-q2", "G2-q13", "G2-q15"], "hx": [], "att": "Dividi per 2 nella formula risolutiva (TOLC-2). −(6−t) = −6+t.", "note": "Compito: oggi scrivi da solo gli Esercizi 2 e 3. Poi manda le foto."}, {"d": "2026-10-08", "t": "Irrazionali I", "min": "60–75′", "th": [["Procedure → equazione e disequazione irrazionale", "archivio_zappulla.html#t=proc&q=irrazionale"], ["Guidati → √A maggiore di B", "archivio_zappulla.html#t=gui&q=irrazionale"]], "es": ["G4-1", "G4-2", "G4-3", "G4-q1", "G4-4", "G4-q2", "G4-5"], "hx": [], "att": "#8: radice «grande» → due sistemi uniti; radice «piccola» → un sistema.", "note": ""}, {"d": "2026-10-09", "t": "Sincrona di riepilogo U1 (17:00)", "min": "45′ prima", "th": [["Malizie → irrazionali", "archivio_zappulla.html#t=mal&q=irrazionali"]], "es": ["G4-6", "G4-q7", "G4-q8", "G4-7", "G1-5"], "hx": [], "att": "Scrivi 2 domande sui punti dove sei ancora fermo (un bivio, non un calcolo).", "note": "Giornata leggera. Dopo la sincrona non fare altro."}, {"d": "2026-10-10", "t": "Irrazionali II", "min": "75–90′", "th": [["Malizie → irrazionali", "archivio_zappulla.html#t=mal&q=irrazionali"]], "es": ["G4-q9", "G4-q10", "G4-q11", "G4-q12", "G4-q13", "G4-q14"], "hx": [], "att": "N-14: (x−a)² sempre ≥ 0; x² ≤ 0 dà x = 0. Una riga impossibile rende vuoto il sistema.", "note": ""}, {"d": "2026-10-11", "t": "Trigonometria I", "min": "60–75′", "th": [["Formulario → tabella degli angoli notevoli", "archivio_zappulla.html#t=form&q=angoli"], ["Grafici → circonferenza goniometrica", "archivio_zappulla.html#t=graf&q=circonferenza"]], "es": ["G5-1", "G5-2", "G5-q1", "G5-3", "G5-4", "G5-q4", "G5-5"], "hx": [], "att": "#43: angolo base rispetto a 0, π, 2π. T-01: (−a)² = a².", "note": ""}, {"d": "2026-10-12", "t": "Trigonometria II + Unità 2 (lettura)", "min": "60–75′", "th": [["Grafici → archi associati", "archivio_zappulla.html#t=graf&q=archi"], ["Hub → Lezioni → U2L1 e U2L2 (video e slide)", "matematica1.html#lezioni"]], "es": ["G5-q5", "G5-q6", "G5-6", "G5-q7", "G5-q8", "G5-7"], "hx": [], "att": "#44: tan = sin/cos, mai un prodotto. Frazioni doppie: (a/b)/c = a/(bc).", "note": "Da oggi Programmazione I: 2 sessioni a settimana (fuori da questa pagina)."}, {"d": "2026-10-13", "t": "Fratte e valore assoluto", "min": "60–75′", "th": [["Guidati → disequazione fratta con ≤", "archivio_zappulla.html#t=gui&q=fratta"], ["Procedure → disequazione fratta", "archivio_zappulla.html#t=proc&q=fratta"], ["Malizie → fratte", "archivio_zappulla.html#t=mal&q=fratte"]], "es": ["G6-q1", "G6-q2", "G6-q3", "G6-q5", "G6-q9", "G6-q10"], "hx": ["U2L1:0"], "att": "Zeri del denominatore sempre esclusi; il verso ≤ si guarda solo alla fine. #3.", "note": ""}, {"d": "2026-10-14", "t": "Moduli e fratte difficili + relazioni", "min": "75′", "th": [["Hub → Esercizi per unità → U2L2 (svolti)", "matematica1.html#esu"]], "es": ["G6-q11", "G6-q13", "G6-q16", "G6-q17", "G6-q18"], "hx": ["U2L2:0", "U2L2:1"], "att": "N-07: verifica ogni soluzione col suo caso. N-03: non sviluppare il cubo.", "note": ""}, {"d": "2026-10-15", "t": "Sincrona U2 · campo complesso", "min": "60′", "th": [["Hub → Lezioni → U2L4 (video e slide)", "matematica1.html#lezioni"], ["Hub → Esercizi per unità → U2L4 (svolti)", "matematica1.html#esu"]], "es": ["G6-q19", "G6-q20"], "hx": ["U2L4:0", "U2L4:1", "U2L4:2", "U2L4:3"], "att": "Chiudi sempre con a+ib numerico (TOLC-2). Potenze di i: resto della divisione per 4.", "note": "Prima della sincrona: i 4 esercizi sui complessi."}, {"d": "2026-10-16", "t": "Induzione e funzioni", "min": "75′", "th": [["Teoria → Insiemi e funzioni", "archivio_zappulla.html#t=fun&q="], ["Teoria → grafici frecce", "archivio_zappulla.html#t=graf&q=funzione"], ["Hub → Esercizi per unità → U2L3 e U2L6 (svolti)", "matematica1.html#esu"]], "es": [], "hx": ["U2L3:0", "U2L3:1", "U2L3:2", "U2L6:0", "U2L6:1", "U2L6:2"], "att": "Induzione: base, ipotesi, tesi P(n+1), passo, conclusione. Non fermarti senza l'ultima uguaglianza.", "note": ""}, {"d": "2026-10-17", "t": "Unità 3 · vettori e matrici", "min": "75–90′", "th": [["Hub → Lezioni → U3L1 e U3L2 (video e slide)", "matematica1.html#lezioni"], ["Hub → Esercizi per unità → U3L1 e U3L2 (svolti)", "matematica1.html#esu"]], "es": ["G1-3", "G1-q5"], "hx": ["U3L1:0", "U3L1:1", "U3L2:0", "U3L2:1", "U3L2:2"], "att": "Prodotto righe per colonne; AB ≠ BA; det = ad − bc (la slide ha un refuso).", "note": ""}, {"d": "2026-10-18", "t": "Unità 3 · matrici e applicazioni lineari", "min": "75–90′", "th": [["Hub → Lezioni → U3L3 (video e slide)", "matematica1.html#lezioni"], ["Hub → Esercizi per unità → U3L3 (svolti)", "matematica1.html#esu"]], "es": ["G1-q8"], "hx": ["U3L1:2", "U3L2:2", "U3L3:0", "U3L3:1", "U3L3:2"], "att": "La matrice ha per colonne L(e1), L(e2)… Iniettiva ⇔ nucleo banale.", "note": ""}, {"d": "2026-10-19", "t": "Unità 3 · sistemi lineari", "min": "75–90′", "th": [["Hub → Lezioni → U3L4 (video e slide)", "matematica1.html#lezioni"], ["Hub → Esercizi per unità → U3L4 (svolti)", "matematica1.html#esu"], ["Malizie → sistemi lineari", "archivio_zappulla.html#t=mal&q=sistemi"]], "es": ["G1-q10", "G1-q9", "G1-6"], "hx": ["U3L4:0", "U3L4:1", "U3L4:2"], "att": "Scrivi accanto a ogni riga l'operazione. Non dimenticare l'ultima colonna.", "note": ""}, {"d": "2026-10-20", "t": "Consolidamento misto (difficili)", "min": "75′", "th": [["Rifai a mano gli svolti U3L4 coprendo i passaggi", "matematica1.html#esu"]], "es": ["G2-q13", "G2-q17", "G3-q3", "G3-q4", "G4-q16", "G4-q17"], "hx": [], "att": "Giornata di mantenimento sui blocchi con più errori (esponenziali, log, irrazionali).", "note": ""}, {"d": "2026-10-21", "t": "Unità 3 · geometria dello spazio", "min": "75–90′", "th": [["Hub → Lezioni → U3L6 (video e slide)", "matematica1.html#lezioni"], ["Hub → Esercizi per unità → U3L6 (svolti)", "matematica1.html#esu"]], "es": ["G5-8", "G5-9", "G1-q12"], "hx": ["U3L6:0", "U3L6:1", "U3L6:2"], "att": "Estende la retta che conosci: si aggiunge la terza componente. Piano: vettore normale.", "note": ""}, {"d": "2026-10-22", "t": "Sincrona U3 · tecniche sui sistemi", "min": "45′ + 2 h sincrona", "th": [["Hub → Esercizi per unità → U3L4 (svolti)", "matematica1.html#esu"]], "es": ["G6-q20", "G4-q15", "G3-8", "G2-9", "G5-q10"], "hx": [], "att": "Giornata leggera. Manca il PDF U3L5: mandalo e preparo gli esercizi.", "note": ""}, {"d": "2026-10-23", "t": "Unità 4 · ingresso e simmetrie", "min": "75′", "th": [["Hub → Test d'ingresso → G6 (20 minuti, senza soluzione)", "matematica1.html#gate"], ["Hub → Lezioni → U4L1 (video e slide)", "matematica1.html#lezioni"]], "es": ["U4-q1", "U4-q2", "U4-q4"], "hx": ["U4L1:0", "U4L1:1", "U4L1:2"], "att": "Pari/dispari: prima il dominio. y = sin x − 1 non è dispari.", "note": "Se superi il test G6, U4 è solo ascolto della sincrona."}, {"d": "2026-10-24", "t": "Domini", "min": "75–90′", "th": [["Procedure → dominio di una funzione", "archivio_zappulla.html#t=proc&q=dominio"], ["Malizie → domini", "archivio_zappulla.html#t=mal&q=domini"]], "es": ["U4-q3", "U4-q5", "U4-q6", "U4-q7", "U4-q8", "U4-q9", "U4-q11"], "hx": [], "att": "#45, #46, #64/#67, #68. Una tabella su N/D se la radice o il log coprono tutta la frazione.", "note": ""}, {"d": "2026-10-25", "t": "Domini con log/esp + trasformazioni", "min": "75–90′", "th": [["Hub → Lezioni → U4L3 (video e slide)", "matematica1.html#lezioni"]], "es": ["U4-q12", "U4-q13", "U4-q14", "U4-q15", "U4-q16"], "hx": ["U4L3:0", "U4L3:1"], "att": "N-27: ln²x = (ln x)². Parti dal grafico base e applica una trasformazione per volta.", "note": ""}, {"d": "2026-10-26", "t": "Zeri e segno", "min": "75′", "th": [["Guidati → pari, dispari, segno", "archivio_zappulla.html#t=gui&q=segno"], ["Hub → Esercizi per unità → U4L5 (svolti)", "matematica1.html#esu"]], "es": ["U4-q17", "U4-q18", "U4-q19"], "hx": ["U4L5:0", "U4L5:1", "U4L5:2"], "att": "#3 e #65: il segno dei limiti laterali si legge dalla tabella.", "note": ""}, {"d": "2026-10-27", "t": "Studio di funzione completo", "min": "75–90′", "th": [["Guidati → studio di funzione completo", "archivio_zappulla.html#t=gui&q=studio"], ["Guidati → forme indeterminate", "archivio_zappulla.html#t=gui&q=indeterminate"]], "es": ["U4-q20", "U4-q21", "G1-9", "G1-10"], "hx": ["U4L3:2"], "att": "Metodo fisso: dominio, simmetrie, intersezioni, segno, limiti, asintoti, f', f'', grafico.", "note": "Rifai a mano lo studio di f(x) = (x²−1)/x senza guardare, poi confronta."}, {"d": "2026-10-28", "t": "Ripasso U1 + U4 sui ✗", "min": "60′", "th": [["Palestra → «Solo ✗»", "palestra_u1.html"]], "es": ["G2-q17", "G3-q4", "G4-q17", "G5-q11", "G6-q20", "U4-q16"], "hx": [], "att": "Rifai solo ciò che hai segnato ✗, cambiando i numeri se puoi.", "note": ""}, {"d": "2026-10-29", "t": "Sincrona U4 · funzioni", "min": "2 h sincrona", "th": [], "es": ["G4-q16", "G6-q19", "G3-q2", "G2-q15", "G5-q9"], "hx": [], "att": "Giornata leggera. Ascolta la sincrona con la lista degli errori davanti.", "note": ""}],EX={"G4-q2": {"a": "G4", "l": 4, "q": "Libro 639: $\\sqrt{3x+4}=2+x$"}, "G6-q3": {"a": "G6", "l": 2, "q": "$\\dfrac{5-3x}{-2}\\gt4$"}, "G2-3": {"a": "G2", "l": 3, "q": "$4^x=8$"}, "G3-q1": {"a": "G3", "l": 4, "q": "Es. 129: $\\log x\\,(\\log x-2)=3$"}, "G3-9": {"a": "G3", "l": 9, "q": "$\\log_3(x^2-4x+3)\\lt1$"}, "G1-q10": {"a": "G1", "l": 5, "q": "Retta per $A(4,2)$ e $B(1,3)$."}, "U4-q3": {"a": "U4", "l": 3, "q": "$y=\\frac1{3x^2+3x}+\\sqrt[3]x$ (libro 122)"}, "G5-5": {"a": "G5", "l": 5, "q": "$2\\sin^2x-\\sin x-1=0$ in $[0,2\\pi)$"}, "G6-q9": {"a": "G6", "l": 4, "q": "$\\dfrac{2x+7}{1-\\sqrt3}\\ge0$"}, "G4-q7": {"a": "G4", "l": 6, "q": "$\\sqrt{25-x^2}\\lt x+1$"}, "G2-q17": {"a": "G2", "l": 9, "q": "Es. 206: $5^{x+2}-4\\cdot5^{1-x}-30=-5^{2-x}$"}, "G2-q5": {"a": "G2", "l": 3, "q": "Es. 156: $2^x+9\\cdot2^x=40$"}, "G4-3": {"a": "G4", "l": 3, "q": "$\\sqrt{x+2}\\lt3$"}, "G5-3": {"a": "G5", "l": 3, "q": "$\\cos x=-\\frac{\\sqrt2}2$ in $[0,2\\pi)$"}, "U4-q16": {"a": "U4", "l": 7, "q": "$y=\\ln\\frac{x^2-4x}{3-x}$ (libro 162)"}, "G4-1": {"a": "G4", "l": 1, "q": "$\\sqrt{x+3}=4$"}, "G3-6": {"a": "G3", "l": 6, "q": "$\\log_{1/2}(x+1)\\gt1$"}, "G2-6": {"a": "G2", "l": 6, "q": "$2^{x+2}-2^x=24$"}, "G2-1": {"a": "G2", "l": 1, "q": "$2^x=32$"}, "G5-7": {"a": "G5", "l": 7, "q": "$\\cos x\\le-\\frac12$ in $[0,2\\pi)$"}, "G3-q4": {"a": "G3", "l": 8, "q": "Es. 122: $\\log\\left(x^3-\\frac72x\\right)-3\\log(x-1)=0$"}, "G1-6": {"a": "G1", "l": 6, "q": "$-x^2+4x-3\\ge0$"}, "U4-q20": {"a": "U4", "l": 8, "q": "$y=\\frac{\\sqrt{3-|x|}}{x^3+1}$ (libro 131)"}, "G4-q10": {"a": "G4", "l": 7, "q": "$\\sqrt{x^2-5x+6}\\gt x-1$"}, "G3-5": {"a": "G3", "l": 5, "q": "$\\log_2(x-3)\\gt2$"}, "G1-q9": {"a": "G1", "l": 5, "q": "Retta per $P(-1,4)$ perpendicolare a $y=-2x+1$."}, "G6-q10": {"a": "G6", "l": 4, "q": "$|3x-5|=2x+1$ (libro 506)"}, "U4-q17": {"a": "U4", "l": 7, "q": "$y=\\frac{\\sqrt{x^2-4x+3}}{x-2}$"}, "U4-q13": {"a": "U4", "l": 6, "q": "$y=\\sqrt{1-\\ln^2x}$ (libro 153)"}, "G4-q17": {"a": "G4", "l": 9, "q": "$\\sqrt{2(x+15)}+2x^2\\gt x(1-x)+3(1+x^2)$"}, "G3-7": {"a": "G3", "l": 7, "q": "$(\\ln x)^2-3\\ln x+2=0$"}, "G6-q11": {"a": "G6", "l": 5, "q": "$|2x-1|=3x+2$"}, "G5-q5": {"a": "G5", "l": 5, "q": "$\\sqrt3\\sin(-60^\\circ)+2\\cos(-120^\\circ)-\\tan(-45^\\circ)$"}, "G6-q18": {"a": "G6", "l": 6, "q": "$\\dfrac{x^2-4}{x-1}\\lt0$"}, "G5-4": {"a": "G5", "l": 4, "q": "$\\tan x=\\sqrt3$ in $[0,2\\pi)$"}, "G1-10": {"a": "G1", "l": 10, "q": "$\\dfrac{x^2-x-2}{x^2-4x+4}\\lt0$"}, "G4-7": {"a": "G4", "l": 7, "q": "$\\sqrt[3]{x^2-1}=2$"}, "U4-q14": {"a": "U4", "l": 6, "q": "$y=\\sqrt{\\ln(x+2)}$ (libro 160)"}, "G5-2": {"a": "G5", "l": 2, "q": "$\\sin x=\\frac12$ in $[0,2\\pi)$"}, "G3-4": {"a": "G3", "l": 4, "q": "$\\log_2(x+1)-\\log_2(x-1)=1$"}, "G5-q4": {"a": "G5", "l": 4, "q": "$\\sin\\left(-\\frac\\pi3\\right)\\cos\\left(-\\frac\\pi6\\right)+\\sin\\frac{7\\pi}2$"}, "G1-q5": {"a": "G1", "l": 3, "q": "Retta per l'origine che forma $30^\\circ$ con l'asse $x$."}, "G2-q8": {"a": "G2", "l": 5, "q": "Es. 217: $9^x-3^x=6$"}, "G4-q14": {"a": "G4", "l": 8, "q": "$\\sqrt{x^2-4}\\ge x-1$"}, "U4-q1": {"a": "U4", "l": 2, "q": "$y=\\frac1{x^2}+\\frac1{x^2+x+5}$ (libro 112)"}, "G3-q3": {"a": "G3", "l": 7, "q": "Es. 150: $\\log_5(x^3-4x^2-5x+25)=2$"}, "G4-2": {"a": "G4", "l": 2, "q": "$\\sqrt{2x-1}=x-2$"}, "U4-q4": {"a": "U4", "l": 3, "q": "$y=\\frac1{\\sqrt{x-5}}+\\frac1{x^2-6x}$ (libro 115)"}, "U4-q15": {"a": "U4", "l": 6, "q": "$y=\\ln(x^2-4)+\\sqrt{25-x^2}$ (libro 161)"}, "G6-q19": {"a": "G6", "l": 7, "q": "$\\dfrac{x^4-5x^2+6}{x^2+3}\\gt0$"}, "G4-q13": {"a": "G4", "l": 8, "q": "$x\\le-1+\\sqrt{1+2x}$"}, "G5-q9": {"a": "G5", "l": 7, "q": "$\\dfrac{\\sin\\frac{5\\pi}3+\\cos\\frac{2\\pi}3}{\\sqrt3\\sin\\frac{5\\pi}6-\\cos\\frac{7\\pi}6}$"}, "G2-2": {"a": "G2", "l": 2, "q": "$3^{x-1}=81$"}, "G5-q8": {"a": "G5", "l": 6, "q": "$\\dfrac{\\cos240^\\circ\\cdot\\tan300^\\circ}{\\sin120^\\circ}$"}, "G6-q17": {"a": "G6", "l": 6, "q": "$\\dfrac{(x-5)(x+2)}{x^2+1}\\lt0$"}, "G5-q1": {"a": "G5", "l": 2, "q": "$\\frac12\\sin90^\\circ+2\\cos180^\\circ+\\frac32\\tan0^\\circ-\\sin270^\\circ$"}, "G4-q8": {"a": "G4", "l": 6, "q": "$\\sqrt{x+3}\\le x-1$"}, "G5-1": {"a": "G5", "l": 1, "q": "$\\sin\\frac\\pi6+\\cos\\frac\\pi3+\\tan\\frac\\pi4$"}, "G6-q5": {"a": "G6", "l": 3, "q": "$-4x+8\\lt-2(-3x+1)$"}, "G6-q2": {"a": "G6", "l": 2, "q": "$|x-1|\\lt3$"}, "G2-9": {"a": "G2", "l": 9, "q": "$2^{x^2-3x}\\lt4$"}, "U4-q18": {"a": "U4", "l": 7, "q": "$y=\\frac{\\sqrt{4x^2-5x+1}}{x-3}$"}, "G2-4": {"a": "G2", "l": 4, "q": "$\\left(\\tfrac12\\right)^x\\gt8$"}, "G5-9": {"a": "G5", "l": 9, "q": "$2\\cos^2x-\\sin x-1=0$ in $[0,2\\pi)$"}, "U4-q8": {"a": "U4", "l": 5, "q": "$y=\\sqrt{\\frac{x^2-4}{x+3}}$ (libro 134)"}, "G4-q11": {"a": "G4", "l": 7, "q": "$\\sqrt{16+x^2}-x\\le-3$"}, "G1-3": {"a": "G1", "l": 3, "q": "Retta perpendicolare a $3x+y-2=0$ passante per $P(3,1)$."}, "U4-q5": {"a": "U4", "l": 4, "q": "$y=\\frac1{x^3+x^2+2x}$ (libro 126)"}, "G2-q11": {"a": "G2", "l": 6, "q": "$2^{x+1}+2^{-x}=3$"}, "G5-q7": {"a": "G5", "l": 6, "q": "$3\\sin210^\\circ-2\\cos315^\\circ+\\tan150^\\circ$"}, "G2-q1": {"a": "G2", "l": 2, "q": "Es. 144: $2^x=16\\sqrt2$"}, "G4-q15": {"a": "G4", "l": 8, "q": "$\\sqrt{7+3(x+2)-2(2x-3)}\\lt-1-x$"}, "U4-q19": {"a": "U4", "l": 7, "q": "$y=\\frac{\\sqrt{x^2+5x}}{x-1}$"}, "G6-q13": {"a": "G6", "l": 5, "q": "Libro 507: $\\left|3x+\\frac52\\right|=7x-\\frac12$"}, "G2-q7": {"a": "G2", "l": 5, "q": "Es. 190: $8+2^{x+1}=2^{2x}$"}, "G2-q13": {"a": "G2", "l": 7, "q": "Es. 192: $3^{2x}-9\\cdot3^x+3=\\frac13\\cdot3^x$"}, "G4-4": {"a": "G4", "l": 4, "q": "$\\sqrt{x-1}\\gt2$"}, "U4-q9": {"a": "U4", "l": 5, "q": "$y=\\sqrt{2^{1-3x}-4}$ (libro 144)"}, "G1-9": {"a": "G1", "l": 9, "q": "Per quale $k$ la retta $y=x+k$ è tangente alla parabola $y=x^2-3x+5$?"}, "G3-3": {"a": "G3", "l": 3, "q": "$\\ln x+\\ln(x-3)=\\ln4$"}, "G1-q12": {"a": "G1", "l": 6, "q": "Parabola con vertice $V(3,-2)$ passante per $P(1,6)$."}, "G6-q20": {"a": "G6", "l": 8, "q": "$\\dfrac{(x^2-4)(x+3)}{(x-1)^2(x+5)}\\ge0$"}, "G6-q1": {"a": "G6", "l": 1, "q": "$1-|x|=x$"}, "G3-1": {"a": "G3", "l": 1, "q": "$\\log_3 x=4$"}, "G2-q15": {"a": "G2", "l": 8, "q": "Es. 236: $\\dfrac{9^x+9}{3^x}=10$"}, "G6-q16": {"a": "G6", "l": 6, "q": "$-(x^2+9)(x-3)^3\\gt0$"}, "G5-6": {"a": "G5", "l": 6, "q": "$\\sin x\\gt\\frac12$ in $[0,2\\pi)$"}, "G4-5": {"a": "G4", "l": 5, "q": "$\\sqrt{x+6}\\gt x$"}, "U4-q21": {"a": "U4", "l": 8, "q": "$y=\\sqrt{\\frac{x^2-1}{x+2}}+\\sqrt{\\frac{x-2}{x+1}}$ (libro 136)"}, "U4-q2": {"a": "U4", "l": 2, "q": "$y=\\sqrt{10x-x^2}$ (libro 121)"}, "G4-q9": {"a": "G4", "l": 7, "q": "$\\sqrt{4x+x^2}\\gt1+x$"}, "G1-5": {"a": "G1", "l": 5, "q": "$x^2-5x+6\\gt0$"}, "G3-8": {"a": "G3", "l": 8, "q": "$(\\log_2 x)^2-\\log_2 x-2\\gt0$"}, "G4-q1": {"a": "G4", "l": 3, "q": "$\\sqrt{2x+3}=x$"}, "G5-q11": {"a": "G5", "l": 8, "q": "$\\dfrac{\\sin^2\\frac{5\\pi}3+\\cos^2\\frac{7\\pi}6}{\\tan^2\\frac{3\\pi}4-\\sin\\frac{7\\pi}2}$"}, "U4-q11": {"a": "U4", "l": 5, "q": "$y=\\frac1{3\\ln x-6}$ (libro 150)"}, "G4-q16": {"a": "G4", "l": 9, "q": "$\\sqrt{x(x-4)+4}\\gt2x+1$"}, "G2-5": {"a": "G2", "l": 5, "q": "$9^x-4\\cdot3^x+3=0$"}, "G3-q2": {"a": "G3", "l": 6, "q": "Es. 133: $\\dfrac{\\log_5x}{6-\\log_5x}=\\dfrac1{\\log_5x-2}$"}, "G2-q2": {"a": "G2", "l": 3, "q": "Es. 154: $3^x\\cdot27=9^{2x}$"}, "G5-q10": {"a": "G5", "l": 8, "q": "$\\dfrac{\\sin150^\\circ\\cos225^\\circ-\\sin315^\\circ}{\\cos330^\\circ\\tan120^\\circ}$"}, "U4-q7": {"a": "U4", "l": 5, "q": "$y=\\frac1{x^3+3x^2-4x-12}$ (libro 128)"}, "G4-q12": {"a": "G4", "l": 7, "q": "$2\\sqrt{1-x+x^2}\\lt1-2x$"}, "G1-q8": {"a": "G1", "l": 4, "q": "Retta per $P(-\\frac12,2)$ parallela a $x+2y=0$."}, "G4-6": {"a": "G4", "l": 6, "q": "$\\sqrt{x^2-x-2}\\lt x+1$"}, "U4-q6": {"a": "U4", "l": 4, "q": "$y=\\frac x{(2x+1)^2-(x-1)^2}$ (libro 127)"}, "G2-q10": {"a": "G2", "l": 6, "q": "$3^x+3^{-x}=\\frac{10}3$"}, "G5-q6": {"a": "G5", "l": 5, "q": "$4\\sin\\frac{5\\pi}6-2\\cos\\frac{4\\pi}3+\\sqrt3\\tan\\frac{2\\pi}3$"}, "G5-8": {"a": "G5", "l": 8, "q": "$\\sin x\\,(2\\cos x-1)=0$ in $[0,2\\pi)$"}, "G3-2": {"a": "G3", "l": 2, "q": "$\\log_2(x-1)=3$"}, "U4-q12": {"a": "U4", "l": 6, "q": "$y=\\frac1{\\ln^2x+3\\ln x}$ (libro 152)"}},DF={"U2L1": ["$B=[2,7)$: ha min? max? estremi?", "$C=\\{1/n\\mid n\\in\\mathbb N^*\\}$: max, min, inf, sup.", "Disegna $A\\cup B$ e $A\\cap B$ per $A=(0,5)$, $B=[3,8]$."], "U2L2": ["$x\\,\\mathcal R\\,y\\iff x\\lt y$ su $\\mathbb R$: ordine stretto?", "$a\\mid b$ (divide) su $\\mathbb N^*$: ordine? totale?", "Determina le classi di equivalenza di «stesso resto nella divisione per 3» su $\\mathbb Z$."], "U2L3": ["Dimostra $1+2+\\dots+n=\\frac{n(n+1)}2$.", "Dimostra $2^n\\gt n$ per $n\\ge1$.", "Dimostra $1^2+\\dots+n^2=\\frac{n(n+1)(2n+1)}6$."], "U2L4": ["$(2+3i)(1-i)$", "$z^2+2z+5=0$ in $\\mathbb C$", "Modulo di $3+4i$ e coniugato.", "Radici cubiche di $8$."], "U2L6": ["$f(x)=e^x$ da $\\mathbb R$ a $\\mathbb R$: iniettiva? suriettiva?", "$f(x)=|x|$ da $\\mathbb R$ a $[0,+\\infty)$.", "Componi $f(x)=x+1$ e $g(x)=x^2$: $g\\circ f$ e $f\\circ g$."], "U3L1": ["Somma $(1,2,3)+(4,-1,2)$ e $3\\cdot(1,0,-2)$.", "Norma di $(1,2,2)$.", "Trova $k$ perché $(k,2,1)$ sia perpendicolare a $(1,-1,2)$."], "U3L2": ["Determinante di $\\begin{pmatrix}3&1\\\\2&4\\end{pmatrix}$.", "Trasposta di $\\begin{pmatrix}1&2&3\\\\4&5&6\\end{pmatrix}$.", "Esiste l'inversa di $\\begin{pmatrix}2&4\\\\1&2\\end{pmatrix}$?"], "U3L3": ["$L(x,y)=(x,0)$: nucleo e immagine.", "$L(x,y)=(x+y,\\ x-y)$: matrice e determinante.", "$f(x)=2x+3$ è lineare?"], "U3L4": ["$\\begin{cases}x-y=2\\\\3x+y=6\\end{cases}$", "$\\begin{cases}2x+y=5\\\\x-y=1\\end{cases}$", "Per quale $k$ il sistema $x+y=1,\\ 2x+2y=k$ è possibile?"], "U3L6": ["Piano per l'origine perpendicolare a $(1,1,1)$.", "Il punto $(1,2,3)$ sta sul piano $2x-y+4z-12=0$?", "Direzione perpendicolare a $(1,2,3)$ e $(0,1,0)$?"], "U4L1": ["$f(x)=x^3-x$: parità?", "Periodo di $\\sin(2x)$ e di $\\tan(3x)$.", "$f(x)=\\sqrt x$: è pari o dispari?"], "U4L3": ["Periodo di $y=\\sin(2x)$.", "Disegna $y=|x^2-4|$ partendo da $y=x^2-4$.", "Immagine di $y=-\\cos x+3$."], "U4L5": ["Zeri e segno di $x^2-4$.", "Zeri e segno di $\\dfrac{x-3}{x+1}$.", "Dominio e zeri di $\\ln(x^2-3x+3)$."]},AFTER=[["30 ott – 1 nov", "Unità 3: rifai a mano gli esercizi di vettori e matrici (da fare L1 e L2), 5 al giorno."], ["2 – 8 nov", "SETTIMANA DI LAVORO: solo mantenimento, 3 giorni da 5 esercizi dalla palestra (solo ✗). Niente argomenti nuovi."], ["9 – 15 nov", "Unità 3: applicazioni lineari, sistemi, geometria dello spazio. Entro il 15/11 decidi se Programmazione va al primo appello (scenario B)."], ["16 – 22 nov", "Unità 2: induzione, complessi con De Moivre, relazioni, insiemi."], ["23 – 27 nov", "Simulazione di Matematica 1 cronometrata e solo recidivi."]];
-var KEY='tutor_v1',PK='palestra_u1_v1',HK='mat1hub_v1';
+var BANK=[{"id": "G1-1", "a": "G1", "l": 1, "q": "Retta per $A(1,2)$ e $B(3,8)$."}, {"id": "G1-2", "a": "G1", "l": 2, "q": "Retta parallela a $y=2x-3$ passante per $P(1,5)$."}, {"id": "G1-q1", "a": "G1", "l": 2, "q": "Retta per $A(3,1)$ e $B(5,-3)$."}, {"id": "G1-q2", "a": "G1", "l": 2, "q": "Intersezione tra $x+y-1=0$ e $2x-y+4=0$."}, {"id": "G1-q3", "a": "G1", "l": 2, "q": "Intersezione tra $y=2x$ e $y=x-3$."}, {"id": "G1-3", "a": "G1", "l": 3, "q": "Retta perpendicolare a $3x+y-2=0$ passante per $P(3,1)$."}, {"id": "G1-q4", "a": "G1", "l": 3, "q": "Retta per $P(-1,5)$ parallela a $y=-x+2$."}, {"id": "G1-q5", "a": "G1", "l": 3, "q": "Retta per l'origine che forma $30^\\circ$ con l'asse $x$."}, {"id": "G1-q6", "a": "G1", "l": 3, "q": "Vertice di $y=x^2-4x+7$."}, {"id": "G1-4", "a": "G1", "l": 4, "q": "Parabola $y=x^2-4x+3$: vertice, zeri, intersezione con l'asse $y$."}, {"id": "G1-q7", "a": "G1", "l": 4, "q": "Vertice di $y=x^2+6x+5$."}, {"id": "G1-q8", "a": "G1", "l": 4, "q": "Retta per $P(-\\frac12,2)$ parallela a $x+2y=0$."}, {"id": "G1-5", "a": "G1", "l": 5, "q": "$x^2-5x+6\\gt0$"}, {"id": "G1-q9", "a": "G1", "l": 5, "q": "Retta per $P(-1,4)$ perpendicolare a $y=-2x+1$."}, {"id": "G1-q10", "a": "G1", "l": 5, "q": "Retta per $A(4,2)$ e $B(1,3)$."}, {"id": "G1-6", "a": "G1", "l": 6, "q": "$-x^2+4x-3\\ge0$"}, {"id": "G1-q11", "a": "G1", "l": 6, "q": "Parabola con asse parallelo a $y$, vertice $V(2,4)$, passante per $P(-1,13)$."}, {"id": "G1-q12", "a": "G1", "l": 6, "q": "Parabola con vertice $V(3,-2)$ passante per $P(1,6)$."}, {"id": "G1-7", "a": "G1", "l": 7, "q": "$x^2-6x+9\\gt0$"}, {"id": "G1-q13", "a": "G1", "l": 7, "q": "Parabola con vertice $V(-3,-2)$ passante per $A(2,0)$."}, {"id": "G1-8", "a": "G1", "l": 8, "q": "Risolvi $x^2+x+1\\gt0$ e poi $x^2+x+1\\lt0$."}, {"id": "G1-q14", "a": "G1", "l": 8, "q": "Vertice e zeri di $y=x^2-3x+4$."}, {"id": "G1-9", "a": "G1", "l": 9, "q": "Per quale $k$ la retta $y=x+k$ è tangente alla parabola $y=x^2-3x+5$?"}, {"id": "G1-10", "a": "G1", "l": 10, "q": "$\\dfrac{x^2-x-2}{x^2-4x+4}\\lt0$"}, {"id": "G2-1", "a": "G2", "l": 1, "q": "$2^x=32$"}, {"id": "G2-2", "a": "G2", "l": 2, "q": "$3^{x-1}=81$"}, {"id": "G2-q1", "a": "G2", "l": 2, "q": "Es. 144: $2^x=16\\sqrt2$"}, {"id": "G2-3", "a": "G2", "l": 3, "q": "$4^x=8$"}, {"id": "G2-q2", "a": "G2", "l": 3, "q": "Es. 154: $3^x\\cdot27=9^{2x}$"}, {"id": "G2-q3", "a": "G2", "l": 3, "q": "Es. 149: $8^x\\cdot\\sqrt2=4^x$"}, {"id": "G2-q4", "a": "G2", "l": 3, "q": "Es. 160: $4^{2x+1}=8^{2x-1}$"}, {"id": "G2-q5", "a": "G2", "l": 3, "q": "Es. 156: $2^x+9\\cdot2^x=40$"}, {"id": "G2-4", "a": "G2", "l": 4, "q": "$\\left(\\tfrac12\\right)^x\\gt8$"}, {"id": "G2-q6", "a": "G2", "l": 4, "q": "Es. 223: $3^{2+x}+3^x=90$"}, {"id": "G2-5", "a": "G2", "l": 5, "q": "$9^x-4\\cdot3^x+3=0$"}, {"id": "G2-q7", "a": "G2", "l": 5, "q": "Es. 190: $8+2^{x+1}=2^{2x}$"}, {"id": "G2-q8", "a": "G2", "l": 5, "q": "Es. 217: $9^x-3^x=6$"}, {"id": "G2-q9", "a": "G2", "l": 5, "q": "Es. 218: $4^x=3\\cdot2^x+4$"}, {"id": "G2-6", "a": "G2", "l": 6, "q": "$2^{x+2}-2^x=24$"}, {"id": "G2-q10", "a": "G2", "l": 6, "q": "$3^x+3^{-x}=\\frac{10}3$"}, {"id": "G2-q11", "a": "G2", "l": 6, "q": "$2^{x+1}+2^{-x}=3$"}, {"id": "G2-q12", "a": "G2", "l": 6, "q": "$2^{2x}-2^{-x+2}=0$"}, {"id": "G2-7", "a": "G2", "l": 7, "q": "$4^x-3\\cdot2^x-4\\gt0$"}, {"id": "G2-q13", "a": "G2", "l": 7, "q": "Es. 192: $3^{2x}-9\\cdot3^x+3=\\frac13\\cdot3^x$"}, {"id": "G2-q14", "a": "G2", "l": 7, "q": "Es. 213: $2^x=2^{x-1}+2^{x+3}$"}, {"id": "G2-8", "a": "G2", "l": 8, "q": "$4^x-2^x-6=0$"}, {"id": "G2-q15", "a": "G2", "l": 8, "q": "Es. 236: $\\dfrac{9^x+9}{3^x}=10$"}, {"id": "G2-q16", "a": "G2", "l": 8, "q": "Es. 189: $4^x=2^x-2$"}, {"id": "G2-9", "a": "G2", "l": 9, "q": "$2^{x^2-3x}\\lt4$"}, {"id": "G2-q17", "a": "G2", "l": 9, "q": "Es. 206: $5^{x+2}-4\\cdot5^{1-x}-30=-5^{2-x}$"}, {"id": "G2-q18", "a": "G2", "l": 9, "q": "Es. 166: $\\dfrac{4^{2-x}\\cdot2^{2x+3}}{16^x}=\\dfrac18$"}, {"id": "G2-q19", "a": "G2", "l": 9, "q": "Es. 199: $3^x+3^{1-x}=4$"}, {"id": "G2-10", "a": "G2", "l": 10, "q": "$\\dfrac{2^x-4}{2^x-1}\\ge0$"}, {"id": "G3-1", "a": "G3", "l": 1, "q": "$\\log_3 x=4$"}, {"id": "G3-2", "a": "G3", "l": 2, "q": "$\\log_2(x-1)=3$"}, {"id": "G3-3", "a": "G3", "l": 3, "q": "$\\ln x+\\ln(x-3)=\\ln4$"}, {"id": "G3-4", "a": "G3", "l": 4, "q": "$\\log_2(x+1)-\\log_2(x-1)=1$"}, {"id": "G3-q1", "a": "G3", "l": 4, "q": "Es. 129: $\\log x\\,(\\log x-2)=3$"}, {"id": "G3-5", "a": "G3", "l": 5, "q": "$\\log_2(x-3)\\gt2$"}, {"id": "G3-6", "a": "G3", "l": 6, "q": "$\\log_{1/2}(x+1)\\gt1$"}, {"id": "G3-q2", "a": "G3", "l": 6, "q": "Es. 133: $\\dfrac{\\log_5x}{6-\\log_5x}=\\dfrac1{\\log_5x-2}$"}, {"id": "G3-7", "a": "G3", "l": 7, "q": "$(\\ln x)^2-3\\ln x+2=0$"}, {"id": "G3-q3", "a": "G3", "l": 7, "q": "Es. 150: $\\log_5(x^3-4x^2-5x+25)=2$"}, {"id": "G3-8", "a": "G3", "l": 8, "q": "$(\\log_2 x)^2-\\log_2 x-2\\gt0$"}, {"id": "G3-q4", "a": "G3", "l": 8, "q": "Es. 122: $\\log\\left(x^3-\\frac72x\\right)-3\\log(x-1)=0$"}, {"id": "G3-9", "a": "G3", "l": 9, "q": "$\\log_3(x^2-4x+3)\\lt1$"}, {"id": "G3-10", "a": "G3", "l": 10, "q": "$\\dfrac{\\log_2x-3}{\\log_2x+1}\\le0$"}, {"id": "G4-1", "a": "G4", "l": 1, "q": "$\\sqrt{x+3}=4$"}, {"id": "G4-2", "a": "G4", "l": 2, "q": "$\\sqrt{2x-1}=x-2$"}, {"id": "G4-3", "a": "G4", "l": 3, "q": "$\\sqrt{x+2}\\lt3$"}, {"id": "G4-q1", "a": "G4", "l": 3, "q": "$\\sqrt{2x+3}=x$"}, {"id": "G4-4", "a": "G4", "l": 4, "q": "$\\sqrt{x-1}\\gt2$"}, {"id": "G4-q2", "a": "G4", "l": 4, "q": "Libro 639: $\\sqrt{3x+4}=2+x$"}, {"id": "G4-q3", "a": "G4", "l": 4, "q": "$\\sqrt{2x+3}=x+1$"}, {"id": "G4-5", "a": "G4", "l": 5, "q": "$\\sqrt{x+6}\\gt x$"}, {"id": "G4-q4", "a": "G4", "l": 5, "q": "$\\sqrt{5-x}=x-1$"}, {"id": "G4-q5", "a": "G4", "l": 5, "q": "$\\sqrt[3]{x^2-3x}=\\sqrt[3]{2x-6}$"}, {"id": "G4-6", "a": "G4", "l": 6, "q": "$\\sqrt{x^2-x-2}\\lt x+1$"}, {"id": "G4-q6", "a": "G4", "l": 6, "q": "$\\sqrt{\\dfrac{x+1}{3x-2}}=\\dfrac13$"}, {"id": "G4-q7", "a": "G4", "l": 6, "q": "$\\sqrt{25-x^2}\\lt x+1$"}, {"id": "G4-q8", "a": "G4", "l": 6, "q": "$\\sqrt{x+3}\\le x-1$"}, {"id": "G4-q18", "a": "G4", "l": 6, "q": "$\\sqrt{x^2-3x}\\lt x-1$ (da Zappulla)"}, {"id": "G4-7", "a": "G4", "l": 7, "q": "$\\sqrt[3]{x^2-1}=2$"}, {"id": "G4-q9", "a": "G4", "l": 7, "q": "$\\sqrt{4x+x^2}\\gt1+x$"}, {"id": "G4-q10", "a": "G4", "l": 7, "q": "$\\sqrt{x^2-5x+6}\\gt x-1$"}, {"id": "G4-q11", "a": "G4", "l": 7, "q": "$\\sqrt{16+x^2}-x\\le-3$"}, {"id": "G4-q12", "a": "G4", "l": 7, "q": "$2\\sqrt{1-x+x^2}\\lt1-2x$"}, {"id": "G4-8", "a": "G4", "l": 8, "q": "$\\sqrt[3]{x^3-1}\\lt x-2$"}, {"id": "G4-q13", "a": "G4", "l": 8, "q": "$x\\le-1+\\sqrt{1+2x}$"}, {"id": "G4-q14", "a": "G4", "l": 8, "q": "$\\sqrt{x^2-4}\\ge x-1$"}, {"id": "G4-q15", "a": "G4", "l": 8, "q": "$\\sqrt{7+3(x+2)-2(2x-3)}\\lt-1-x$"}, {"id": "G4-9", "a": "G4", "l": 9, "q": "$\\sqrt{x^2-3x}\\lt x-1$"}, {"id": "G4-q16", "a": "G4", "l": 9, "q": "$\\sqrt{x(x-4)+4}\\gt2x+1$"}, {"id": "G4-q17", "a": "G4", "l": 9, "q": "$\\sqrt{2(x+15)}+2x^2\\gt x(1-x)+3(1+x^2)$"}, {"id": "G4-10", "a": "G4", "l": 10, "q": "$\\sqrt{x+1}\\ge x-1$"}, {"id": "G5-1", "a": "G5", "l": 1, "q": "$\\sin\\frac\\pi6+\\cos\\frac\\pi3+\\tan\\frac\\pi4$"}, {"id": "G5-2", "a": "G5", "l": 2, "q": "$\\sin x=\\frac12$ in $[0,2\\pi)$"}, {"id": "G5-q1", "a": "G5", "l": 2, "q": "$\\frac12\\sin90^\\circ+2\\cos180^\\circ+\\frac32\\tan0^\\circ-\\sin270^\\circ$"}, {"id": "G5-3", "a": "G5", "l": 3, "q": "$\\cos x=-\\frac{\\sqrt2}2$ in $[0,2\\pi)$"}, {"id": "G5-q2", "a": "G5", "l": 3, "q": "$(5\\cos2\\pi+3\\cos\\pi)\\sin\\frac{3\\pi}2-2\\cos\\pi+5$"}, {"id": "G5-4", "a": "G5", "l": 4, "q": "$\\tan x=\\sqrt3$ in $[0,2\\pi)$"}, {"id": "G5-q3", "a": "G5", "l": 4, "q": "$2\\sin^2\\frac{5\\pi}4-3\\cos^2\\frac{11\\pi}6+\\cos\\pi$"}, {"id": "G5-q4", "a": "G5", "l": 4, "q": "$\\sin\\left(-\\frac\\pi3\\right)\\cos\\left(-\\frac\\pi6\\right)+\\sin\\frac{7\\pi}2$"}, {"id": "G5-5", "a": "G5", "l": 5, "q": "$2\\sin^2x-\\sin x-1=0$ in $[0,2\\pi)$"}, {"id": "G5-q5", "a": "G5", "l": 5, "q": "$\\sqrt3\\sin(-60^\\circ)+2\\cos(-120^\\circ)-\\tan(-45^\\circ)$"}, {"id": "G5-q6", "a": "G5", "l": 5, "q": "$4\\sin\\frac{5\\pi}6-2\\cos\\frac{4\\pi}3+\\sqrt3\\tan\\frac{2\\pi}3$"}, {"id": "G5-6", "a": "G5", "l": 6, "q": "$\\sin x\\gt\\frac12$ in $[0,2\\pi)$"}, {"id": "G5-q7", "a": "G5", "l": 6, "q": "$3\\sin210^\\circ-2\\cos315^\\circ+\\tan150^\\circ$"}, {"id": "G5-q8", "a": "G5", "l": 6, "q": "$\\dfrac{\\cos240^\\circ\\cdot\\tan300^\\circ}{\\sin120^\\circ}$"}, {"id": "G5-7", "a": "G5", "l": 7, "q": "$\\cos x\\le-\\frac12$ in $[0,2\\pi)$"}, {"id": "G5-q9", "a": "G5", "l": 7, "q": "$\\dfrac{\\sin\\frac{5\\pi}3+\\cos\\frac{2\\pi}3}{\\sqrt3\\sin\\frac{5\\pi}6-\\cos\\frac{7\\pi}6}$"}, {"id": "G5-8", "a": "G5", "l": 8, "q": "$\\sin x\\,(2\\cos x-1)=0$ in $[0,2\\pi)$"}, {"id": "G5-q10", "a": "G5", "l": 8, "q": "$\\dfrac{\\sin150^\\circ\\cos225^\\circ-\\sin315^\\circ}{\\cos330^\\circ\\tan120^\\circ}$"}, {"id": "G5-q11", "a": "G5", "l": 8, "q": "$\\dfrac{\\sin^2\\frac{5\\pi}3+\\cos^2\\frac{7\\pi}6}{\\tan^2\\frac{3\\pi}4-\\sin\\frac{7\\pi}2}$"}, {"id": "G5-9", "a": "G5", "l": 9, "q": "$2\\cos^2x-\\sin x-1=0$ in $[0,2\\pi)$"}, {"id": "G5-10", "a": "G5", "l": 10, "q": "$\\tan x\\ge1$ in $[0,2\\pi)$"}, {"id": "G6-q1", "a": "G6", "l": 1, "q": "$1-|x|=x$"}, {"id": "G6-q2", "a": "G6", "l": 2, "q": "$|x-1|\\lt3$"}, {"id": "G6-q3", "a": "G6", "l": 2, "q": "$\\dfrac{5-3x}{-2}\\gt4$"}, {"id": "G6-q4", "a": "G6", "l": 2, "q": "$\\dfrac{5-2x}{-3}\\le4$"}, {"id": "G6-q5", "a": "G6", "l": 3, "q": "$-4x+8\\lt-2(-3x+1)$"}, {"id": "G6-q6", "a": "G6", "l": 3, "q": "$-3(2x-4)+2(x-5)\\ge-(x+3)$"}, {"id": "G6-q7", "a": "G6", "l": 3, "q": "$\\dfrac{3x+1}5-\\dfrac{x-2}{-10}\\lt1$"}, {"id": "G6-q8", "a": "G6", "l": 3, "q": "$\\dfrac{2x+3}3-\\dfrac{4x-5}6\\gt\\dfrac{x+1}2$"}, {"id": "G6-q9", "a": "G6", "l": 4, "q": "$\\dfrac{2x+7}{1-\\sqrt3}\\ge0$"}, {"id": "G6-q10", "a": "G6", "l": 4, "q": "$|3x-5|=2x+1$ (libro 506)"}, {"id": "G6-q11", "a": "G6", "l": 5, "q": "$|2x-1|=3x+2$"}, {"id": "G6-q12", "a": "G6", "l": 5, "q": "$\\left|x-\\frac32\\right|=2x-\\frac12$"}, {"id": "G6-q13", "a": "G6", "l": 5, "q": "Libro 507: $\\left|3x+\\frac52\\right|=7x-\\frac12$"}, {"id": "G6-q14", "a": "G6", "l": 5, "q": "$x^4-16\\le0$"}, {"id": "G6-q15", "a": "G6", "l": 5, "q": "$3x^6+5\\gt0$"}, {"id": "G6-q16", "a": "G6", "l": 6, "q": "$-(x^2+9)(x-3)^3\\gt0$"}, {"id": "G6-q17", "a": "G6", "l": 6, "q": "$\\dfrac{(x-5)(x+2)}{x^2+1}\\lt0$"}, {"id": "G6-q18", "a": "G6", "l": 6, "q": "$\\dfrac{x^2-4}{x-1}\\lt0$"}, {"id": "G6-q19", "a": "G6", "l": 7, "q": "$\\dfrac{x^4-5x^2+6}{x^2+3}\\gt0$"}, {"id": "G6-q20", "a": "G6", "l": 8, "q": "$\\dfrac{(x^2-4)(x+3)}{(x-1)^2(x+5)}\\ge0$"}, {"id": "U4-q1", "a": "U4", "l": 2, "q": "$y=\\frac1{x^2}+\\frac1{x^2+x+5}$ (libro 112)"}, {"id": "U4-q2", "a": "U4", "l": 2, "q": "$y=\\sqrt{10x-x^2}$ (libro 121)"}, {"id": "U4-q3", "a": "U4", "l": 3, "q": "$y=\\frac1{3x^2+3x}+\\sqrt[3]x$ (libro 122)"}, {"id": "U4-q4", "a": "U4", "l": 3, "q": "$y=\\frac1{\\sqrt{x-5}}+\\frac1{x^2-6x}$ (libro 115)"}, {"id": "U4-q5", "a": "U4", "l": 4, "q": "$y=\\frac1{x^3+x^2+2x}$ (libro 126)"}, {"id": "U4-q6", "a": "U4", "l": 4, "q": "$y=\\frac x{(2x+1)^2-(x-1)^2}$ (libro 127)"}, {"id": "U4-q7", "a": "U4", "l": 5, "q": "$y=\\frac1{x^3+3x^2-4x-12}$ (libro 128)"}, {"id": "U4-q8", "a": "U4", "l": 5, "q": "$y=\\sqrt{\\frac{x^2-4}{x+3}}$ (libro 134)"}, {"id": "U4-q9", "a": "U4", "l": 5, "q": "$y=\\sqrt{2^{1-3x}-4}$ (libro 144)"}, {"id": "U4-q10", "a": "U4", "l": 5, "q": "$y=\\ln\\left(e^{1-x^2}-1\\right)$ (libro 149)"}, {"id": "U4-q11", "a": "U4", "l": 5, "q": "$y=\\frac1{3\\ln x-6}$ (libro 150)"}, {"id": "U4-q12", "a": "U4", "l": 6, "q": "$y=\\frac1{\\ln^2x+3\\ln x}$ (libro 152)"}, {"id": "U4-q13", "a": "U4", "l": 6, "q": "$y=\\sqrt{1-\\ln^2x}$ (libro 153)"}, {"id": "U4-q14", "a": "U4", "l": 6, "q": "$y=\\sqrt{\\ln(x+2)}$ (libro 160)"}, {"id": "U4-q15", "a": "U4", "l": 6, "q": "$y=\\ln(x^2-4)+\\sqrt{25-x^2}$ (libro 161)"}, {"id": "U4-q16", "a": "U4", "l": 7, "q": "$y=\\ln\\frac{x^2-4x}{3-x}$ (libro 162)"}, {"id": "U4-q17", "a": "U4", "l": 7, "q": "$y=\\frac{\\sqrt{x^2-4x+3}}{x-2}$"}, {"id": "U4-q18", "a": "U4", "l": 7, "q": "$y=\\frac{\\sqrt{4x^2-5x+1}}{x-3}$"}, {"id": "U4-q19", "a": "U4", "l": 7, "q": "$y=\\frac{\\sqrt{x^2+5x}}{x-1}$"}, {"id": "U4-q20", "a": "U4", "l": 8, "q": "$y=\\frac{\\sqrt{3-|x|}}{x^3+1}$ (libro 131)"}, {"id": "U4-q21", "a": "U4", "l": 8, "q": "$y=\\sqrt{\\frac{x^2-1}{x+2}}+\\sqrt{\\frac{x-2}{x+1}}$ (libro 136)"}, {"id": "G2-h1", "a": "G2", "l": 7, "q": "$5^x+5^{3-x}=30$"}, {"id": "G2-h2", "a": "G2", "l": 8, "q": "$2^x+2^{2-x}=3\\sqrt2$"}, {"id": "G2-h3", "a": "G2", "l": 7, "q": "$4^x-5\\cdot2^x+4\\le0$"}, {"id": "G2-h4", "a": "G2", "l": 8, "q": "$2^{2x+1}-9\\cdot2^x+4\\gt0$"}, {"id": "G2-h5", "a": "G2", "l": 8, "q": "$2^{x+1}+2^{-x}\\lt3$"}, {"id": "G2-h6", "a": "G2", "l": 9, "q": "$\\dfrac{2^x}{2^x-1}-\\dfrac3{2^x+1}=\\dfrac{11}{4^x-1}$"}, {"id": "G3-h1", "a": "G3", "l": 7, "q": "$\\ln(x^2-1)-\\ln(x+1)=\\ln3$"}, {"id": "G3-h2", "a": "G3", "l": 7, "q": "$2\\log_3x=\\log_3(x+6)$"}, {"id": "G3-h3", "a": "G3", "l": 8, "q": "$\\log_{1/3}(x^2-2x)\\gt-1$"}, {"id": "G3-h4", "a": "G3", "l": 8, "q": "$(\\ln x)^2-3\\ln x+2\\le0$"}, {"id": "G3-h5", "a": "G3", "l": 9, "q": "$\\dfrac{\\ln x-1}{\\ln x+2}\\gt0$"}, {"id": "G3-h6", "a": "G3", "l": 9, "q": "$\\dfrac{\\log_2x}{\\log_2x-1}-\\dfrac2{\\log_2x+1}=\\dfrac8{(\\log_2x)^2-1}$"}];
+var DF={"U2L1": ["$B=[2,7)$: ha min? max? estremi?", "$C=\\{1/n\\mid n\\in\\mathbb N^*\\}$: max, min, inf, sup.", "Disegna $A\\cup B$ e $A\\cap B$ per $A=(0,5)$, $B=[3,8]$."], "U2L2": ["$x\\,\\mathcal R\\,y\\iff x\\lt y$ su $\\mathbb R$: ordine stretto?", "$a\\mid b$ (divide) su $\\mathbb N^*$: ordine? totale?", "Determina le classi di equivalenza di «stesso resto nella divisione per 3» su $\\mathbb Z$."], "U2L3": ["Dimostra $1+2+\\dots+n=\\frac{n(n+1)}2$.", "Dimostra $2^n\\gt n$ per $n\\ge1$.", "Dimostra $1^2+\\dots+n^2=\\frac{n(n+1)(2n+1)}6$."], "U2L4": ["$(2+3i)(1-i)$", "$z^2+2z+5=0$ in $\\mathbb C$", "Modulo di $3+4i$ e coniugato.", "Radici cubiche di $8$."], "U2L6": ["$f(x)=e^x$ da $\\mathbb R$ a $\\mathbb R$: iniettiva? suriettiva?", "$f(x)=|x|$ da $\\mathbb R$ a $[0,+\\infty)$.", "Componi $f(x)=x+1$ e $g(x)=x^2$: $g\\circ f$ e $f\\circ g$."], "U3L1": ["Somma $(1,2,3)+(4,-1,2)$ e $3\\cdot(1,0,-2)$.", "Norma di $(1,2,2)$.", "Trova $k$ perché $(k,2,1)$ sia perpendicolare a $(1,-1,2)$."], "U3L2": ["Determinante di $\\begin{pmatrix}3&1\\\\2&4\\end{pmatrix}$.", "Trasposta di $\\begin{pmatrix}1&2&3\\\\4&5&6\\end{pmatrix}$.", "Esiste l'inversa di $\\begin{pmatrix}2&4\\\\1&2\\end{pmatrix}$?"], "U3L3": ["$L(x,y)=(x,0)$: nucleo e immagine.", "$L(x,y)=(x+y,\\ x-y)$: matrice e determinante.", "$f(x)=2x+3$ è lineare?"], "U3L4": ["$\\begin{cases}x-y=2\\\\3x+y=6\\end{cases}$", "$\\begin{cases}2x+y=5\\\\x-y=1\\end{cases}$", "Per quale $k$ il sistema $x+y=1,\\ 2x+2y=k$ è possibile?"], "U3L6": ["Piano per l'origine perpendicolare a $(1,1,1)$.", "Il punto $(1,2,3)$ sta sul piano $2x-y+4z-12=0$?", "Direzione perpendicolare a $(1,2,3)$ e $(0,1,0)$?"], "U4L1": ["$f(x)=x^3-x$: parità?", "Periodo di $\\sin(2x)$ e di $\\tan(3x)$.", "$f(x)=\\sqrt x$: è pari o dispari?"], "U4L3": ["Periodo di $y=\\sin(2x)$.", "Disegna $y=|x^2-4|$ partendo da $y=x^2-4$.", "Immagine di $y=-\\cos x+3$."], "U4L5": ["Zeri e segno di $x^2-4$.", "Zeri e segno di $\\dfrac{x-3}{x+1}$.", "Dominio e zeri di $\\ln(x^2-3x+3)$."]};
+var ERRS=[{"c": "#3", "a": "G1", "d": "Grafico dei segni letto al contrario", "g": "$a\\gt0$: $\\gt0$ FUORI dalle radici, $\\lt0$ TRA le radici.", "w": "$x^2+4x-21\\lt0\\Rightarrow x\\lt-7\\lor x\\gt3$", "k": "$x^2+4x-21\\lt0\\Rightarrow-7\\lt x\\lt3$", "t": "concettuale"}, {"c": "#2", "a": "G1", "d": "Verso non invertito moltiplicando per $-1$", "g": "Moltiplicare o dividere per un negativo inverte il verso.", "w": "$-2x^2-2x+24\\lt0\\Rightarrow x^2+x-12\\lt0$", "k": "$\\Rightarrow x^2+x-12\\gt0$", "t": "calcolo"}, {"c": "N-01", "a": "G6", "d": "Inversione dimenticata alla seconda divisione per un negativo", "g": "Conta le inversioni: una per ogni moltiplicazione/divisione per un negativo.", "w": "$-3x\\lt-13\\Rightarrow x\\lt\\frac{13}3$", "k": "$-3x\\lt-13\\Rightarrow x\\gt\\frac{13}3$", "t": "concettuale"}, {"c": "N-02", "a": "G6", "d": "Costante negativa trattata come fattore in tabella", "g": "Se il denominatore non contiene $x$ è un numero: niente tabella.", "w": "$\\frac{2x+7}{1-\\sqrt3}\\ge0$ con tabella a due righe", "k": "$1-\\sqrt3\\lt0$: moltiplica e inverti, $2x+7\\le0$", "t": "impostazione"}, {"c": "N-03", "a": "G6", "d": "Sviluppare un cubo invece di ragionare sul segno", "g": "Potenza dispari: stesso segno della base. Non sviluppare.", "w": "$(x-3)^3=x^3-27-9x^2+\\ldots$", "k": "$(x-3)^3$ ha il segno di $(x-3)$", "t": "impostazione"}, {"c": "N-04", "a": "G6", "d": "Radici reali attribuite a $x^2+c$ con $c\\gt0$", "g": "$x^2+c$, $c\\gt0$: sempre positivo, fuori dalla tabella.", "w": "$x^2+9=0\\Rightarrow x=\\pm3$", "k": "$x^2+9\\gt0$ sempre, nessuna radice", "t": "concettuale"}, {"c": "N-05", "a": "G6", "d": "Biquadratica senza sostituzione", "g": "Con $x^4$ e $x^2$ e nessuna potenza dispari: $t=x^2$.", "w": "$x^4-5x^2+6\\to x(x^3-5x)+6$", "k": "$t=x^2$: $(t-2)(t-3)$", "t": "impostazione"}, {"c": "N-06", "a": "G6", "d": "Condizione del modulo messa sul membro destro", "g": "La condizione sta sempre sull'argomento del modulo.", "w": "$|3x-5|=2x+1$: casi su $2x+1$", "k": "casi su $3x-5\\ge0$ e $\\lt0$", "t": "impostazione"}, {"c": "N-07", "a": "G6", "d": "Soluzione di un caso non verificata", "g": "Ogni soluzione va verificata contro la condizione del suo caso.", "w": "$x=-3$ trovata nel caso $x\\ge\\frac12$ e tenuta", "k": "$-3\\ge\\frac12$? No: scartata", "t": "impostazione"}, {"c": "N-08", "a": "G6", "d": "Modulo ridotto a un solo lato", "g": "$|x|\\le a$ dà sempre una doppia disuguaglianza.", "w": "$|x|\\le3\\Rightarrow x\\le3$", "k": "$-3\\le x\\le3$", "t": "concettuale"}, {"c": "N-09", "a": "G4", "d": "Equazione irrazionale: C.E. solo sul radicando", "g": "$\\sqrt A=B$ richiede $A\\ge0$ E $B\\ge0$ (condizione sul membro destro).", "w": "$\\sqrt{2x+3}=x$: solo $x\\ge-\\frac32$", "k": "aggiungi $x\\ge0$", "t": "impostazione"}, {"c": "#8", "a": "G4", "d": "Un solo sistema per $\\sqrt A\\gt B$", "g": "Radice «grande» ($\\gt,\\ge$): DUE sistemi uniti.", "w": "$\\sqrt A\\gt B\\Rightarrow A\\gt B^2$", "k": "due sistemi: $\\{A\\ge0,B\\lt0\\}\\cup\\{B\\ge0,A\\gt B^2\\}$", "t": "impostazione"}, {"c": "N-10", "a": "G4", "d": "Due sistemi per $\\sqrt A\\lt B$ (o $\\le$)", "g": "Radice «piccola» ($\\lt,\\le$): UN sistema.", "w": "$\\sqrt{16+x^2}\\le x-3$: due sistemi", "k": "un sistema: $A\\ge0$, $B\\ge0$, $A\\le B^2$", "t": "impostazione"}, {"c": "N-11", "a": "G4", "d": "Nel 2° sistema $A\\gt B$ invece di $A\\gt B^2$", "g": "Si eleva al quadrato anche $B$.", "w": "$\\sqrt{-x+3}\\gt x-3\\to-x+3\\gt x-3$", "k": "$-x+3\\gt(x-3)^2$", "t": "concettuale"}, {"c": "N-12", "a": "G4", "d": "Si quadra solo un membro", "g": "Il quadrato riguarda ENTRAMBI i membri, con il doppio prodotto.", "w": "$x+2x^2\\lt x+\\frac12$", "k": "$x+2x^2\\lt\\left(x+\\frac12\\right)^2$", "t": "calcolo"}, {"c": "N-13", "a": "G4", "d": "Radici non semplificate prima dei sistemi", "g": "Semplifica $\\sqrt{4A}=2\\sqrt A$ prima di tutto.", "w": "$\\sqrt{4A}-\\sqrt A=\\sqrt{3A}$", "k": "$2\\sqrt A-\\sqrt A=\\sqrt A$", "t": "impostazione"}, {"c": "N-14", "a": "G4", "d": "$(x-a)^2\\ge0$ trattato come $x\\ge a$", "g": "Un quadrato è sempre $\\ge0$; $x^2\\le0\\Rightarrow x=0$, non impossibile.", "w": "$(x-2)^2\\ge0\\Rightarrow x\\ge2$", "k": "sempre vero $\\forall x$", "t": "concettuale"}, {"c": "N-15", "a": "G4", "d": "Condizioni del sistema non intersecate", "g": "Tutte le righe devono valere insieme; una riga impossibile rende vuoto tutto.", "w": "$x(x+4)\\ge0$ e $x\\lt-1$: scrive solo $x\\lt-1$", "k": "intersezione: $x\\le-4$", "t": "impostazione"}, {"c": "N-16", "a": "G4", "d": "Segno di $\\Delta$ con $c\\lt0$", "g": "$-4ac$ con $c\\lt0$ è positivo.", "w": "$a=2,b=5,c=-3$: $25-24$", "k": "$25-4(2)(-3)=49$", "t": "calcolo"}, {"c": "N-17", "a": "G4", "d": "Equazione irrazionale: manca l'unione/la verifica finale", "g": "Ogni esercizio finisce con valori espliciti e verifica.", "w": "si ferma a $x^2=2$ con «x maggiore di 1»", "k": "$x=\\pm\\sqrt2$, poi scarta con $x+1\\ge0$", "t": "impostazione"}, {"c": "A", "a": "G2", "d": "Dopo l'ausiliaria ci si ferma a $t$", "g": "La risposta è $x$: sempre tre righe $t\\to a^x=t\\to x$.", "w": "«soluzione: $t=9$»", "k": "$3^x=9\\Rightarrow x=2$", "t": "impostazione"}, {"c": "B", "a": "G2", "d": "Proprietà delle potenze applicate a somme/differenze", "g": "Gli esponenti si toccano solo con $\\cdot$ e $:$, mai con $+$ e $-$.", "w": "$3^{2x}-3^x=6\\Rightarrow2x-x=6$; $2^x-2=2^{x-1}$", "k": "$t=3^x$: $t^2-t-6=0$", "t": "concettuale"}, {"c": "C", "a": "G2", "d": "Esponente parziale trattato come equazione", "g": "Completa l'esponente con il denominatore prima di uguagliare.", "w": "$2^{7-x}$ al numeratore $\\Rightarrow x=7$", "k": "$\\frac{2^{7-x}}{2^{4x}}=2^{7-5x}$, poi uguaglia", "t": "impostazione"}, {"c": "N-18", "a": "G2", "d": "$t^{-1}$ al posto di $\\frac1t$ / $a^{k-x}$", "g": "$a^{k-x}=\\frac{a^k}t$: separa la costante.", "w": "$5^{1-x}=t^{-1}$", "k": "$5^{1-x}=\\frac5t$", "t": "calcolo"}, {"c": "N-19", "a": "G2", "d": "Per togliere $\\frac1t$ si moltiplica per un numero", "g": "$\\frac1t$ si elimina moltiplicando per $t$.", "w": "$2\\left(2t+\\frac1t\\right)=6$", "k": "moltiplica per $t$: $2t^2+1=3t$", "t": "impostazione"}, {"c": "N-20", "a": "G2", "d": "Ausiliaria forzata dove basta eguagliare gli esponenti", "g": "Un termine per lato, stessa base → $f(x)=g(x)$.", "w": "$2^{2x}=2^{-x+2}\\to t=2^2\\ldots$", "k": "$2x=-x+2\\Rightarrow x=\\frac23$", "t": "impostazione"}, {"c": "N-21", "a": "G2", "d": "Addendi fusi in un prodotto", "g": "Addendi separati da $+$ non si fondono.", "w": "$t^2+9=9t^2$", "k": "$t^2+9$ resta così: moltiplica per $t$", "t": "concettuale"}, {"c": "N-22", "a": "G2", "d": "Perde una cifra ricopiando", "g": "Ricopia dal testo originale, non dalla tua riga.", "w": "$3^{2-x}$ letto come $3^{-x}$", "k": "$3^{2-x}=9\\cdot3^{-x}$", "t": "slip"}, {"c": "#32", "a": "G3", "d": "C.E. del logaritmo dimenticata o incompleta", "g": "Argomento $\\gt0$ per ogni log; si interseca alla fine.", "w": "$\\log(x^3-\\frac72x)-3\\log(x-1)=0$ con solo $x\\gt1$", "k": "tabella su $x^3-\\frac72x\\gt0$ e $x\\gt1$", "t": "impostazione"}, {"c": "N-23", "a": "G3", "d": "C.E. messa su un fattore che non è un log", "g": "La C.E. riguarda solo gli argomenti dei log.", "w": "$\\log x(\\log x-2)=3$ con C.E. $x\\gt2$", "k": "solo $x\\gt0$", "t": "concettuale"}, {"c": "N-24", "a": "G3", "d": "Meno davanti a parentesi non distribuito", "g": "Il meno cambia TUTTI i segni interni.", "w": "$-(6-t)=-6-t$", "k": "$-6+t$", "t": "calcolo"}, {"c": "N-25", "a": "G3", "d": "Prodotto in croce con somma/differenza di frazioni", "g": "Differenza di frazioni → denominatore comune.", "w": "$\\frac A B-\\frac C D=0\\to AD=BC$ saltando il resto", "k": "denominatore comune, numeratore $=0$", "t": "impostazione"}, {"c": "TOLC-2", "a": "G3", "d": "Si ferma al numeratore della formula risolutiva", "g": "Dividi per $2a$ e scrivi i valori finali.", "w": "$\\frac{2\\pm4}2\\to\\{6,-2\\}$", "k": "$\\{3,-1\\}$", "t": "calcolo"}, {"c": "#23", "a": "G3", "d": "Differenza di logaritmi", "g": "Differenza di log = log del quoziente.", "w": "$\\log A-\\log B=\\log(A-B)$", "k": "$\\log\\frac AB$", "t": "calcolo"}, {"c": "T-01", "a": "G5", "d": "Segno negativo portato fuori dal quadrato", "g": "$(-a)^2=a^2$.", "w": "$\\left(-\\frac{\\sqrt2}2\\right)^2=-\\frac12$", "k": "$+\\frac12$", "t": "concettuale"}, {"c": "#43", "a": "G5", "d": "Angolo base misurato dall'asse sbagliato", "g": "Base sempre rispetto a $0,\\pi,2\\pi$.", "w": "base di $210^\\circ$: $270^\\circ-210^\\circ=60^\\circ$", "k": "$210^\\circ-180^\\circ=30^\\circ$", "t": "concettuale"}, {"c": "#44", "a": "G5", "d": "$\\tan$ calcolata come prodotto", "g": "$\\tan\\alpha=\\frac{\\sin\\alpha}{\\cos\\alpha}$.", "w": "$\\tan300^\\circ=\\sin\\cdot\\cos$", "k": "$\\tan=\\frac{\\sin}{\\cos}=-\\sqrt3$", "t": "concettuale"}, {"c": "T-02", "a": "G5", "d": "Valori di $\\sin60^\\circ$ e $\\cos60^\\circ$ scambiati", "g": "$\\sin30^\\circ=\\cos60^\\circ=\\frac12$.", "w": "$\\sin60^\\circ=\\frac12$", "k": "$\\sin60^\\circ=\\frac{\\sqrt3}2$", "t": "slip"}, {"c": "T-03", "a": "G5", "d": "Frazione doppia trattata come prodotto", "g": "$\\frac{a/b}c=\\frac a{bc}$.", "w": "$\\frac{(2-\\sqrt3)/2}2=2-\\sqrt3$", "k": "$\\frac{2-\\sqrt3}4$", "t": "calcolo"}, {"c": "T-04", "a": "G5", "d": "Radicali diversi sommati come uguali", "g": "$\\sqrt6\\ne\\sqrt2$: non si sommano.", "w": "$\\frac{\\sqrt6}4+\\frac{\\sqrt2}4=\\frac{2\\sqrt2\\sqrt3}4$", "k": "$\\frac{\\sqrt6+\\sqrt2}4$", "t": "calcolo"}, {"c": "R-01", "a": "G1", "d": "$m$ letto dalla forma implicita", "g": "Prima isola $y$, poi leggi $m$.", "w": "$x+2y=0\\Rightarrow m=1$", "k": "$y=-\\frac12x\\Rightarrow m=-\\frac12$", "t": "impostazione"}, {"c": "R-02", "a": "G1", "d": "Perpendicolare con lo stesso $m$", "g": "Perpendicolare: $-\\frac1m$.", "w": "$m_\\perp=-2$ per $m=-2$", "k": "$m_\\perp=\\frac12$", "t": "concettuale"}, {"c": "R-03", "a": "G1", "d": "Dopo $m$ si indovina $q$", "g": "Applica sempre $y-y_0=m(x-x_0)$.", "w": "$y=-\\frac13x+3$ (indovinato)", "k": "$y-2=-\\frac13(x-4)\\Rightarrow y=-\\frac13x+\\frac{10}3$", "t": "impostazione"}, {"c": "R-04", "a": "G1", "d": "La $x$ del fascio sostituita con un numero", "g": "La $x$ resta incognita; $x_0$ è il punto.", "w": "$y+3=-2(5-3)$", "k": "$y+3=-2(x-5)$", "t": "slip"}, {"c": "R-05", "a": "G1", "d": "Segno perso sostituendo un valore negativo", "g": "$-x$ con $x\\lt0$ diventa positivo.", "w": "$-x$ con $x=-1$: $(-1)+1=0$", "k": "$-(-1)+1=2$", "t": "calcolo"}, {"c": "#45", "a": "U4", "d": "Denominatore senza radice posto $\\gt0$ (o radice al denominatore solo $\\ne0$)", "g": "Radice al denominatore: $\\gt0$ stretto; altrimenti $\\ne0$.", "w": "$3\\ln x-6\\gt0$; $\\sqrt x\\ne0\\Rightarrow\\mathbb R$", "k": "$\\ne0$; con radice al denominatore $x\\gt0$", "t": "concettuale"}, {"c": "#46", "a": "U4", "d": "$\\ln\\frac ND$ o $\\sqrt{\\frac ND}$ con due condizioni separate", "g": "Perdi il caso $N\\lt0$ e $D\\lt0$.", "w": "$N\\gt0$ e $D\\ne0$ separati", "k": "UNA tabella dei segni su $\\frac ND$", "t": "impostazione"}, {"c": "#64/#67", "a": "U4", "d": "Radici del numeratore usate come esclusioni", "g": "Le radici di $N$ servono per segno e intersezioni, non per il dominio.", "w": "$D=\\mathbb R\\setminus\\{\\text{radici di }N\\}$", "k": "$D$: solo il denominatore", "t": "concettuale"}, {"c": "#68", "a": "U4", "d": "Radice al numeratore: radicando dimenticato", "g": "Il radicando è $\\ge0$ sopra o sotto la frazione.", "w": "$\\frac{\\sqrt{x-3}}{x^2+4}$: $D=\\mathbb R$", "k": "$D=[3,+\\infty)$", "t": "concettuale"}, {"c": "N-26", "a": "U4", "d": "Somma di cubi non nota / «sempre positivo» su potenza dispari", "g": "$a^3+b^3=(a+b)(a^2-ab+b^2)$; $x^3+1$ cambia segno.", "w": "$x^3+1=(x^2+1)(x^2-x+1)$", "k": "$x^3+1=(x+1)(x^2-x+1)$", "t": "concettuale"}, {"c": "N-27", "a": "U4", "d": "$\\ln^2x$ letto come $2\\ln x$", "g": "$\\ln^2x=(\\ln x)^2$.", "w": "$\\ln^2x+3\\ln x\\to5\\ln x$", "k": "$\\ln x(\\ln x+3)$", "t": "concettuale"}, {"c": "N-28", "a": "U4", "d": "Notazione $\\pm$ nelle soluzioni", "g": "Scrivi i due rami per esteso.", "w": "$x\\ge\\pm\\sqrt3$", "k": "$x\\le-\\sqrt3\\ \\lor\\ x\\ge\\sqrt3$", "t": "slip"}, {"c": "N-29", "a": "U4", "d": "Estremi e esclusioni nel dominio finale", "g": "Punto escluso: tonda. Spunta ogni riga della tabella prima di scrivere $D$.", "w": "$(-\\infty,-2]\\cup(-2,+\\infty)$; $x\\ne1$ persa", "k": "$(-\\infty,-2)\\cup(-2,+\\infty)$", "t": "slip"}, {"c": "TOLC-1", "a": "G6", "d": "Aritmetica di base / slip di copiatura", "g": "Un conteggio intero si arrotonda per eccesso.", "w": "$\\frac{120}{50}=2{,}4\\to$ 2 pullman", "k": "servono 3 pullman", "t": "calcolo"}, {"c": "N-30", "a": "G2", "d": "$a^{x-k}$ letto come $\\frac1{a^x}$", "g": "$a^{x-k}=\\frac{a^x}{a^k}$: la $x$ resta al numeratore, il $-k$ va al denominatore come numero.", "w": "$3^{x-1}=\\frac1t\\Rightarrow x=-4$", "k": "$3^{x-1}=\\frac t3$, oppure $3^{x-1}=3^4\\Rightarrow x=5$", "t": "calcolo"}, {"c": "N-31", "a": "G2", "d": "$a^{x+k}$ letto come $(a^x)^k$", "g": "Somma negli esponenti = prodotto di potenze. Il quadrato di $t$ è $2^{2x}$, un'altra cosa.", "w": "$2^{x+2}=t^2$", "k": "$2^{x+2}=2^x\\cdot2^2=4t$", "t": "concettuale"}, {"c": "N-32", "a": "G2", "d": "Frazione scritta come potenza", "g": "Una frazione non è una potenza: $3^x+3^{-x}=\\frac{10}3\\Rightarrow t+\\frac1t=\\frac{10}3$.", "w": "$\\frac{10}3=3^{-10}$", "k": "$\\frac{10}3$ resta un numero; $3^{-x}=\\frac1t$", "t": "concettuale"}, {"c": "N-33", "a": "G2", "d": "Raccoglimento con $a^x$ e $a^{-x}$", "g": "Raccogli quando gli esponenti differiscono per una costante ($2^{x+2}-2^x$). Con $x$ e $-x$ serve l'ausiliaria.", "w": "$3^x(1+1^{-x})$", "k": "$t+\\frac1t=\\frac{10}3$, poi moltiplica per $t$ (N-19)", "t": "impostazione"}, {"c": "N-34", "a": "G3", "d": "Parentesi perse nel prodotto degli argomenti", "g": "L'argomento è $x-3$ intero: scrivi la parentesi, poi distribuisci.", "w": "$\\ln x+\\ln(x-3)=\\ln4\\Rightarrow x\\cdot x-3=4$", "k": "$x(x-3)=4\\Rightarrow x^2-3x-4=0$", "t": "impostazione"}, {"c": "N-35", "a": "G3", "d": "Disequazione chiusa alle radici come un'equazione", "g": "Nelle disequazioni le radici sono confini: leggi il segno, torna a $x$, interseca con la C.E.", "w": "$t=2,-1\\Rightarrow x=4,\\frac12$ «accettabili»", "k": "$t^2-t-2\\gt0\\Rightarrow t\\lt-1\\lor t\\gt2\\Rightarrow0\\lt x\\lt\\frac12\\lor x\\gt4$", "t": "impostazione"}, {"c": "N-36", "a": "G3", "d": "Prodotto $\\lt0$ spezzato in due $\\lt0$", "g": "Un prodotto $\\lt0$ ha fattori di segno opposto: parabola o tabella dei segni, mai due condizioni nello stesso verso.", "w": "$x(x-4)\\lt0\\Rightarrow x\\lt0$ e $x\\lt4$", "k": "$0\\lt x\\lt4$ (tra le radici)", "t": "concettuale"}, {"c": "N-37", "a": "G3", "d": "C.E. inventata dall'esponente di una radice", "g": "Il $\\frac12$ è l'esponente, non un limite per $x$.", "w": "$\\ln\\sqrt x$: «$x\\gt0$ e $x\\gt\\frac12$»", "k": "$\\ln\\sqrt x=\\frac12\\ln x$, C.E. solo $x\\gt0$", "t": "concettuale"}];
+var OSS=[{"d": "2026-10-04", "c": "N-30", "tp": "nuovo", "ex": "G2-2", "n": "$3^{x-1}=81$: prima riga con $\\frac1t$; poi rifatto giusto con $3^4$ ($x=5$)."}, {"d": "2026-10-04", "c": "N-31", "tp": "nuovo", "ex": "G2-6", "n": "$2^{x+2}-2^x=24$ impostato come $t^2-t-24=0$; poi risolto con il raccoglimento ($x=3$)."}, {"d": "2026-10-04", "c": "N-32", "tp": "nuovo", "ex": "G2-q10", "n": "$3^x+3^{-x}=\\frac{10}3$: il $\\frac{10}3$ riscritto come $3^{-10}$."}, {"d": "2026-10-04", "c": "N-33", "tp": "nuovo", "ex": "G2-q10", "n": "Stesso esercizio: raccoglimento con $1^{-x}$. Una versione giusta sul quaderno non c'è ancora."}, {"d": "2026-10-04", "c": "N-34", "tp": "nuovo", "ex": "G3-3", "n": "$\\ln x+\\ln(x-3)=\\ln4$: prodotto scritto senza parentesi; corretto in rosso ($x=4$)."}, {"d": "2026-10-04", "c": "N-35", "tp": "nuovo", "ex": "G3-8", "n": "Disequazione chiusa alle radici di $t$ («accettabili»); completata in rosso."}, {"d": "2026-10-04", "c": "N-36", "tp": "nuovo", "ex": "G3-9", "n": "$x(x-4)\\lt0$ spezzato in $x\\lt0$ e $x\\lt4$; corretto con la parabola."}, {"d": "2026-10-04", "c": "N-37", "tp": "nuovo", "ex": null, "n": "Esercizio dei quaderni $\\ln^2x-6\\ln\\sqrt x\\ge-2$: C.E. $x\\gt\\frac12$ inventata. Esercizio non finito."}, {"d": "2026-10-04", "c": "A", "tp": "riemerso", "ex": "G2-q5", "n": "$2^x+9\\cdot2^x=40$: fermato a $t=4$; completato in rosso con $x=2$."}, {"d": "2026-10-04", "c": "TOLC-1", "tp": "riemerso", "ex": "G2-q7", "n": "$\\sqrt{36}$ scritto 8 (poi corretto: radici $4$ e $-2$)."}, {"d": "2026-10-04", "c": "TOLC-1", "tp": "riemerso", "ex": "G3-1", "n": "$3^4$ scritto 71, corretto 81."}, {"d": "2026-10-04", "c": "#32", "tp": "riemerso", "ex": "G3-6", "n": "$\\log_{1/2}$: manca l'intersezione con la C.E. alla fine; corretto in rosso."}];
+var TH={"G2": [["Guidati → esponenziale con ausiliaria", "archivio_zappulla.html#t=gui&q=ausiliaria"], ["Malizie → esponenziali", "archivio_zappulla.html#t=mal&q=esponenziali"]], "G3": [["Procedure → equazione e disequazione logaritmica", "archivio_zappulla.html#t=proc&q=logaritmic"], ["Guidati → logaritmi: la C.E. decide", "archivio_zappulla.html#t=gui&q=log"], ["Malizie → logaritmi", "archivio_zappulla.html#t=mal&q=logaritmi"]], "G4": [["Procedure → equazione e disequazione irrazionale", "archivio_zappulla.html#t=proc&q=irrazionale"], ["Guidati → √A maggiore di B", "archivio_zappulla.html#t=gui&q=irrazionale"], ["Malizie → irrazionali", "archivio_zappulla.html#t=mal&q=irrazionali"]], "G5": [["Formulario → tabella degli angoli notevoli", "archivio_zappulla.html#t=form&q=angoli"], ["Grafici → circonferenza goniometrica", "archivio_zappulla.html#t=graf&q=circonferenza"], ["Grafici → archi associati", "archivio_zappulla.html#t=graf&q=archi"]], "G6": [["Guidati → disequazione fratta con ≤", "archivio_zappulla.html#t=gui&q=fratta"], ["Procedure → disequazione fratta", "archivio_zappulla.html#t=proc&q=fratta"], ["Malizie → fratte", "archivio_zappulla.html#t=mal&q=fratte"]], "G1": [["Procedure → disequazioni di 2° grado", "archivio_zappulla.html#t=proc&q=disequazion"]], "U4D": [["Procedure → dominio di una funzione", "archivio_zappulla.html#t=proc&q=dominio"], ["Malizie → domini", "archivio_zappulla.html#t=mal&q=domini"]]};
+var TOPICS=[{"id": "G2", "k": "pal", "area": "G2", "nm": "Esponenziali", "by": "2026-10-08", "need": 12, "hi": 7, "m": "M1"}, {"id": "G3", "k": "pal", "area": "G3", "nm": "Logaritmi", "by": "2026-10-09", "need": 12, "hi": 7, "m": "M1"}, {"id": "G4", "k": "pal", "area": "G4", "nm": "Irrazionali", "by": "2026-10-09", "need": 8, "hi": 7, "m": "M1"}, {"id": "U2A", "k": "hub", "nm": "U2 · Insiemi e relazioni (L1–L2)", "lessons": ["U2L1", "U2L2"], "by": "2026-10-12", "m": "M1"}, {"id": "G5", "k": "pal", "area": "G5", "nm": "Trigonometria", "by": "2026-10-13", "need": 8, "hi": 7, "m": "M1"}, {"id": "G6", "k": "pal", "area": "G6", "nm": "Modulo, lineari, fratte", "by": "2026-10-14", "need": 8, "hi": 7, "m": "M1"}, {"id": "U2B", "k": "hub", "nm": "U2 · Induzione e complessi (L3–L4)", "lessons": ["U2L3", "U2L4"], "by": "2026-10-14", "m": "M1"}, {"id": "G1", "k": "pal", "area": "G1", "nm": "Retta e parabola", "by": "2026-10-19", "need": 5, "hi": 6, "m": "M1"}, {"id": "P1A", "k": "hub", "nm": "Programmazione · U1 Fondamenti", "lessons": ["P1U1L1", "P1U1L2", "P1U1L3", "P1U1L4", "P1U1L5", "P1U1L6"], "by": "2026-10-22", "m": "P1"}, {"id": "U2C", "k": "hub", "nm": "U2 · Funzioni (L6)", "lessons": ["U2L6"], "by": "2026-10-20", "m": "M1"}, {"id": "U3A", "k": "hub", "nm": "U3 · Vettori, matrici, applicazioni lineari (L1–L3)", "lessons": ["U3L1", "U3L2", "U3L3"], "by": "2026-10-20", "m": "M1"}, {"id": "U3B", "k": "hub", "nm": "U3 · Sistemi lineari (L4)", "lessons": ["U3L4"], "by": "2026-10-21", "m": "M1"}, {"id": "U4D", "k": "pal", "area": "U4", "nm": "U4 · Domini", "by": "2026-10-27", "need": 8, "hi": 6, "m": "M1"}, {"id": "U3C", "k": "hub", "nm": "U3 · Geometria dello spazio (L6)", "lessons": ["U3L6"], "by": "2026-10-27", "m": "M1"}, {"id": "U4B", "k": "hub", "nm": "U4 · Funzioni (L1–L5, 3 e-tivity)", "lessons": ["U4L1", "U4L2", "U4L3", "U4L4", "U4L5"], "by": "2026-10-28", "m": "M1", "att": "U4"}, {"id": "P1B", "k": "hub", "nm": "Programmazione · U2 Linguaggio C", "lessons": ["P1U2L1", "P1U2L2", "P1U2L3", "P1U2L4", "P1U2L5", "P1U2L6"], "by": "2026-10-29", "m": "P1"}, {"id": "P1C", "k": "hub", "nm": "Programmazione · U3 Strutture dati e funzioni", "lessons": ["P1U3L1", "P1U3L2", "P1U3L3", "P1U3L4", "P1U3L5", "P1U3L6"], "by": "2026-11-09", "m": "P1"}, {"id": "M2A", "k": "hub", "nm": "Matematica II · U1 Successioni e limiti", "lessons": ["M2U1L1", "M2U1L2", "M2U1L3", "M2U1L4", "M2U1L5", "M2U1L6"], "by": "2026-11-09", "m": "M2"}, {"id": "P1D", "k": "hub", "nm": "Programmazione · U4 Puntatori e memoria dinamica", "lessons": ["P1U4L1", "P1U4L2", "P1U4L3", "P1U4L4", "P1U4L5", "P1U4L6"], "by": "2026-11-12", "m": "P1"}, {"id": "M2B", "k": "hub", "nm": "Matematica II · U2 Continuità e derivate", "lessons": ["M2U2L1", "M2U2L2", "M2U2L3", "M2U2L4", "M2U2L5", "M2U2L6"], "by": "2026-11-15", "m": "M2"}, {"id": "P1E", "k": "hub", "nm": "Programmazione · U5 Algoritmi", "lessons": ["P1U5L1", "P1U5L2", "P1U5L3", "P1U5L4", "P1U5L5", "P1U5L6"], "by": "2026-11-19", "m": "P1"}, {"id": "M2C", "k": "hub", "nm": "Matematica II · U3 Studio di funzioni", "lessons": ["M2U3L1", "M2U3L2", "M2U3L3", "M2U3L4", "M2U3L5", "M2U3L6"], "by": "2026-11-21", "m": "M2"}, {"id": "P1F", "k": "hub", "nm": "Programmazione · U6 Strutture e complessità", "lessons": ["P1U6L1", "P1U6L2", "P1U6L3", "P1U6L4", "P1U6L5"], "by": "2026-11-26", "m": "P1"}, {"id": "M2D", "k": "hub", "nm": "Matematica II · U4 Integrazione", "lessons": ["M2U4L1", "M2U4L2", "M2U4L3", "M2U4L4", "M2U4L5", "M2U4L6"], "by": "2026-11-26", "m": "M2"}];
+var SYNC=[{"d": "2026-10-09", "m": "M1", "s": "U1 1.6 riepilogo (17:00)", "min": 120}, {"d": "2026-10-15", "m": "M1", "s": "U2 2.5 campo complesso", "min": 120}, {"d": "2026-10-21", "m": "P1", "s": "U1 1.3", "min": 120}, {"d": "2026-10-22", "m": "M1", "s": "U3 3.5 sistemi lineari", "min": 120}, {"d": "2026-10-28", "m": "P1", "s": "U2 2.3 input, switch, cicli", "min": 120}, {"d": "2026-10-29", "m": "M1", "s": "U4 4.6 funzioni", "min": 120}, {"d": "2026-11-04", "m": "P1", "s": "U3 3.3 call and return", "min": 120}, {"d": "2026-11-06", "m": "M2", "s": "U1 1.6 asintoti", "min": 120}, {"d": "2026-11-11", "m": "P1", "s": "U4 4.3 puntatori a funzione", "min": 120}, {"d": "2026-11-12", "m": "M2", "s": "U2 2.5 derivate composte", "min": 120}, {"d": "2026-11-18", "m": "P1", "s": "U5 5.4 astrazione", "min": 120}, {"d": "2026-11-19", "m": "M2", "s": "U3 3.5 studio di funzione", "min": 120}, {"d": "2026-11-25", "m": "P1", "s": "U6 6.3 ordinamento e ricerca", "min": 120}, {"d": "2026-11-26", "m": "M2", "s": "U4 4.5 integrazione", "min": 120}];
+var UNITS=[{"id": "M1U1", "m": "M1", "nm": "Matematica I · Unità 1 · Matematica di base", "L": ["U1L1", "U1L2", "U1L3", "U1L4", "U1L5", "U1L6"], "C": [{"id": "C1", "t": "Equazioni esponenziali", "min": 90, "date": "2026-10-07", "known": "completa", "after": [], "n": "Scrivi a mano gli Esercizi 1, 2 e 3 in bella copia, da solo, con tutti i passaggi e una breve riflessione sul significato dei risultati. Poi manda le foto: ti correggo il lavoro, non do le soluzioni (il docente verifica originalità e uso di IA).", "m": "M1"}]}, {"id": "M1U2", "m": "M1", "nm": "Matematica I · Unità 2 · Fondamenti di algebra, campo reale e complesso", "L": ["U2L1", "U2L2", "U2L3", "U2L4", "U2L5", "U2L6"], "C": [{"id": "C2", "t": "Comunicazione tra droni in una rete di monitoraggio", "min": 120, "date": "2026-10-21", "known": "scenario", "after": ["U2A", "U2B", "U2C"], "n": "Scenario: droni sul piano complesso (distanza, posizione, rotazioni). Il file con i quesiti si scarica da Ariel. Rispondi mostrando i passaggi essenziali e aggiungi una breve riflessione personale sul significato dei risultati; scrivi a mano e consegna la scansione. Il docente verifica originalità e uso di IA: io correggo il tuo lavoro, non risolvo. Scadenza: controlla su Ariel (non compare nei PDF).", "m": "M1"}]}, {"id": "M1U3", "m": "M1", "nm": "Matematica I · Unità 3 · Vettori e geometria (sistemi lineari)", "L": ["U3L1", "U3L2", "U3L3", "U3L4", "U3L5", "U3L6"], "C": [{"id": "C3", "t": "Progettazione di un sistema di localizzazione tridimensionale per un magazzino automatizzato", "min": 120, "date": "2026-10-28", "known": "scenario", "after": ["U3A", "U3B", "U3C"], "n": "Nel PDF il testo dello scenario è identico a quello dei droni (probabile copia): controlla su Ariel. Il file con i quesiti si scarica da Ariel. Rispondi mostrando i passaggi essenziali e aggiungi una breve riflessione personale sul significato dei risultati; scrivi a mano e consegna la scansione. Il docente verifica originalità e uso di IA: io correggo il tuo lavoro, non risolvo. Scadenza: controlla su Ariel (non compare nei PDF).", "m": "M1"}]}, {"id": "M1U4", "m": "M1", "nm": "Matematica I · Unità 4 · Funzioni", "L": ["U4L1", "U4L2", "U4L3", "U4L4", "U4L5", "U4L6"], "C": [{"id": "C4", "t": "Sistema informativo per l'ottimizzazione di una rete logistica", "min": 60, "date": "2026-10-30", "known": "scenario", "after": ["U4B", "U4D"], "n": "Scenario: e-commerce di componenti informatici (ordini, giacenze, approvvigionamenti, spedizioni) con dati, grafici e modelli matematici. Il file con i quesiti si scarica da Ariel. Rispondi mostrando i passaggi essenziali e aggiungi una breve riflessione personale sul significato dei risultati; scrivi a mano e consegna la scansione. Il docente verifica originalità e uso di IA: io correggo il tuo lavoro, non risolvo. Scadenza: controlla su Ariel (non compare nei PDF).", "m": "M1"}]}, {"id": "M2U1", "m": "M2", "nm": "Matematica II · Unità 1 · Successioni e limiti di funzioni", "L": ["M2U1L1", "M2U1L2", "M2U1L3", "M2U1L4", "M2U1L5", "M2U1L6"], "C": [{"id": "MC1", "t": "Successioni", "min": 120, "date": "2026-11-09", "known": "completa", "after": ["M2A"], "n": "Tre successioni: per ognuna stabilire se è limitata (superiormente/inferiormente), limitata o illimitata. Scrivi a mano, con passaggi e riflessione personale. Io correggo il tuo lavoro, non risolvo.", "m": "M2"}]}, {"id": "M2U2", "m": "M2", "nm": "Matematica II · Unità 2 · Continuità e calcolo differenziale", "L": ["M2U2L1", "M2U2L2", "M2U2L3", "M2U2L4", "M2U2L5", "M2U2L6"], "C": [{"id": "MC2", "t": "Monitoraggio del traffico di una piattaforma online", "min": 120, "date": "2026-11-15", "known": "scenario", "after": ["M2B"], "n": "Scenario: modello matematico delle richieste a un server; derivata, crescita più rapida, retta tangente, previsioni locali. Il file con i quesiti si scarica da Ariel. Rispondi mostrando i passaggi essenziali e aggiungi una breve riflessione personale sul significato dei risultati; scrivi a mano e consegna la scansione. Il docente verifica originalità e uso di IA: io correggo il tuo lavoro, non risolvo. Scadenza: controlla su Ariel (non compare nei PDF).", "m": "M2"}]}, {"id": "M2U3", "m": "M2", "nm": "Matematica II · Unità 3 · Studio di funzioni", "L": ["M2U3L1", "M2U3L2", "M2U3L3", "M2U3L4", "M2U3L5", "M2U3L6"], "C": [{"id": "MC3", "t": "Ottimizzazione dell'esperienza utente in una piattaforma di streaming", "min": 90, "date": "2026-11-21", "known": "scenario", "after": ["M2C"], "n": "Scenario: indice di soddisfazione dato da una funzione polinomiale di terzo grado; derivata prima e seconda, crescita, flessi. Il file con i quesiti si scarica da Ariel. Rispondi mostrando i passaggi essenziali e aggiungi una breve riflessione personale sul significato dei risultati; scrivi a mano e consegna la scansione. Il docente verifica originalità e uso di IA: io correggo il tuo lavoro, non risolvo. Scadenza: controlla su Ariel (non compare nei PDF).", "m": "M2"}]}, {"id": "M2U4", "m": "M2", "nm": "Matematica II · Unità 4 · Integrazione", "L": ["M2U4L1", "M2U4L2", "M2U4L3", "M2U4L4", "M2U4L5", "M2U4L6"], "C": [{"id": "MC4", "t": "Calcolo degli integrali definiti", "min": 120, "date": "2026-11-26", "known": "completa", "after": ["M2D"], "n": "Tre esercizi: due integrali (uno definito con radici, uno improprio) e un'area tra due parabole. Il livello è alto: serve integrazione di funzioni razionali, sostituzione e criteri per gli impropri. Scrivi a mano, con passaggi e riflessione. Io correggo, non risolvo.", "m": "M2"}]}, {"id": "P1U1", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 1 · Fondamenti di programmazione", "L": ["P1U1L1", "P1U1L2", "P1U1L3", "P1U1L4", "P1U1L5", "P1U1L6"], "C": [{"id": "P1C1", "t": "Quiz di fine unità 1 + 2 compiti: La Macchina di Turing e Triangoli numerici validati", "min": 240, "date": "2026-10-22", "known": "no", "after": ["P1A"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «La Macchina di Turing» (1,5 h) e «Triangoli numerici validati» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U2", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 2 · Introduzione al linguaggio C", "L": ["P1U2L1", "P1U2L2", "P1U2L3", "P1U2L4", "P1U2L5", "P1U2L6"], "C": [{"id": "P1C2", "t": "Quiz di fine unità 2 + 2 compiti: Introduzione al linguaggio C - Parte 1 e Parte 2", "min": 240, "date": "2026-10-29", "known": "no", "after": ["P1B"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Introduzione al linguaggio C - Parte 1» (1,5 h) e «Parte 2» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U3", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 3 · Strutture dati e funzioni", "L": ["P1U3L1", "P1U3L2", "P1U3L3", "P1U3L4", "P1U3L5", "P1U3L6"], "C": [{"id": "P1C3", "t": "Quiz di fine unità 3 + 2 compiti: Forza 4 in C e Strutture dati e funzioni", "min": 240, "date": "2026-11-09", "known": "no", "after": ["P1C"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Forza 4 in C» (1,5 h) e «Strutture dati e funzioni» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U4", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 4 · Puntatori e memoria dinamica", "L": ["P1U4L1", "P1U4L2", "P1U4L3", "P1U4L4", "P1U4L5", "P1U4L6"], "C": [{"id": "P1C4", "t": "Quiz di fine unità 4 + 2 compiti: Puntatori e memoria dinamica e Potenze in ordine inverso", "min": 240, "date": "2026-11-12", "known": "no", "after": ["P1D"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Puntatori e memoria dinamica» (1,5 h) e «Potenze in ordine inverso» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U5", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 5 · Introduzione agli algoritmi", "L": ["P1U5L1", "P1U5L2", "P1U5L3", "P1U5L4", "P1U5L5", "P1U5L6"], "C": [{"id": "P1C5", "t": "Quiz di fine unità 5 + 2 compiti: Analisi di complessità e MasterMind", "min": 240, "date": "2026-11-19", "known": "no", "after": ["P1E"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Analisi di complessità» (1,5 h) e «MasterMind» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U6", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 6 · Algoritmi: approfondimenti e complessità", "L": ["P1U6L1", "P1U6L2", "P1U6L3", "P1U6L4", "P1U6L5"], "C": [{"id": "P1C6", "t": "Quiz di fine unità 6 + 2 compiti: BubbleBlast e Ricerca su grafi", "min": 240, "date": "2026-11-26", "known": "no", "after": ["P1F"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «BubbleBlast» (1,5 h) e «Ricerca su grafi» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}];
+var LES={"U1L1": {"id": "U1L1", "t": "Retta e parabola. Equazioni e disequazioni", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U1L2": {"id": "U1L2", "t": "Equazioni e disequazioni esponenziali", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U1L3": {"id": "U1L3", "t": "Equazioni e disequazioni logaritmiche", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U1L4": {"id": "U1L4", "t": "Equazioni e disequazioni irrazionali", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U1L5": {"id": "U1L5", "t": "Cenni sulle questioni trigonometriche", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U1L6": {"id": "U1L6", "t": "Sincrona: esercizi di riepilogo", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-10-09", "m": "M1", "sinc": true}, "U2L1": {"id": "U2L1", "t": "Insiemi dei numeri naturali e reali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U2L2": {"id": "U2L2", "t": "Relazioni d'ordine e di equivalenza", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U2L3": {"id": "U2L3", "t": "Principio di induzione", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U2L4": {"id": "U2L4", "t": "Il campo complesso", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U2L5": {"id": "U2L5", "t": "Sincrona: campo complesso, De Moivre, radici n-esime", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-10-15", "m": "M1", "sinc": true}, "U2L6": {"id": "U2L6", "t": "Funzioni e applicazioni", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U3L1": {"id": "U3L1", "t": "Introduzione ai vettori", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U3L2": {"id": "U3L2", "t": "Le matrici (e-tivity: matrice inversa)", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U3L3": {"id": "U3L3", "t": "Applicazioni lineari", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U3L4": {"id": "U3L4", "t": "Sistemi lineari (e-tivity con scenario)", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U3L5": {"id": "U3L5", "t": "Sincrona: tecniche di risoluzione dei sistemi lineari", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-10-22", "m": "M1", "sinc": true}, "U3L6": {"id": "U3L6", "t": "Cenni di geometria dello spazio", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U4L1": {"id": "U4L1", "t": "Simmetrie e periodicità", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U4L2": {"id": "U4L2", "t": "Funzioni razionali e irrazionali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U4L3": {"id": "U4L3", "t": "Funzioni trigonometriche", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U4L4": {"id": "U4L4", "t": "Funzioni logaritmiche ed esponenziali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U4L5": {"id": "U4L5", "t": "Zeri e segno (3 e-tivity: irrazionale, trigonometrica, logaritmica)", "v": 30, "s": 1, "e": 270, "x": 0, "sd": null, "m": "M1", "sinc": false}, "U4L6": {"id": "U4L6", "t": "Sincrona: funzioni, caratteristiche e classificazione", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-10-29", "m": "M1", "sinc": true}, "M2U1L1": {"id": "M2U1L1", "t": "Successioni", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U1L2": {"id": "M2U1L2", "t": "Definizione di limite e teoremi fondamentali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U1L3": {"id": "M2U1L3", "t": "Aritmetizzazione dei limiti", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U1L4": {"id": "M2U1L4", "t": "Forme di indecisione", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U1L5": {"id": "M2U1L5", "t": "Limiti notevoli", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U1L6": {"id": "M2U1L6", "t": "Sincrona: ricerca asintoti, gli asintotici (+ e-tivity ordini di infinitesimo)", "v": 0, "s": 0, "e": 60, "x": 0, "sd": "2026-11-06", "m": "M2", "sinc": true}, "M2U2L1": {"id": "M2U2L1", "t": "Continuità di una funzione", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U2L2": {"id": "M2U2L2", "t": "Discontinuità", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U2L3": {"id": "M2U2L3", "t": "Calcolo differenziale", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U2L4": {"id": "M2U2L4", "t": "Derivabilità e continuità", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U2L5": {"id": "M2U2L5", "t": "Sincrona: derivate di funzioni composte", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-12", "m": "M2", "sinc": true}, "M2U2L6": {"id": "M2U2L6", "t": "Ricerca degli asintoti", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U3L1": {"id": "M2U3L1", "t": "Il percorso dello studio di funzione", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U3L2": {"id": "M2U3L2", "t": "Funzioni razionali e irrazionali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U3L3": {"id": "M2U3L3", "t": "Funzioni logaritmiche", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U3L4": {"id": "M2U3L4", "t": "Funzioni esponenziali", "v": 30, "s": 1, "e": 90, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U3L5": {"id": "M2U3L5", "t": "Sincrona: studio di una funzione", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-19", "m": "M2", "sinc": true}, "M2U3L6": {"id": "M2U3L6", "t": "Funzioni trigonometriche", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U4L1": {"id": "M2U4L1", "t": "Calcolo integrale", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U4L2": {"id": "M2U4L2", "t": "Integrazione di funzioni composte", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U4L3": {"id": "M2U4L3", "t": "Integrazione di funzioni razionali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U4L4": {"id": "M2U4L4", "t": "Integrazione per parti e per sostituzione", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "M2", "sinc": false}, "M2U4L5": {"id": "M2U4L5", "t": "Sincrona: tecniche di risoluzione con integrazione", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-26", "m": "M2", "sinc": true}, "M2U4L6": {"id": "M2U4L6", "t": "Integrali impropri (e-tivity: volumi, integrali impropri)", "v": 30, "s": 1, "e": 150, "x": 0, "sd": null, "m": "M2", "sinc": false}, "P1U1L1": {"id": "P1U1L1", "t": "Linguaggi formali e automi a stati finiti", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L2": {"id": "P1U1L2", "t": "Macchina di Turing e architettura dell'elaboratore", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L3": {"id": "P1U1L3", "t": "Sincrona: semantica, grammatica, algoritmo, indecidibilità (+ e-tivity BNF)", "v": 0, "s": 0, "e": 30, "x": 0, "sd": "2026-10-21", "m": "P1", "sinc": true}, "P1U1L4": {"id": "P1U1L4", "t": "Programmazione non strutturata", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L5": {"id": "P1U1L5", "t": "Programmazione strutturata: costrutti fondamentali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L6": {"id": "P1U1L6", "t": "Eliminazione dei salti (+ appunti di fine unità)", "v": 30, "s": 1, "e": 0, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U2L1": {"id": "P1U2L1", "t": "Introduzione al linguaggio C", "v": 30, "s": 1, "e": 75, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U2L2": {"id": "P1U2L2", "t": "Tipi di operatori e macro (+ dispensa primi programmi)", "v": 30, "s": 1, "e": 0, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U2L3": {"id": "P1U2L3", "t": "Sincrona: input, switch e cicli (+ dispensa Input/Output)", "v": 0, "s": 0, "e": 0, "x": 15, "sd": "2026-10-28", "m": "P1", "sinc": true}, "P1U2L4": {"id": "P1U2L4", "t": "Tipi enum e typedef", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U2L5": {"id": "P1U2L5", "t": "Gestione della memoria e vettori", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U2L6": {"id": "P1U2L6", "t": "Stringhe (+ appunti di fine unità)", "v": 30, "s": 1, "e": 45, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U3L1": {"id": "P1U3L1", "t": "Funzioni", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L2": {"id": "P1U3L2", "t": "Parametri e macro", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L3": {"id": "P1U3L3", "t": "Sincrona: call and return", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-04", "m": "P1", "sinc": true}, "P1U3L4": {"id": "P1U3L4", "t": "Puntatori e vettori", "v": 30, "s": 1, "e": 45, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L5": {"id": "P1U3L5", "t": "Strutture dati e union", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L6": {"id": "P1U3L6", "t": "Approfondimento puntatori (+ dispensa Stream, appunti)", "v": 30, "s": 1, "e": 45, "x": 35, "sd": null, "m": "P1", "sinc": false}, "P1U4L1": {"id": "P1U4L1", "t": "Memoria dinamica", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L2": {"id": "P1U4L2", "t": "Ricorsione", "v": 30, "s": 1, "e": 45, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L3": {"id": "P1U4L3", "t": "Sincrona: puntatori a funzione (+ e-tivity indirizzo→esecuzione)", "v": 0, "s": 0, "e": 45, "x": 0, "sd": "2026-11-11", "m": "P1", "sinc": true}, "P1U4L4": {"id": "P1U4L4", "t": "Controllo dello scope: const e static", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L5": {"id": "P1U4L5", "t": "Paradigma imperativo", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L6": {"id": "P1U4L6", "t": "Paradigmi funzionale e logico (+ appunti)", "v": 30, "s": 1, "e": 30, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U5L1": {"id": "P1U5L1", "t": "Astrazione", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L2": {"id": "P1U5L2", "t": "Astrazione dei dati", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L3": {"id": "P1U5L3", "t": "Astrazione ad oggetti", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L4": {"id": "P1U5L4", "t": "Sincrona: approfondimenti astrazione", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-18", "m": "P1", "sinc": true}, "P1U5L5": {"id": "P1U5L5", "t": "Costo computazionale", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L6": {"id": "P1U5L6", "t": "Progettazione del software (+ appunti)", "v": 30, "s": 1, "e": 0, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U6L1": {"id": "P1U6L1", "t": "Liste", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U6L2": {"id": "P1U6L2", "t": "Pile, code, alberi", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U6L3": {"id": "P1U6L3", "t": "Sincrona: ordinamento e ricerca avanzata", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-25", "m": "P1", "sinc": true}, "P1U6L4": {"id": "P1U6L4", "t": "Ricerca applicata a grafi", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U6L5": {"id": "P1U6L5", "t": "Tabelle di hash (+ dispensa compilatori, appunti)", "v": 60, "s": 1, "e": 30, "x": 40, "sd": null, "m": "P1", "sinc": false}};
+var BASE={"v": {"U1L1": 1, "U1L2": 1, "U1L3": 1, "U1L4": 1, "U1L5": 1, "U2L1": 1, "U2L2": 1}, "s": {"U1L1": 1, "U1L2": 1, "U1L3": 1, "U1L4": 1, "U1L5": 1}, "e": {"U1L2": 1, "U1L3": 1, "U1L4": 1}};
+var PK='palestra_u1_v1',HK='mat1hub_v1',TK='tutor_v2',CK='fao_custom_v1';
+var EXMIN=12;
+var AN={G1:'Retta e parabola',G2:'Esponenziali',G3:'Logaritmi',G4:'Irrazionali',G5:'Trigonometria',G6:'Modulo e fratte',U4:'Domini'};
+var MODN={M1:'Matematica I',M2:'Matematica II',P1:'Programmazione I'};
 function jl(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return {};}}
-var tst=jl(KEY);if(!tst.c)tst.c={};
-function sv(){try{localStorage.setItem(KEY,JSON.stringify(tst));}catch(e){}}
-function ds(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function wl(k,o){try{localStorage.setItem(k,JSON.stringify(o));}catch(e){}}
 function mk(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
 function render(el){if(window.renderMathInElement){renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],strict:false,throwOnError:false});}}
-function pst(){return (jl(PK).r)||{};}
-function hst(){return jl(HK);}
-function fmt(s){var p=s.split('-');var g=['dom','lun','mar','mer','gio','ven','sab'];var d=new Date(+p[0],+p[1]-1,+p[2]);return g[d.getDay()]+' '+p[2]+'/'+p[1];}
-var today=ds(new Date()),idx=0;
-(function(){var f=-1;for(var i=0;i<DAYS.length;i++){if(DAYS[i].d===today){f=i;break;}}
- if(f<0){for(var j=0;j<DAYS.length;j++){if(DAYS[j].d>today){f=j;break;}}}
- if(f<0)f=DAYS.length-1;idx=f;})();
-function dayDone(d){
-  var r=pst(),h=hst(),n=0,t=d.es.length+d.hx.length;
-  d.es.forEach(function(i){if(r[i])n++;});
-  d.hx.forEach(function(x){var p=x.split(':');if(h['x_'+p[0]+'_'+p[1]])n++;});
-  return {n:n,t:t};
+function ds(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function pd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function addd(s,n){var d=pd(s);d.setDate(d.getDate()+n);return ds(d);}
+function diffd(a,b){return Math.round((pd(a)-pd(b))/86400000);}
+function fmt(s){var g=['dom','lun','mar','mer','gio','ven','sab'];var d=pd(s);return g[d.getDay()]+' '+s.slice(8)+'/'+s.slice(5,7);}
+function hh(m){var h=m/60;return (Math.round(h*10)/10).toString().replace('.',',')+' h';}
+var TODAY=(window.__TODAY__)||ds(new Date());
+var END=TODAY>'2026-11-27'?addd(TODAY,14):'2026-11-27';
+
+/* ---------- dati personali ---------- */
+var T=jl(TK);if(!T.c)T.c={};if(!T.f)T.f={};if(!T.av)T.av={};if(!T.sl)T.sl={};
+if(!T.hw)T.hw=12;if(!T.vel)T.vel=1;if(T.maint===undefined)T.maint=true;
+var QZ=jl('fao_quiz_v1');
+var BUILTINQ=[{id:'rel1',t:'Proprietà delle relazioni (prima dell\'e-tivity 2.2.2)',n:10}];
+var C=jl(CK);['ex','errs','oss','notes','free','imp','quiz'].forEach(function(k){if(!C[k])C[k]=[];});['areas','rec','cal','units'].forEach(function(k){if(!C[k])C[k]={};});
+C.ex.forEach(function(e){BANK.push({id:e.id,a:e.a,l:e.l,q:e.q});});
+C.errs.forEach(function(e){ERRS.push({c:e.c,a:e.a,d:e.d,g:e.g,w:e.w,k:e.k,t:e.t});});
+OSS=OSS.concat(C.oss);
+Object.keys(C.areas).forEach(function(k){AN[k]=C.areas[k];});
+TOPICS.forEach(function(tp){if(tp.k==='pal'&&C.cal[tp.area]){if(C.cal[tp.area].hi)tp.hi=C.cal[tp.area].hi;if(C.cal[tp.area].need)tp.need=C.cal[tp.area].need;}});
+var BYA={},BYID={};
+BANK.forEach(function(e,i){e.i=i;BYID[e.id]=e;(BYA[e.a]=BYA[e.a]||[]).push(e);});
+Object.keys(BYA).forEach(function(a){BYA[a].sort(function(x,y){return x.l-y.l||x.i-y.i;});});
+
+/* ---------- stato ---------- */
+function snapshot(){
+  var raw=jl(PK),r=raw.r||{},h=raw.h||{},d=raw.d||{},n=raw.n||0,att={};
+  var fd=Object.keys(d).sort()[0]||'2026-10-04';
+  Object.keys(h).forEach(function(id){att[id]=(h[id]||[]).map(function(x){return {r:x.r,d:x.d,n:x.n};});if(att[id].length)n=Math.max(n,att[id][att[id].length-1].n||0);});
+  Object.keys(r).forEach(function(id){if(!att[id]||!att[id].length){n++;att[id]=[{r:r[id],d:fd,n:n}];}});
+  return {att:att,d:d,hub:jl(HK),n:n,video:{},fixed:{},sl:T.sl,free:C.free.slice(),slx:{}};
 }
-function drawNav(){
-  var nv=document.getElementById('nav');nv.innerHTML='';
-  var b1=mk('button','pill','← precedente'),b2=mk('button','pill','Oggi'),b3=mk('button','pill','successivo →');
-  b1.addEventListener('click',function(){if(idx>0){idx--;draw();}});
-  b3.addEventListener('click',function(){if(idx<DAYS.length-1){idx++;draw();}});
-  b2.addEventListener('click',function(){for(var i=0;i<DAYS.length;i++){if(DAYS[i].d===today){idx=i;draw();return;}}});
-  nv.appendChild(b1);nv.appendChild(b2);nv.appendChild(b3);
+function cloneS(S){var c={att:{},d:S.d,hub:{},n:S.n,video:{},fixed:{},sl:{},free:S.free,slx:{}};
+  Object.keys(S.att).forEach(function(k){c.att[k]=S.att[k].slice();});
+  Object.keys(S.hub).forEach(function(k){c.hub[k]=S.hub[k];});
+  Object.keys(S.sl).forEach(function(k){c.sl[k]=S.sl[k];});
+  return c;}
+function lastR(S,id){var a=S.att[id];return a&&a.length?a[a.length-1]:null;}
+function seqArea(S,area){var o=[];(BYA[area]||[]).forEach(function(e){(S.att[e.id]||[]).forEach(function(t){o.push({id:e.id,l:e.l,r:t.r,d:t.d,n:t.n});});});o.sort(function(a,b){return a.n-b.n;});return o;}
+function tried(S,area){return (BYA[area]||[]).filter(function(e){return (S.att[e.id]||[]).length;});}
+function hubKey(L,i){return 'x_'+L+'_'+i;}
+/* costi in minuti */
+function vcost(L){return Math.round(((LES[L]&&LES[L].v)||0)/(T.vel||1));}
+function scost(L){var le=LES[L];if(!le)return 0;return (le.s?10:0)+(le.x||0);}
+function ecost(L){return (LES[L]&&LES[L].e)||0;}
+function vDone(S,L){if(S.video[L])return true;var k=L+'|video';if(S.hub[k]!==undefined)return !!S.hub[k];return !!BASE.v[L];}
+function sDone(S,L){if(S.slx[L])return true;if(S.sl[L]!==undefined)return !!S.sl[L];return !!BASE.s[L];}
+function aDone(S,L){if(S.slx['a'+L])return true;var k=L+'|activity';if(S.hub[k]!==undefined)return !!S.hub[k];return !!BASE.e[L];}
+function recv(L){if(C.rec[L]!==undefined)return !!C.rec[L];return /^U\dL/.test(L)&&!LES[L].sinc;}
+function lastActivity(S){var m=null;Object.keys(S.att).forEach(function(id){S.att[id].forEach(function(t){if(!m||t.d>m)m=t.d;});});S.free.forEach(function(f){if(!m||f.d>m)m=f.d;});return m;}
+
+/* ---------- stato di un argomento ---------- */
+function topicStat(S,tp){
+  if(tp.k==='pal'){
+    var ids=tried(S,tp.area),ok=0;ids.forEach(function(e){if(lastR(S,e.id).r==='ok')ok++;});
+    var seq=seqArea(S,tp.area),rec=seq.slice(-4),ko4=rec.filter(function(x){return x.r==='ko';}).length;
+    var hi=seq.filter(function(x){return x.l>=tp.hi;});
+    var hn=Math.min(5,(BYA[tp.area]||[]).filter(function(e){return e.l>=tp.hi;}).length);
+    var l5=hi.slice(-hn),master=hn>0?(l5.length>=hn&&l5.every(function(x){return x.r==='ok';})):(ids.length>=tp.need);
+    var streak=0;for(var i=hi.length-1;i>=0&&hi[i].r==='ok';i--)streak++;
+    var rate=ids.length?ok/ids.length:0,st;
+    if(!ids.length)st='nuovo';else if(master)st='master';else if(ids.length>=5&&rate>=0.8)st='solida';else if(rate<0.55||ko4>=3)st='fragile';else st='consolida';
+    var rem=master?0:Math.max(tp.need-ids.length,hn-streak);
+    if(!ids.length)rem=Math.max(tp.need,hn);
+    return {st:st,tried:ids.length,ok:ok,rate:rate,rem:rem,rm:rem*EXMIN,tm:Math.max(tp.need,rem)*EXMIN,streak:streak,hiN:hi.length,ko4:ko4,master:master,total:(BYA[tp.area]||[]).length};
+  }
+  var tot=0,done=0,rm=0,tm=0,vt=0,vid=0,sl=0,sld=0,at=0,ad=0;
+  tp.lessons.forEach(function(L){
+    (DF[L]||[]).forEach(function(_,i){tot++;tm+=EXMIN;if(S.hub[hubKey(L,i)])done++;else rm+=EXMIN;});
+    (BYA[L]||[]).forEach(function(e){tot++;tm+=EXMIN;if((S.att[e.id]||[]).length)done++;else rm+=EXMIN;});
+    var vc=vcost(L);if(vc>0){vt++;tm+=vc;if(vDone(S,L))vid++;else rm+=vc;}
+    var sc=scost(L);if(sc>0){sl++;tm+=sc;if(sDone(S,L))sld++;else rm+=sc;}
+    var ec=ecost(L);if(ec>0){at++;tm+=ec;if(aDone(S,L))ad++;else rm+=ec;}
+  });
+  return {st:rm===0?'master':((done||vid||sld||ad)?'consolida':'nuovo'),tried:done,ok:done,rate:1,rem:rm,rm:rm,tm:tm,total:tot,vid:vid,vt:vt,sld:sld,sl:sl,ad:ad,at:at,hub:true};
 }
-function stat(k){var s=mk('span','st '+(k==='ok'?'ok':(k==='ko'?'ko':'no')),k==='ok'?'✓':(k==='ko'?'✗':'·'));return s;}
-function drawDay(){
-  var d=DAYS[idx],box=document.getElementById('day');box.innerHTML='';
-  var c=mk('div','card'+(d.d===today?' today':''));
-  c.appendChild(mk('div','meta',fmt(d.d)+' · '+d.min+(d.d===today?' · OGGI':'')));
-  c.appendChild(mk('div','title',d.t));
-  if(d.note){var n=mk('div','mut',d.note);c.appendChild(n);}
-  if(d.th.length){
-    c.appendChild(mk('h2','','1. Teoria da leggere'));
-    d.th.forEach(function(t){var a=mk('a','lnk',t[0]);a.href=t[1];var p=mk('div','');p.style.margin='6px 0';p.appendChild(a);c.appendChild(p);});
+var STL={nuovo:['Non iniziato','bl'],consolida:['Da consolidare','ac'],fragile:['Fragile','ko'],solida:['Solido','ok'],master:['Padroneggiato','ok']};
+
+/* ---------- ritmo e capacità (minuti) ---------- */
+function paceInfo(S){
+  var all=[];Object.keys(S.att).forEach(function(id){S.att[id].forEach(function(t){all.push(t);});});
+  S.free.forEach(function(f){all.push({r:f.r,d:f.d,n:f.n||0});});
+  all.sort(function(a,b){return a.n-b.n;});
+  var l10=all.slice(-10),ok=l10.filter(function(x){return x.r==='ok';}).length;
+  return {n:l10.length,ok:ok,rate:l10.length?ok/l10.length:null,total:all.length};
+}
+function isMaint(d){return !!T.maint&&d>='2026-11-02'&&d<='2026-11-08';}
+function syncOn(d){return SYNC.filter(function(x){return x.d===d&&!isMaint(d);});}
+function capFor(d,S,isToday,pace,gap){
+  var g=pd(d).getDay(),W=T.hw*60,base=(g===0||g===6)?2*W/9:W/9;
+  if(isMaint(d)){var m=(g===2||g===4||g===6)?60:0;return {cap:m,redoOnly:true,why:m?'settimana di lavoro: solo ripasso ✗':'settimana di lavoro: riposo',sync:[]};}
+  var cap=base,why='';
+  if(isToday&&T.av[d]){cap=cap*(T.av[d]==='lo'?0.5:1.6);}
+  else if(isToday&&gap>=3){cap=Math.min(cap,60);why='ripartenza dopo '+gap+' giorni fermo';}
+  var sy=syncOn(d);
+  if(sy.length){cap=Math.max(0,cap-120);why=(why?why+' · ':'')+'sincrona '+sy.map(function(x){return x.m;}).join('+');}
+  if(pace&&pace.rate!==null&&pace.n>=6){if(pace.rate>=0.8)cap*=1.1;else if(pace.rate<0.55)cap*=0.9;}
+  if(d>='2026-11-26')return {cap:Math.round(cap/5)*5,redoOnly:true,why:'ultimi giorni: solo ripasso e recidivi',sync:sy};
+  return {cap:Math.round(cap/5)*5,redoOnly:false,why:why,sync:sy};
+}
+
+/* ---------- selezione esercizi ---------- */
+function areaDeadline(a){var b='9999';TOPICS.forEach(function(t){if(t.k==='pal'&&t.area===a&&t.by<b)b=t.by;});return b;}
+function dueRedo(S,date){var o=[];Object.keys(S.att).forEach(function(id){var l=lastR(S,id);if(l&&l.r==='ko'&&l.d<date&&BYID[id])o.push(id);});return o;}
+var PACE=null;
+function pickNew(S,tp,k){
+  var seq=seqArea(S,tp.area),rec3=seq.slice(-3),rec4=seq.slice(-4);
+  var ids=(BYA[tp.area]||[]).filter(function(e){return !(S.att[e.id]||[]).length;});
+  var maxOk=0;seq.forEach(function(x){if(x.r==='ok'&&x.l>maxOk)maxOk=x.l;});
+  var mode='normale',pool;
+  var ko=rec4.filter(function(x){return x.r==='ko';});
+  if(rec3.length===3&&rec3.every(function(x){return x.r==='ok';}))mode='avanza';
+  else if(ko.length>=2)mode='consolida';
+  if(mode==='consolida'){
+    var mk_=Math.min.apply(null,ko.map(function(x){return x.l;}));
+    pool=ids.filter(function(e){return e.l>=Math.max(1,mk_-2)&&e.l<=mk_;});
+    if(pool.length<k)pool=pool.concat(ids.filter(function(e){return e.l<Math.max(1,mk_-2);}).reverse()).concat(ids.filter(function(e){return e.l>mk_;}));
+  }else{
+    var lv=mode==='avanza'?Math.max.apply(null,rec3.map(function(x){return x.l;})):Math.max(1,maxOk-3);
+    if(!seq.length&&PACE&&PACE.rate!==null&&PACE.n>=6&&PACE.rate>=0.8){lv=3;mode='sonda';}
+    if(mode==='avanza'){var st=0;for(var i=seq.length-1;i>=0&&seq[i].r==='ok';i--)st++;if(st>=5)lv=Math.max(lv,tp.hi);}
+    pool=ids.filter(function(e){return e.l>=lv;});
+    if(pool.length<k)pool=pool.concat(ids.filter(function(e){return e.l<lv;}).reverse());
   }
-  var r=pst(),h=hst();
-  if(d.es.length){
-    c.appendChild(mk('h2','','2. Esercizi (dal più semplice)'));
-    d.es.forEach(function(id,i){
-      var e=EX[id];if(!e)return;
-      var w=mk('div','ex');var top=mk('div','');top.appendChild(stat(r[id]||'no'));top.appendChild(mk('span','meta',(i+1)+'. '+e.a+' · livello '+e.l));w.appendChild(top);
-      var q=mk('div','q',e.q);w.appendChild(q);c.appendChild(w);
+  var pick=pool.slice(0,k);pick.sort(function(a,b){return a.l-b.l||a.i-b.i;});
+  return {mode:mode,ids:pick.map(function(e){return e.id;})};
+}
+function assume(S,id,date){S.n++;(S.att[id]=S.att[id]||[]).push({r:'ok',d:date,n:S.n});}
+
+/* ---------- compiti finali ---------- */
+function compiti(){var o=[];UNITS.forEach(function(u){(u.C||[]).forEach(function(c){o.push({id:c.id,d:c.date,t:c.t,min:c.min,n:c.n,after:c.after||[],u:u.id,m:c.m,known:c.known});});});o.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0;});return o;}
+function topicById(id){var r=null;TOPICS.forEach(function(x){if(x.id===id)r=x;});return r;}
+
+/* ---------- costruzione del giorno ---------- */
+function buildDay(date,S,capObj,opts){
+  var left=capObj.cap,items=[],deferred=[],cap=capObj.cap;
+  if(opts&&opts.doneToday)left=Math.max(0,left-opts.doneToday*EXMIN);
+  compiti().forEach(function(f){
+    if(f.d>date||T.f[f.id]||S.fixed[f.id])return;
+    var blocked=f.after.some(function(id){var tp=topicById(id);return tp&&topicStat(S,tp).rm>0;});
+    if(blocked&&date<addd(f.d,3))return;
+    if(left>=f.min||(cap>0&&left>=cap*0.85)){items.push({t:'fixed',f:f});S.fixed[f.id]=1;left=Math.max(0,left-f.min);}
+  });
+  var due=dueRedo(S,date);
+  if(due.length&&left>=EXMIN){
+    var share=capObj.redoOnly?1:((opts&&opts.pace&&opts.pace.rate!==null&&opts.pace.rate<0.55)?0.8:0.5);
+    var rc=Math.min(due.length,Math.max(1,Math.floor(left*share/EXMIN)));
+    due.sort(function(a,b){var A=areaDeadline(BYID[a].a),B=areaDeadline(BYID[b].a);return A<B?-1:A>B?1:(BYID[a].a<BYID[b].a?-1:BYID[a].a>BYID[b].a?1:BYID[a].l-BYID[b].l);});
+    var pick=due.slice(0,rc);pick.sort(function(a,b){return BYID[a].l-BYID[b].l;});
+    deferred=pick.slice();items.push({t:'redo',ids:pick,left:due.length-pick.length});left-=pick.length*EXMIN;
+  }
+  if(!capObj.redoOnly&&left>=EXMIN){
+    var tps=TOPICS.map(function(tp){return {tp:tp,s:topicStat(S,tp)};}).filter(function(x){return x.s.rm>0;});
+    tps.sort(function(a,b){return a.tp.by<b.tp.by?-1:a.tp.by>b.tp.by?1:0;});
+    var cnt=0;
+    for(var i=0;i<tps.length&&left>=EXMIN&&cnt<3;i++){
+      var tp=tps[i].tp,s=tps[i].s,more=i<tps.length-1;
+      var budget=more?Math.ceil(left*0.7):left;
+      if(tp.k==='pal'){
+        var give=Math.min(s.rem,Math.floor(budget/EXMIN));if(give<=0)continue;
+        var pk=pickNew(S,tp,give);if(!pk.ids.length)continue;
+        pk.ids.forEach(function(id){assume(S,id,date);});
+        items.push({t:'new',tp:tp,mode:pk.mode,ids:pk.ids});left-=pk.ids.length*EXMIN;cnt++;
+      }else{
+        var it={t:'hub',tp:tp,theory:[],ex:[],cx:[],min:0},stop=false;
+        function can(c){return c<=budget||(cap>0&&c>cap&&budget>=cap*0.8);}
+        function take(c){var u=Math.min(c,budget);budget=Math.max(0,budget-c);left=Math.max(0,left-c);it.min+=c;}
+        for(var j=0;j<tp.lessons.length&&!stop;j++){
+          var L=tp.lessons[j];
+          var vc=vcost(L);if(vc>0&&!vDone(S,L)){if(can(vc)){it.theory.push({L:L,k:'video',min:vc});S.video[L]=1;take(vc);}else{stop=true;break;}}
+          var sc=scost(L);if(sc>0&&!sDone(S,L)){if(can(sc)){it.theory.push({L:L,k:'slide',min:sc});S.slx[L]=1;take(sc);}else{stop=true;break;}}
+          var n=(DF[L]||[]).length;
+          for(var q=0;q<n&&!stop;q++){if(!S.hub[hubKey(L,q)]){if(can(EXMIN)){it.ex.push([L,q]);S.hub[hubKey(L,q)]=1;take(EXMIN);}else stop=true;}}
+          if(stop)break;
+          (BYA[L]||[]).forEach(function(e){if(!stop&&!(S.att[e.id]||[]).length){if(can(EXMIN)){it.cx.push(e.id);assume(S,e.id,date);take(EXMIN);}else stop=true;}});
+          if(stop)break;
+          var ec=ecost(L);if(ec>0&&!aDone(S,L)){if(can(ec)){it.theory.push({L:L,k:'etivity',min:ec});S.slx['a'+L]=1;take(ec);}else{stop=true;break;}}
+        }
+        if(it.theory.length||it.ex.length||it.cx.length){items.push(it);cnt++;}
+      }
+    }
+  }
+  deferred.forEach(function(id){assume(S,id,date);});
+  return {date:date,cap:cap,why:capObj.why,items:items,redoOnly:capObj.redoOnly};
+}
+function dayEvents(d){return SYNC.filter(function(x){return x.d===d;});}
+function moduleLoad(S,m,withC){
+  var rm=0;TOPICS.forEach(function(tp){if((tp.m||'M1')===m)rm+=topicStat(S,tp).rm;});
+  if(withC)compiti().forEach(function(f){if(f.m===m&&!T.f[f.id]&&!S.fixed[f.id])rm+=f.min;});
+  return rm;
+}
+function simulate(S0,gap){
+  var S=cloneS(S0),pace=paceInfo(S0);PACE=pace;var days=[],fin={},d=TODAY,avail=0,availBy={};
+  while(d<=END){
+    var co=capFor(d,S,d===TODAY,pace,gap);
+    var doneT=d===TODAY?((S0.d[d]||0)):0;
+    avail+=Math.max(0,co.cap-doneT*EXMIN);
+    var day=buildDay(d,S,co,{pace:pace,doneToday:doneT});
+    days.push(day);
+    TOPICS.forEach(function(tp){if(!fin[tp.id]&&topicStat(S,tp).rm===0)fin[tp.id]=d;});
+    d=addd(d,1);
+  }
+  var endRem={};['M1','M2','P1'].forEach(function(m){endRem[m]=moduleLoad(S,m,true);});
+  return {days:days,fin:fin,avail:avail,endRem:endRem};
+}
+
+/* ---------- quiz ---------- */
+function quizStats(){
+  var agg={},last=null;
+  Object.keys(QZ).forEach(function(id){var h=(QZ[id]&&QZ[id].h)||[];if(!h.length)return;var l=h[h.length-1];
+    if(!last||l.d>last.d)last={id:id,d:l.d,s:l.s,nq:l.nq};
+    Object.keys(l.tags||{}).forEach(function(k){var a=agg[k]||(agg[k]=[0,0]);a[0]+=l.tags[k][0];a[1]+=l.tags[k][1];});});
+  var weak=[];Object.keys(agg).forEach(function(k){var a=agg[k];if(a[1]>=2&&a[0]/a[1]<0.6)weak.push(k);});
+  return {agg:agg,weak:weak,last:last};
+}
+function tagHits(tp,tag){var b=tag.split(':')[0];if(tp.k==='pal')return tp.area===b;return tp.lessons.some(function(L){return L===b;})||b===(tp.m||'M1')||b===tp.id;}
+function modOf(tp){return tp.m||'M1';}
+function topicFrac(S,tp){
+  var s=topicStat(S,tp);
+  if(tp.k==='pal'){var m={master:1,solida:0.85,consolida:0.5,fragile:0.3,nuovo:0};return m[s.st];}
+  return s.tm?Math.max(0,1-s.rm/s.tm):1;
+}
+
+/* ---------- prontezza (ore) ---------- */
+function readiness(S,sim){
+  var qs=quizStats(),out=[],A=sim.avail;
+  ['M1','M2','P1'].forEach(function(m){
+    var o={m:m,w:0,v:0,fin:'0000-00-00',over:false,qa:0,qn:0,stock:0};
+    TOPICS.forEach(function(tp){if(modOf(tp)!==m)return;
+      var w=tp.k==='hub'?tp.lessons.length:2;o.w+=w;o.v+=w*topicFrac(S,tp);
+      var s=topicStat(S,tp);o.stock+=(tp.k==='pal'?(BYA[tp.area]||[]).length:tp.lessons.reduce(function(a,L){return a+(DF[L]||[]).length+(BYA[L]||[]).length;},0));
+      if(s.rm>0){var f=sim.fin[tp.id];if(!f)o.over=true;else if(f>o.fin)o.fin=f;}
+      Object.keys(qs.agg).forEach(function(k){if(tagHits(tp,k)){o.qa+=qs.agg[k][0];o.qn+=qs.agg[k][1];}});
     });
-    var go=mk('a','go','Apri nella palestra (con soluzioni e ✓/✗)');go.href='palestra_u1.html#ids='+d.es.join(',');c.appendChild(go);
+    o.p=o.w?o.v/o.w:0;o.q=o.qn?o.qa/o.qn:null;
+    o.loadMin=moduleLoad(S,m,true);o.needMin=Math.round(o.loadMin*1.15);
+    o.syncLeft=SYNC.filter(function(x){return x.m===m&&x.d>=TODAY&&!isMaint(x.d);}).length*120;
+    o.syncSkipped=SYNC.filter(function(x){return x.m===m&&x.d>=TODAY&&isMaint(x.d);}).length;
+    var weakQ=o.q!==null&&o.qn>=3&&o.q<0.6;o.weakQ=weakQ;
+    o.meas=m==='M1'||o.qn>0;
+    var inTime=!o.over&&o.fin<=END;
+    o.status=o.loadMin===0?'pronto':(inTime&&!weakQ?'in linea':((!o.over&&o.fin<=addd(END,6))?'a rischio':'fuori portata'));
+    out.push(o);
+  });
+  return {mods:out,avail:A};
+}
+function combos(rd){
+  var by={};rd.mods.forEach(function(o){by[o.m]=o;});
+  var c=[['M1','M2','P1'],['M1','M2'],['M1','P1'],['M2','P1']].map(function(ms){var n=0;ms.forEach(function(m){n+=by[m].needMin;});return {ms:ms,need:n,fits:n<=rd.avail};});
+  return c;
+}
+
+/* ---------- priorità e giudizio ---------- */
+function areaOfCode(c){for(var i=0;i<ERRS.length;i++)if(ERRS[i].c===c)return ERRS[i].a;return null;}
+function priorities(S){
+  var out=[];
+  TOPICS.forEach(function(tp){
+    var s=topicStat(S,tp);if(s.rm<=0)return;
+    var dd=diffd(tp.by,TODAY),urg=Math.max(0,10-Math.max(0,dd)),fr=0,why=[];
+    if(dd<=3)why.push(dd<=0?'scadenza oggi o già passata':'scadenza tra '+dd+' giorni');else if(dd<=7)why.push('scadenza tra '+dd+' giorni');
+    if(tp.k==='pal'){
+      if(s.tried>=3&&s.rate<0.7){fr=(1-s.rate)*6;why.push('fragile ('+s.ok+'/'+s.tried+' giusti)');}
+      var du=0;(BYA[tp.area]||[]).forEach(function(e){var l=lastR(S,e.id);if(l&&l.r==='ko')du++;});if(du){fr+=du*0.4;why.push(du+' ✗ da rifare');}
+      var er=OSS.filter(function(o){return areaOfCode(o.c)===tp.area;}).length;if(er){fr+=er;why.push(er+' errori emersi da FAO');}
+      if(s.st==='nuovo'){fr+=2;why.push('mai tentato');}
+    }else{fr+=3;why.push('argomento nuovo');}
+    var qw=quizStats().weak.filter(function(k){return tagHits(tp,k);});if(qw.length){fr+=3;why.push('quiz debole su '+qw.slice(0,2).join(', '));}
+    out.push({tp:tp,sc:urg+fr,why:why});
+  });
+  out.sort(function(a,b){return b.sc-a.sc;});
+  return out;
+}
+function stockGaps(S){
+  var out=[];
+  TOPICS.forEach(function(tp){
+    if(tp.k==='hub'){var n=0;tp.lessons.forEach(function(L){n+=(DF[L]||[]).length+(BYA[L]||[]).length;});if(n<4&&topicStat(S,tp).rm>0)out.push({n:n,by:tp.by,t:tp.nm.split(' (')[0]+': '+n+' esercizi'});}
+    else{var left=(BYA[tp.area]||[]).filter(function(e){return !(S.att[e.id]||[]).length&&e.l>=tp.hi;}).length;if(left<3&&topicStat(S,tp).rm>0)out.push({n:left,by:tp.by,t:AN[tp.area]+': restano '+left+' esercizi di livello alto'});}
+  });
+  out.sort(function(a,b){return a.by<b.by?-1:a.by>b.by?1:a.n-b.n;});
+  return out.map(function(x){return x.t;});
+}
+function judge(S,sim,gap,rd){
+  var L=[],pc=paceInfo(S),dn=(S.d[TODAY]||0);
+  if(pc.total){
+    var pr=Math.round(pc.rate*100);
+    var v=pc.rate>=0.8?'Reggi bene: porto avanti gli argomenti nuovi e salto i livelli bassi.':(pc.rate>=0.55?'Reggi, ma con buchi: ripasso ✗ davanti, poi materiale nuovo a ritmo normale.':'Stai perdendo precisione: meno materiale nuovo, più ripasso e livelli più bassi.');
+    L.push('Ultimi '+pc.n+' tentativi: '+pc.ok+' ✓ ('+pr+'%). '+v);
+  }else L.push('Non ho ancora nessun tuo ✓/✗: fai qualche esercizio nella palestra e ricalcolo.');
+  if(rd){
+    var by={};rd.mods.forEach(function(o){by[o.m]=o;});
+    L.push('Ore di studio disponibili fino al 27/11 a '+T.hw+' h/settimana: '+hh(rd.avail)+' (sincrone già tolte). Servono, con +15% di margine: Matematica I '+hh(by.M1.needMin)+' · Matematica II '+hh(by.M2.needMin)+' · Programmazione '+hh(by.P1.needMin)+'.');
+    var cs=combos(rd);var all3=cs[0];
+    if(all3.fits)L.push('Tre su tre entra nei tuoi numeri ('+hh(all3.need)+' su '+hh(rd.avail)+'): serve costanza, nessun giorno perso.');
+    else{var okp=cs.slice(1).filter(function(c){return c.fits;});
+      L.push('Tre su tre non entra: servono '+hh(all3.need)+' e ne hai '+hh(rd.avail)+' (mancano '+hh(all3.need-rd.avail)+', circa '+Math.ceil((all3.need-rd.avail)/60/Math.max(1,(diffd(END,TODAY)+1)/7))+' h/settimana in più).'+(okp.length?' Entrano: '+okp.map(function(c){return c.ms.map(function(m){return MODN[m];}).join(' + ');}).join(' oppure ')+'.':' Nemmeno due moduli entrano a questo ritmo.'));}
   }
-  if(d.hx.length){
-    c.appendChild(mk('h2','',(d.es.length?'3. ':'2. ')+'Esercizi dall\'hub (Esercizi per unità)'));
-    d.hx.forEach(function(x,i){
-      var p=x.split(':'),q=(DF[p[0]]||[])[+p[1]];if(!q)return;
-      var w=mk('div','ex');var top=mk('div','');top.appendChild(stat(h['x_'+p[0]+'_'+p[1]]?'ok':'no'));top.appendChild(mk('span','meta',p[0]+' · da fare '+(+p[1]+1)));w.appendChild(top);
-      w.appendChild(mk('div','q',q));c.appendChild(w);
-    });
-    var g2=mk('a','go','Apri nell\'hub (spunta e soluzioni)');g2.href='matematica1.html#esu';c.appendChild(g2);
-  }
-  c.appendChild(mk('h2','','Attenzione di oggi'));
-  var a=mk('div','warn',d.att);c.appendChild(a);
+  if(gap>=3)L.push('Sei fermo da '+gap+' giorni: oggi ripartenza leggera, poi il piano si ricalcola sul tempo che resta. Il lavoro viene prima: nessun recupero in blocco.');
+  var bad=[],good=[];
+  TOPICS.forEach(function(tp){var s=topicStat(S,tp);if(tp.k==='pal'&&s.tried>=4){if(s.st==='fragile')bad.push(AN[tp.area]+' ('+s.ok+'/'+s.tried+')');if(s.st==='solida'||s.st==='master')good.push(AN[tp.area]+' ('+s.ok+'/'+s.tried+')');}});
+  if(bad.length)L.push('Punto debole: '+bad.join(', ')+'. Qui non avanzo finché le ✗ non tornano ✓.');
+  if(good.length)L.push('Solido: '+good.join(', ')+'.');
+  var sl=OSS.filter(function(o){return o.c==='TOLC-1';}).length;
+  if(sl>=2)L.push('Slip di aritmetica ('+sl+' dal 4 ottobre): rileggi ogni radice e ogni potenza prima di chiudere.');
+  var sg=stockGaps(S);if(sg.length)L.push('Esercizi da scrivere (scorte basse): '+sg.slice(0,5).join('; ')+(sg.length>5?' (+'+(sg.length-5)+')':'')+'. Con il prompt «Teoria / PDF» le slide diventano esercizi.');
+  var qq=quizStats();if(qq.last){L.push('Ultimo quiz ('+qq.last.id+', '+fmt(qq.last.d)+'): '+qq.last.s+'/'+qq.last.nq+(qq.weak.length?'. Concetti deboli: '+qq.weak.slice(0,4).join(', ')+'. Prima di avanzare rileggi quei punti e rifai il quiz tra un paio di giorni.':'. Nessun concetto sotto il 60%.'));}
+  if(dn>15)L.push('Oggi hai già fatto '+dn+' esercizi: sopra il massimo di 15. Fermati: la precisione cala.');
+  else if(dn>0)L.push('Oggi: '+dn+' tentativi'+(dn<5?' (minimo 5)':'')+'.');
+  var past=Object.keys(S.d).filter(function(k){return k<TODAY&&S.d[k]>15;});
+  if(past.length)L.push('Il '+past.map(function(k){return fmt(k);}).join(', ')+' hai superato i 15 esercizi ('+past.map(function(k){return S.d[k];}).join(', ')+'): non è un ritmo sostenibile con il lavoro.');
+  return L;
+}
+
+/* ---------- disegno ---------- */
+var S0,SIM,RD,GAP=0,ROUTEALL=false;
+function stat(S,id){var l=lastR(S,id);return mk('span','st '+(l?(l.r==='ok'?'ok':'ko'):'no'),l?(l.r==='ok'?'✓':'✗'):'·');}
+function exRow(S,id,i){
+  var e=BYID[id];if(!e)return null;var w=mk('div','ex'),top=mk('div','');top.appendChild(stat(S,id));
+  top.appendChild(mk('span','meta',(i+1)+'. '+e.a+' · livello '+e.l));
+  var n=(S.att[id]||[]).length;if(n)top.appendChild(mk('span','bdg','✓ già fatto '+n+'×'));
+  w.appendChild(top);w.appendChild(mk('div','q',e.q));return w;
+}
+function attention(areas){
+  var out=[],seen={};
+  OSS.slice().reverse().forEach(function(o){var er=null;ERRS.forEach(function(e){if(e.c===o.c)er=e;});if(!er||areas.indexOf(er.a)<0||seen[o.c])return;seen[o.c]=1;out.push({c:o.c,tp:o.tp,g:er.g});});
+  return out.slice(0,4);
+}
+function pillRow(b,items,cur,cb){items.forEach(function(x){var p=mk('button','pill'+(cur===x[0]?' on':''),x[1]);p.addEventListener('click',function(){cb(x[0]);});b.appendChild(p);});}
+function drawAvail(){
+  var b=document.getElementById('avail');b.innerHTML='';
+  var g=pd(TODAY).getDay(),nm=Math.round(((g===0||g===6)?2:1)*T.hw*60/9/5)*5;
+  pillRow(b,[['lo','Poco (~'+Math.round(nm*0.5/5)*5+'′)'],['','Normale (~'+nm+'′)'],['hi','Tanto (~'+Math.round(nm*1.6/5)*5+'′)']],T.av[TODAY]||'',function(v){if(v)T.av[TODAY]=v;else delete T.av[TODAY];wl(TK,T);drawAll();});
+  var s=document.getElementById('sett');s.innerHTML='';
+  pillRow(s,[[8,'8 h/sett.'],[12,'12 h/sett.'],[16,'16 h/sett.'],[20,'20 h/sett.']],T.hw,function(v){T.hw=v;wl(TK,T);drawAll();});
+  pillRow(s,[[1,'Video 1×'],[1.5,'Video 1,5×']],T.vel,function(v){T.vel=v;wl(TK,T);drawAll();});
+  pillRow(s,[[true,'2–8/11: solo ripasso'],[false,'2–8/11: libera']],T.maint,function(v){T.maint=v;wl(TK,T);drawAll();});
+  var ev=dayEvents(TODAY);
+  document.getElementById('today-meta').textContent=fmt(TODAY)+(ev.length?' · sincrona '+ev.map(function(e){return e.m+' '+e.s;}).join('; '):'');
+}
+function drawJudge(){
+  var c=document.getElementById('judge');c.innerHTML='';c.appendChild(mk('h2','','Giudizio del Tutor'));
+  var ul=mk('ul','');judge(S0,SIM,GAP,RD).forEach(function(x){ul.appendChild(mk('li','',x));});c.appendChild(ul);
+  var pr=priorities(S0).slice(0,3);
+  if(pr.length){c.appendChild(mk('h2','','Su cosa concentrarti'));var u2=mk('ol','');pr.forEach(function(p){u2.appendChild(mk('li','',p.tp.nm.split(' (')[0]+' — '+p.why.join(', ')+'.'));});u2.style.paddingLeft='22px';c.appendChild(u2);}
+}
+function setHub(k,v){var h=jl(HK);h[k]=v;wl(HK,h);}
+function theoryRow(c,x){
+  var nm={video:'Video',slide:'Slide e letture',etivity:'E-tivity'}[x.k];
+  var l=mk('label','chk'),inp=document.createElement('input');inp.type='checkbox';
+  inp.checked=x.k==='video'?vDone(S0,x.L):(x.k==='slide'?sDone(S0,x.L):aDone(S0,x.L));
+  inp.addEventListener('change',function(){if(x.k==='video')setHub(x.L+'|video',inp.checked);else if(x.k==='etivity')setHub(x.L+'|activity',inp.checked);else{T.sl[x.L]=inp.checked;wl(TK,T);}drawAll();});
+  l.appendChild(inp);l.appendChild(mk('span','',nm+' '+x.L+' · '+LES[x.L].t+' ('+x.min+'′)'));c.appendChild(l);
+}
+function drawPlan(){
+  var box=document.getElementById('plan');box.innerHTML='';
+  var day=SIM.days[0];
+  var c=mk('div','card today');
+  c.appendChild(mk('div','meta','Piano di oggi · '+(day.cap?(hh(day.cap)+' di studio'+(day.why?' · '+day.why:'')):'riposo')));
+  var ids=[],areas=[],n=0;
+  if(day.cap===0&&!day.items.length){c.appendChild(mk('div','title','Oggi nessuno studio in programma'));c.appendChild(mk('div','mut',(day.why||'giornata occupata')+'.'));box.appendChild(c);return;}
+  var dn=(S0.d[TODAY]||0);
+  if(dn*EXMIN>=day.cap&&day.items.length===0){c.appendChild(mk('div','title','Per oggi basta così'));c.appendChild(mk('div','mut','Hai fatto '+dn+' esercizi: la capacità di oggi è esaurita. Domani il piano si ricalcola.'));}
+  else if(!day.items.length){c.appendChild(mk('div','title','Niente in coda per oggi'));c.appendChild(mk('div','mut','Con il tempo di oggi non entra nessun blocco: rifai 5 esercizi ✗ dalla palestra o riguarda gli errori.'));}
+  day.items.forEach(function(it){
+    if(it.t==='fixed'){
+      c.appendChild(mk('h2','','Compito finale: '+it.f.t+' ('+it.f.min+'′)'));
+      var l=mk('label','chk'),inp=document.createElement('input');inp.type='checkbox';inp.checked=!!T.f[it.f.id];
+      inp.addEventListener('change',function(){T.f[it.f.id]=inp.checked;wl(TK,T);drawAll();});
+      l.appendChild(inp);l.appendChild(mk('span','','Consegnato'));c.appendChild(l);c.appendChild(mk('div','mut',it.f.n));
+    }else if(it.t==='redo'){
+      c.appendChild(mk('h2','','Ripasso ✗ (da capo, senza guardare)'));
+      it.ids.forEach(function(id){var r=exRow(S0,id,n++);if(r)c.appendChild(r);ids.push(id);if(areas.indexOf(BYID[id].a)<0)areas.push(BYID[id].a);});
+      if(it.left>0)c.appendChild(mk('div','mut','Altre '+it.left+' ✗ restano in coda per i prossimi giorni.'));
+    }else if(it.t==='new'){
+      var md={sonda:'SONDA: parto dal livello 3 perché reggi bene; se escono sereni, salto avanti',normale:'ritmo normale',avanza:'AVANZO: salto i livelli bassi perché ne hai fatti 3 di fila giusti',consolida:'CONSOLIDO: restano livelli vicini a dove sbagli'}[it.mode];
+      c.appendChild(mk('h2','',AN[it.tp.area]+' · '+md));
+      (TH[it.tp.id]||[]).forEach(function(t){var a=mk('a','lnk','Lettura: '+t[0]);a.href=t[1];var p=mk('div','');p.style.margin='5px 0';p.appendChild(a);c.appendChild(p);});
+      it.ids.forEach(function(id){var r=exRow(S0,id,n++);if(r)c.appendChild(r);ids.push(id);});
+      if(areas.indexOf(it.tp.area)<0)areas.push(it.tp.area);
+    }else if(it.t==='hub'){
+      c.appendChild(mk('h2','',it.tp.nm+' · '+it.min+'′'));
+      it.theory.forEach(function(x){theoryRow(c,x);});
+      if(it.tp.m==='M1'||!it.tp.m){var a=mk('a','lnk','Lettura: teoria e svolti nell\'hub');a.href='matematica1.html#lezioni';c.appendChild(a);}
+      it.ex.forEach(function(x){var w=mk('div','ex');var top=mk('div','');top.appendChild(mk('span','st no','·'));top.appendChild(mk('span','meta',x[0]+' · da fare '+(x[1]+1)));w.appendChild(top);w.appendChild(mk('div','q',DF[x[0]][x[1]]));c.appendChild(w);n++;});
+      if(it.ex.length){var g2=mk('a','lnk','Segna fatto nell\'hub (Esercizi per unità)');g2.href='matematica1.html#esu';g2.style.display='block';c.appendChild(g2);}
+      it.cx.forEach(function(id){var r=exRow(S0,id,n++);if(r)c.appendChild(r);ids.push(id);});
+      if(it.tp.att&&areas.indexOf(it.tp.att)<0)areas.push(it.tp.att);
+    }
+  });
+  if(ids.length){var go=mk('a','go','Apri nella palestra (con soluzioni e ✓/✗)');go.href='palestra_u1.html#ids='+ids.join(',');c.appendChild(go);}
+  var at=attention(areas);
+  if(at.length){c.appendChild(mk('h2','','Attenzione di oggi'));at.forEach(function(a){var w=mk('div','warn','');w.appendChild(mk('span','tag '+(a.tp==='nuovo'?'ko':'ac'),a.tp==='nuovo'?'NUOVO':'RIEMERSO'));w.appendChild(document.createTextNode(a.c+' — '+a.g));c.appendChild(w);});}
   c.appendChild(mk('h2','','Chiusura'));
-  var ck=['Ho scritto un valore esplicito in ogni esercizio','Ho riletto l\'errore di oggi','Ho segnato ✓/✗ (palestra o hub)'];
-  ck.forEach(function(t,i){
-    var k=d.d+'|'+i;var l=mk('label','chk');var inp=document.createElement('input');inp.type='checkbox';inp.checked=!!tst.c[k];
-    inp.addEventListener('change',function(){tst.c[k]=inp.checked;sv();});
-    l.appendChild(inp);l.appendChild(mk('span','',t));c.appendChild(l);
+  ['Ho scritto un valore esplicito in ogni esercizio','Ho riletto gli errori di oggi','Ho segnato ✓/✗ onesti (anche se 2/3 giusto: ✗)'].forEach(function(t,i){
+    var k=TODAY+'|'+i,l=mk('label','chk'),inp=document.createElement('input');inp.type='checkbox';inp.checked=!!T.c[k];
+    inp.addEventListener('change',function(){T.c[k]=inp.checked;wl(TK,T);});l.appendChild(inp);l.appendChild(mk('span','',t));c.appendChild(l);
   });
   box.appendChild(c);render(box);
 }
-function drawAll(){
-  var b=document.getElementById('all');b.innerHTML='';
-  DAYS.forEach(function(d,i){
-    var s=dayDone(d);var x=mk('span','dot'+(s.t&&s.n>=s.t?' done':'')+(i===idx?' sel':'')+(/Sincrona/.test(d.t)?' sinc':''),d.d.slice(8));
-    x.title=fmt(d.d)+' · '+d.t+' · '+s.n+'/'+s.t;x.addEventListener('click',function(){idx=i;draw();window.scrollTo(0,0);});b.appendChild(x);
-  });
+function drawDone(){
+  var box=document.getElementById('donetoday');box.innerHTML='';
+  var rows=[];Object.keys(S0.att).forEach(function(id){S0.att[id].forEach(function(t){if(t.d===TODAY&&BYID[id])rows.push({id:id,r:t.r,n:t.n});});});
+  S0.free.forEach(function(f){if(f.d===TODAY)rows.push({free:f,r:f.r,n:f.n||0});});
+  if(!rows.length)return;rows.sort(function(a,b){return a.n-b.n;});
+  var c=mk('div','card');c.appendChild(mk('h2','','Fatto oggi ('+rows.length+')'));
+  rows.forEach(function(x){var w=mk('div','ex'),top=mk('div','');top.appendChild(mk('span','st '+(x.r==='ok'?'ok':'ko'),x.r==='ok'?'✓':'✗'));
+    if(x.free){top.appendChild(mk('span','meta',(x.free.a||'')+' · dal quaderno'));top.appendChild(mk('span','bdg','✓ già fatto'));w.appendChild(top);w.appendChild(mk('div','q',x.free.q||''));}
+    else{var e=BYID[x.id];top.appendChild(mk('span','meta',e.a+' · livello '+e.l));top.appendChild(mk('span','bdg','✓ già fatto'));w.appendChild(top);w.appendChild(mk('div','q',e.q));}
+    c.appendChild(w);});
+  box.appendChild(c);render(box);
 }
-function drawAfter(){var b=document.getElementById('after');b.innerHTML='';AFTER.forEach(function(a){var l=mk('div','');l.style.margin='6px 0';var s=mk('b','',a[0]+': ');l.appendChild(s);l.appendChild(document.createTextNode(a[1]));b.appendChild(l);});}
-function draw(){drawNav();drawDay();drawAll();}
-draw();drawAfter();
-window.addEventListener('load',function(){render(document.getElementById('day'));});
-window.addEventListener('pageshow',function(){drawDay();drawAll();});
+function chk(checked,fn){var i=document.createElement('input');i.type='checkbox';i.checked=checked;i.addEventListener('change',function(){fn(i.checked);});return i;}
+function drawGoal(){
+  var c=document.getElementById('goal');c.innerHTML='';
+  c.appendChild(mk('h2','','Obiettivo: cluster completo al primo appello'));
+  c.appendChild(mk('div','mut','Tuo traguardo: 27–28 novembre, con Matematica I, Matematica II e Programmazione I insieme. Il 28/11 è solo una voce, non confermata: data e regole (moduli separabili? voti mantenuti?) si verificano sul forum del cluster o con InformaStudenti. Il secondo cluster parte il 1° dicembre.'));
+  var w=mk('div','tw'),t=mk('table','');var hd=mk('tr','');['Modulo','Pronto','Residuo','Fine prevista','Verdetto'].forEach(function(x){hd.appendChild(mk('th','',x));});t.appendChild(hd);
+  RD.mods.forEach(function(o){var r=mk('tr','');r.appendChild(mk('td','',MODN[o.m]));
+    r.appendChild(mk('td','',Math.round(o.p*100)+'%'+(o.q!==null&&o.qn>=3?' · quiz '+Math.round(o.q*100)+'%':'')));
+    r.appendChild(mk('td','',hh(o.loadMin)+' + '+hh(o.syncLeft)+' sincrone'));
+    r.appendChild(mk('td','',o.over?'oltre il 27/11':(o.fin==='0000-00-00'?'—':fmt(o.fin))));
+    var td=mk('td','');td.appendChild(mk('span','tag '+({'pronto':'ok','in linea':'ok','a rischio':'ac','fuori portata':'ko'}[o.status]),o.status));r.appendChild(td);t.appendChild(r);});
+  w.appendChild(t);c.appendChild(w);
+  var cs=combos(RD),a3=cs[0],txt;
+  if(a3.fits)txt='Verdetto provvisorio: tre su tre entra nei tuoi numeri ('+hh(a3.need)+' su '+hh(RD.avail)+').';
+  else{var okp=cs.slice(1).filter(function(x){return x.fits;});
+    txt='Verdetto provvisorio: tre su tre non entra ('+hh(a3.need)+' necessarie, '+hh(RD.avail)+' disponibili).'+(okp.length?' Entrano: '+okp.map(function(x){return x.ms.map(function(m){return MODN[m];}).join(' + ')+' ('+hh(x.need)+')';}).join(' · ')+'.':' Nemmeno due moduli entrano a questo ritmo: serve più tempo a settimana o più settimane.');}
+  c.appendChild(mk('div','',txt));
+  c.appendChild(mk('div','mut','«Residuo» = video, slide, e-tivity ed esercizi non ancora fatti + compiti da consegnare (Ariel dichiara 10 ore per unità, sincrone comprese). Margine +15% per ripassi ed errori. Il quiz di fine unità di Programmazione è stimato in 30′. Il 15/11 il Tutor ti dà il verdetto definitivo.'));
+  c.appendChild(mk('div','mut','Se oggi dovessi scegliere due moduli: '+RD.mods.slice().sort(function(a,b){return (a.loadMin/Math.max(1,a.needMin||1))-(b.loadMin/Math.max(1,b.needMin||1))||a.loadMin-b.loadMin;}).slice(0,2).map(function(o){return MODN[o.m];}).join(' e ')+' (i più leggeri da portare a termine).'));
+}
+function drawMats(){
+  var b=document.getElementById('mats');b.innerHTML='';
+  b.appendChild(mk('div','mut','Struttura copiata dai tre corsi su Ariel (5 ottobre). Spunti tu ciò che fai: video, slide, e-tivity. Le e-tivity con scenario hanno quiz di ripasso → scenario → peer review → forum: le scadenze sono su Ariel. Ogni unità finisce con un compito (Programmazione: anche un quiz con almeno 16/30).'));
+  var mods=[['M1','Matematica I'],['M2','Matematica II'],['P1','Programmazione e Algoritmi I']];
+  mods.forEach(function(md){
+    var det=document.createElement('details');if(md[0]==='M1')det.open=true;
+    det.appendChild(mk('summary','',md[1]));
+    UNITS.filter(function(u){return u.m===md[0];}).forEach(function(u){
+      det.appendChild(mk('h2','',u.nm));
+      var w=mk('div','tw'),t=mk('table','');var hd=mk('tr','');['Lezione','Video','Slide','E-tivity','Es.'].forEach(function(x){hd.appendChild(mk('th','',x));});t.appendChild(hd);
+      u.L.forEach(function(L){
+        var le=LES[L],r=mk('tr','');var c0=mk('td','',L+' · '+le.t);if(le.sinc)c0.appendChild(mk('span','tag bl',fmt(le.sd)+' 17:00'));r.appendChild(c0);
+        var tv=mk('td','');if(le.v>0){tv.appendChild(chk(vDone(S0,L),function(v){setHub(L+'|video',v);drawAll();}));tv.appendChild(document.createTextNode(' '+le.v+'′'));}else tv.textContent='—';r.appendChild(tv);
+        var ts=mk('td','');if(scost(L)>0){ts.appendChild(chk(sDone(S0,L),function(v){T.sl[L]=v;wl(TK,T);drawAll();}));}else ts.textContent='—';r.appendChild(ts);
+        var ta=mk('td','');if(le.e>0){ta.appendChild(chk(aDone(S0,L),function(v){setHub(L+'|activity',v);drawAll();}));ta.appendChild(document.createTextNode(' '+le.e+'′'));}else ta.textContent='—';r.appendChild(ta);
+        var n=(DF[L]||[]).length+(BYA[L]||[]).length,dn=0;(DF[L]||[]).forEach(function(_,i){if(S0.hub[hubKey(L,i)])dn++;});(BYA[L]||[]).forEach(function(e){if((S0.att[e.id]||[]).length)dn++;});
+        r.appendChild(mk('td','',n?dn+'/'+n:'—'));t.appendChild(r);
+      });
+      (u.C||[]).forEach(function(cc){
+        var r2=mk('tr','');var td0=mk('td','');td0.colSpan=3;td0.appendChild(mk('b','','Compito: '+cc.t+' ('+cc.min+'′)'));
+        td0.appendChild(mk('div','mut',{completa:'Traccia con gli esercizi visibile nel PDF di Ariel.',scenario:'Visto solo lo scenario: i quesiti sono in un file da scaricare su Ariel.',no:'Traccia non ancora vista.'}[cc.known]));r2.appendChild(td0);
+        var tf=mk('td','');tf.colSpan=2;var lb=mk('label','chk');lb.appendChild(chk(!!T.f[cc.id],function(v){T.f[cc.id]=v;wl(TK,T);drawAll();}));lb.appendChild(mk('span','','Consegnato'));tf.appendChild(lb);r2.appendChild(tf);t.appendChild(r2);
+      });
+      w.appendChild(t);det.appendChild(w);
+    });
+    b.appendChild(det);
+  });
+  b.appendChild(mk('h2','','Slide che il Tutor ha ricevuto'));
+  var got=Object.keys(LES).filter(function(k){return /^U\dL/.test(k)&&recv(k);}).length;
+  b.appendChild(mk('div','mut','Matematica I: le slide delle lezioni asincrone ('+got+' lezioni; le 4 sincrone non hanno PDF). Matematica II e Programmazione: ho la struttura dei corsi (indice di Ariel, 5/10), ma non le slide: quando le carichi, una chat per ogni PDF con il prompt «Teoria / PDF». Il dato su Matematica I viene dall\'hub: se una scheda è fatta dai tuoi appunti e non dal PDF, correggimelo.'));
+  render(b);
+}
+function drawTopics(){
+  var b=document.getElementById('topics');b.innerHTML='';
+  var w=mk('div','tw'),t=mk('table','');var hd=mk('tr','');['Argomento','Stato','Numeri','Entro'].forEach(function(x){hd.appendChild(mk('th','',x));});t.appendChild(hd);
+  TOPICS.forEach(function(tp){
+    var s=topicStat(S0,tp),r=mk('tr',''),st=STL[s.st];
+    r.appendChild(mk('td','',tp.nm));var td=mk('td','');td.appendChild(mk('span','tag '+st[1],st[0]));r.appendChild(td);
+    var num;
+    if(tp.k==='pal'){num=s.tried?(s.ok+' ✓ su '+s.tried+' fatti'+(s.hiN?' · livello alto: '+s.streak+' di fila':'')):'mai tentato';var du=0;(BYA[tp.area]||[]).forEach(function(e){var l=lastR(S0,e.id);if(l&&l.r==='ko')du++;});if(du)num+=' · '+du+' ✗ da rifare';}
+    else num='video '+s.vid+'/'+s.vt+' · slide '+s.sld+'/'+s.sl+' · e-tivity '+s.ad+'/'+s.at+(s.total?' · es. '+s.tried+'/'+s.total:'')+' · residuo '+hh(s.rm);
+    r.appendChild(mk('td','',num));r.appendChild(mk('td','',fmt(tp.by)));t.appendChild(r);
+  });
+  w.appendChild(t);b.appendChild(w);
+}
+function drawRoute(){
+  var b=document.getElementById('route');b.innerHTML='';
+  b.appendChild(mk('div','mut','Se vai bene, il piano sarebbe questo. Cambia ogni volta che i tuoi risultati o le tue ore cambiano.'));
+  var w=mk('div','tw'),t=mk('table','');var hd=mk('tr','');['Giorno','Cosa','Min.'].forEach(function(x){hd.appendChild(mk('th','',x));});t.appendChild(hd);
+  var shown=0,lim=ROUTEALL?200:14;
+  SIM.days.forEach(function(day,i){
+    if(shown>=lim)return;
+    var ev=dayEvents(day.date),parts=[],cnt=0;
+    day.items.forEach(function(it){
+      if(it.t==='redo'){parts.push('ripasso ✗ '+it.ids.length);cnt+=it.ids.length*EXMIN;}
+      else if(it.t==='new'){parts.push(AN[it.tp.area]+' '+it.ids.length+' es.');cnt+=it.ids.length*EXMIN;}
+      else if(it.t==='hub'){var th=it.theory.map(function(x){return {video:'video',slide:'slide',etivity:'e-tivity'}[x.k]+' '+x.L;}).join(', ');parts.push(it.tp.nm.split(' (')[0].replace('Programmazione · ','P1 ').replace('Matematica II · ','M2 ')+': '+th+(th&&(it.ex.length+it.cx.length)?' + ':'')+((it.ex.length+it.cx.length)?(it.ex.length+it.cx.length)+' es.':''));cnt+=it.min;}
+      else if(it.t==='fixed'){parts.push('COMPITO '+it.f.t.slice(0,40));cnt+=it.f.min;}
+    });
+    var skipped=ev.filter(function(e){return isMaint(e.d);});
+    var txt=(ev.length?'['+ev.map(function(e){return e.m+' '+e.s;}).join('; ')+(skipped.length?' · saltata':'')+'] ':'')+(day.cap===0&&!parts.length?'riposo':parts.join(' + ')||'—');
+    if(day.date==='2026-11-15')txt+=' · decisione scenario B (Programmazione al primo appello?)';
+    if(i===0&&!parts.length&&!ev.length&&day.cap)return;
+    var r=mk('tr','');r.appendChild(mk('td','',fmt(day.date)));r.appendChild(mk('td','',txt));r.appendChild(mk('td','',String(cnt)));t.appendChild(r);shown++;
+  });
+  w.appendChild(t);b.appendChild(w);
+  var tg=mk('button','pill',ROUTEALL?'Mostra solo i prossimi 14 giorni':'Mostra tutti i giorni fino al 27/11');tg.addEventListener('click',function(){ROUTEALL=!ROUTEALL;drawRoute();});b.appendChild(tg);
+  b.appendChild(mk('h2','','Scadenze per argomento'));
+  var w2=mk('div','tw'),t2=mk('table','');var h2=mk('tr','');['Argomento','Entro','Previsto'].forEach(function(x){h2.appendChild(mk('th','',x));});t2.appendChild(h2);
+  TOPICS.forEach(function(tp){
+    var fin=SIM.fin[tp.id],cur=topicStat(S0,tp);var r=mk('tr','');r.appendChild(mk('td','',tp.nm));r.appendChild(mk('td','',fmt(tp.by)));
+    var td=mk('td','');
+    if(cur.rm===0)td.appendChild(mk('span','tag ok','già a posto'));
+    else if(!fin)td.appendChild(mk('span','tag ko','non finisce entro il 27/11'));
+    else if(fin<=tp.by)td.appendChild(mk('span','tag ok','in linea · '+fmt(fin)));
+    else if(fin<=addd(tp.by,2))td.appendChild(mk('span','tag ac','stretto · '+fmt(fin)));
+    else td.appendChild(mk('span','tag ko','in ritardo · '+fmt(fin)));
+    r.appendChild(td);t2.appendChild(r);
+  });
+  w2.appendChild(t2);b.appendChild(w2);
+  b.appendChild(mk('div','mut','Il 28/11 è solo una voce per il primo appello: non è confermato, quindi non lo uso come scadenza. Le sincrone sono quelle ufficiali di Ariel; la settimana 2–8/11 resta di lavoro finché non la liberi tu nelle impostazioni.'));
+}
+function drawQuiz(){
+  var b=document.getElementById('quiz');b.innerHTML='';
+  var qs=quizStats(),list=BUILTINQ.map(function(q){return {id:q.id,t:q.t,n:q.n};});
+  C.quiz.forEach(function(q){if(!list.some(function(x){return x.id===q.id;}))list.push({id:q.id,t:q.t,n:(q.q||[]).length});});
+  list.forEach(function(q){var h=(QZ[q.id]&&QZ[q.id].h)||[],l=h.length?h[h.length-1]:null;
+    var w=mk('div','ex');var a=mk('a','lnk',q.t);a.href='quiz.html#id='+encodeURIComponent(q.id);w.appendChild(a);
+    w.appendChild(mk('div','mut',q.n+' domande'+(l?' · ultimo '+fmt(l.d)+': '+l.s+'/'+l.nq+' · tentativi '+h.length:' · mai fatto')));b.appendChild(w);});
+  if(qs.weak.length)b.appendChild(mk('div','warn','Concetti deboli dai quiz: '+qs.weak.join(', ')));
+  b.appendChild(mk('div','mut','Per un quiz su misura (dai tuoi ✗ e dai tuoi errori) usa il prompt «Quiz» qui sotto. In Programmazione i quiz di fine unità su Ariel (min 16/30) valgono come completamento: usa i miei per prepararti.'));
+}
+function drawHow(){
+  var u=document.getElementById('how');u.innerHTML='';
+  ['Il piano ragiona in minuti, come Ariel: video, e-tivity, sincrone e compiti hanno la durata dichiarata (video a 1× o 1,5×), le slide 10′, gli esercizi 12′ ciascuno. Le sincrone tolgono 2 ore alla giornata in cui cadono.',
+   'Le tue ore a settimana sono quelle che imposti: i giorni feriali valgono 1 parte, sabato e domenica 2. Scegli il valore onesto, non quello ideale.',
+   'Ogni ✗ torna in coda dal giorno dopo; se la rifai ✓ è recuperata. Con 3 ✓ di fila in un argomento salto i livelli bassi; con 2 ✗ tra gli ultimi 4 non avanzo.',
+   'Un argomento di esercizi è padroneggiato quando gli ultimi 5 di livello alto sono ✓. Se gli ultimi 10 tentativi sono ≥ 80% ✓ allungo la giornata del 10%, sotto il 55% la accorcio e metto più ripasso. Fermo da 3 giorni: ripartenza leggera.',
+   'Il compito di ogni unità compare quando l\'unità è pronta (o 3 giorni dopo la data prevista). Tre su tre entra solo se le ore necessarie (+15%) stanno nelle ore disponibili: il verdetto definitivo è il 15/11.',
+   'Non posso inventare esercizi da solo in questa pagina: se le scorte sono basse lo segnalo, e li scrivo nella chat «Teoria / PDF»; tu li importi con la riga FAO2.',
+   'Mai le soluzioni dei compiti da consegnare: solo correzione del tuo lavoro. Le scadenze di consegna sono su Ariel, non nei PDF: ricontrollale.'].forEach(function(x){u.appendChild(mk('li','',x));});
+}
+
+/* ---------- prompt ---------- */
+var PT='ex',PSEL={ex:{},tm:'M1',tu:'M1U2',th:'U2L1',co:'C2',qz:{}};
+function stateSummary(){
+  var L=[];TOPICS.forEach(function(tp){var s=topicStat(S0,tp);
+    if(tp.k==='pal')L.push('- '+AN[tp.area]+': '+(s.tried?s.ok+'/'+s.tried+' giusti, stato '+STL[s.st][0].toLowerCase():'mai tentato')+', entro '+fmt(tp.by));
+    else L.push('- '+tp.nm+': video '+s.vid+'/'+s.vt+', slide '+s.sld+'/'+s.sl+', e-tivity '+s.ad+'/'+s.at+', es. '+s.tried+'/'+s.total+', residuo '+hh(s.rm)+', entro '+fmt(tp.by));});
+  return L.join('\n');
+}
+function dueList(){var o=[];Object.keys(S0.att).forEach(function(id){var l=lastR(S0,id);if(l&&l.r==='ko'&&BYID[id])o.push(id);});return o.join(', ')||'nessuna';}
+function recentOSS(){return OSS.slice(-8).map(function(o){return '- '+o.d.slice(8)+'/'+o.d.slice(5,7)+' '+o.c+' ('+o.tp+') '+(o.ex||'quaderno')+': '+o.n;}).join('\n')||'- nessuna';}
+function errCatalog(areas){
+  return ERRS.filter(function(e){return !areas||!areas.length||areas.indexOf(e.a)>=0||/^(TOLC|A|B|C|#3|#8)$/.test(e.c);}).map(function(e){return e.c+' ['+e.a+'] '+e.d;}).join('\n');
+}
+var FMT=['FORMATO DI CHIUSURA. Quando ti scrivo CHIUDI (o la chat sta per riempirsi) rispondi con UNA riga, dentro un blocco di codice, che inizia con FAO2: seguita da un JSON valido su una sola riga:',
+'FAO2:{"d":"AAAA-MM-GG","ex":[{"id":"G2-2","r":"ok"}],"free":[{"a":"G3","q":"testo LaTeX","r":"ko"}],"oss":[{"c":"N-31","tp":"nuovo","ex":"G2-6","n":"cosa è successo"}],"errnew":[{"c":"N-38","a":"G2","t":"calcolo","d":"descrizione","w":"sbagliato","k":"corretto","g":"regola"}],"notes":["appunto verde"],"newex":[],"areas":{},"rec":{},"cal":{},"units":{}}',
+'Regole: r è "ok" solo se il risultato finale è esplicito e giusto SENZA correzioni in rosso; "ko" se c\'è rosso (aiuto), se manca il valore finale o se è giusto solo in parte. tp è "nuovo" se l\'errore non è mai comparso prima di FAO, "riemerso" se è già nel catalogo. Usa gli ID dell\'elenco; gli esercizi senza ID vanno in "free". Se hai dubbi sulla grafia, scrivilo fuori dal JSON e non indovinare. I campi vuoti si possono omettere.'].join('\n');
+var COL='COLORI DEL QUADERNO: nero e blu = svolgimento, grafici, esercizi; rosso = correzioni fatte DOPO averti chiesto dove sbaglio; verde = mie considerazioni e appunti utili (da raccogliere, non da correggere).';
+var COMMON='Sei il tutor di Davide (progetto !Università, La Statale Open, primo cluster: Matematica I, Matematica II, Programmazione e Algoritmi I). Leggi prima ISTRUZIONI_PROGETTO.md e 04_DOSSIER_FAO.md. Scrivi in italiano, diretto, con piani a fasi e senza motivazione. Il testo che ricevi può arrivare da dettatura vocale: interpreta il senso. Non inventare formule o regole. Mai più di 15 esercizi al giorno e sessioni oltre 1,5 h. Compiti da consegnare: non dare MAI le soluzioni, correggi solo il lavoro di Davide (il docente verifica originalità e uso di IA). Ogni esercizio chiude con un valore esplicito.';
+function unitOf(L){var r=null;UNITS.forEach(function(u){if(u.L.indexOf(L)>=0)r=u;});return r;}
+function buildPrompt(){
+  var d=fmt(TODAY),out=[];
+  if(PT==='ex'){
+    var ar=Object.keys(PSEL.ex).filter(function(k){return PSEL.ex[k];});if(!ar.length)ar=['G2','G3'];
+    out.push('CHAT: MATE I_esercizi '+ar.join('+')+' ('+d+')');out.push(COMMON);
+    out.push('SCOPO: ti mando le foto del quaderno su queste aree ('+ar.map(function(a){return AN[a]||a;}).join(', ')+'). Mi aiuti dove sbaglio con: codice dell\'errore dal catalogo, regola in 2-3 frasi, UN esempio numerico completo fino al risultato, un esercizio simile. Se l\'errore è nuovo, numeralo (prossimo codice libero) e proponilo come errnew.');
+    out.push(COL);out.push('STATO ATTUALE ('+d+'):\n'+stateSummary());out.push('✗ DA RIFARE: '+dueList());
+    out.push('ERRORI EMERSI DI RECENTE:\n'+recentOSS());out.push('CATALOGO ERRORI:\n'+errCatalog(ar));
+    var ex=[];ar.forEach(function(a){(BYA[a]||[]).forEach(function(e){var l=lastR(S0,e.id);ex.push(e.id+' (L'+e.l+(l?', '+(l.r==='ok'?'✓':'✗'):'')+'): '+e.q);});});
+    out.push('ELENCO ESERCIZI (ID: testo):\n'+ex.join('\n'));out.push(FMT);
+  }else if(PT==='th'){
+    var Lx=PSEL.th,le=LES[Lx]||{t:''},un=unitOf(Lx);
+    out.push('CHAT: '+(le.m==='P1'?'PROG1':(le.m==='M2'?'MATE II':'MATE I'))+'_teoria '+Lx+' ('+d+')');out.push(COMMON);
+    out.push('SCOPO: ti allego il PDF della lezione '+Lx+' ('+le.t+(un?' · '+un.nm:'')+'). Fammi: (1) breve ripasso scritto; (2) «cosa si aspetta il professore» ('+(le.m==='P1'?'Anisetti':'Manicone')+', esami in presenza, tipo compito finale di unità); (3) i punti dove di solito si sbaglia, collegati al catalogo errori; (4) da 8 a 12 esercizi ORIGINALI e graduati (livelli 1–9), nello stile del corso e solo su argomenti presenti nel PDF; (5) ogni esercizio con passaggi e «Risultato: …» esplicito, calcoli verificati. In Ariel questa lezione ha: video '+(le.v||0)+'′, e-tivity '+(le.e||0)+'′.');
+    out.push('Gli esercizi nuovi vanno nel campo "newex" di FAO2, ciascuno come {"id":"'+Lx+'-c1","a":"'+Lx+'","l":4,"q":"testo LaTeX","sol":"passaggi e Risultato: …","b":"dove ci si blocca"} con id '+Lx+'-c1, '+Lx+'-c2, … Usa il delimitatore $...$ e \\\\lt \\\\gt al posto di < >. Per Programmazione: esercizi di lettura (output previsto) e di scrittura in C o Python, con soluzione completa; verifica che il codice compili; a capo con \\\\n dentro le stringhe. In "areas" metti {"'+Lx+'":"'+Lx+' · '+le.t+'"}; in "rec" metti {"'+Lx+'":true} perché il PDF è stato ricevuto.');
+    out.push('STATO ATTUALE ('+d+'):\n'+stateSummary());out.push('ERRORI EMERSI DI RECENTE:\n'+recentOSS());out.push(FMT);
+  }else if(PT==='qz'){
+    var qa=Object.keys(PSEL.qz).filter(function(k){return PSEL.qz[k];});
+    var wk=quizStats().weak,fr=[];TOPICS.forEach(function(tp){var s=topicStat(S0,tp);if(tp.k==='pal'&&s.tried>=3&&(s.st==='fragile'||s.st==='consolida'))fr.push(tp.area);});
+    var foc=qa.length?qa:fr.concat(wk.map(function(x){return x.split(':')[0];}));
+    out.push('CHAT: MATE I_quiz ('+d+')');out.push(COMMON);
+    out.push('SCOPO: preparami un quiz per migliorare i concetti dove sbaglio. Aree/concetti da coprire: '+(foc.length?foc.join(', '):'scegli tu in base ai miei errori')+'. Base: ✗ da rifare, errori emersi, esiti dei quiz precedenti. Da 10 a 15 domande dal più semplice al livello compito, solo su argomenti presenti nel corso, calcoli verificati. Tipi ammessi: mc (4 opzioni, "c" = indice 0-3 della giusta), tf ("c" true/false), num ("a" = lista di risposte accettate), self (domanda aperta con risposta modello "r"). Ogni domanda: "tag" (area o lezione, es. G3 oppure U2L2:simmetria), "lv" 1–10, "e" = spiegazione dell\'errore tipico. Math tra $...$ con \\\\lt \\\\gt al posto di < >.');
+    out.push('✗ DA RIFARE: '+dueList());out.push('ERRORI EMERSI DI RECENTE:\n'+recentOSS());
+    out.push('QUIZ GIÀ FATTI: '+(quizStats().last?'ultimo '+quizStats().last.id+' '+quizStats().last.s+'/'+quizStats().last.nq+'; concetti deboli: '+(wk.join(', ')||'nessuno'):'nessuno'));
+    out.push('STATO ATTUALE ('+d+'):\n'+stateSummary());
+    out.push('FORMATO — scegli UNO. (A) riga FAO2 con "quiz":[{"id":"q_G3_gg","t":"titolo","q":[{"t":"mc","q":"testo","o":["a","b","c","d"],"c":1,"e":"spiegazione","tag":"G3","lv":4},{"t":"tf","q":"...","c":true,"e":"...","tag":"U2L2:simmetria","lv":3},{"t":"num","q":"...","a":["4","4,0"],"e":"...","tag":"G2","lv":5},{"t":"self","q":"...","r":"risposta modello","e":"...","tag":"G3","lv":6}]}] — la importo nel Tutor e compare in «Quiz». (B) se ti allego quiz.html: restituiscimi quiz.html con la costante EMBED riempita con lo stesso oggetto {id,t,q}, da caricare su GitHub come quiz_<tema>.html.');
+    out.push('ESITO: quando finisco il quiz il sito salva il risultato da solo e mi dà un testo «ESITO QUIZ» da incollarti: allora analizzi dove ho sbagliato e mi dici cosa ripassare. Per le chiusure vale: '+FMT.split('\n')[0]);
+  }else if(PT==='co'){
+    var cc=null,cu=null;UNITS.forEach(function(u){(u.C||[]).forEach(function(x){if(x.id===PSEL.co){cc=x;cu=u;}});});
+    out.push('CHAT: '+(cc&&cc.m==='P1'?'PROG1':(cc&&cc.m==='M2'?'MATE II':'MATE I'))+'_compito '+PSEL.co+' ('+d+')');out.push(COMMON);
+    out.push('SCOPO: compito finale «'+(cc?cc.t:'')+'» ('+(cu?cu.nm:'')+', circa '+(cc?cc.min:'')+' minuti). Ti mando la traccia (foto o testo da Ariel). Fai due cose: (1) stima il calibro (livello 1–10 per area) e quali tecniche servono SENZA risolvere gli esercizi; (2) quando ti mando il mio lavoro, correggilo e dimmi dove sbaglio, senza darmi la soluzione completa. Ricorda: la consegna richiede passaggi espliciti e una breve riflessione personale sul significato dei risultati.');
+    out.push('Alla chiusura, in FAO2 metti "cal":{"G2":{"hi":8}} (soglia di livello alto per area, solo se la traccia lo giustifica) e "units":{"'+PSEL.co+'":{"traccia":true}}.');
+    out.push(COL);out.push('STATO ATTUALE ('+d+'):\n'+stateSummary());out.push(FMT);
+  }else if(PT==='root'){
+    out.push('CHAT: MATE I_root/portale ('+d+')');out.push(COMMON);
+    out.push('SCOPO: lavori sui file del sito (GitHub Pages, repo D3iV507/D3iv_FAO, pubblicato su d3iv90.github.io/Sec-Ai---D3iV). Ci sono 6 pagine: index.html (menu), tutor.html (Tutor adattivo su tre moduli), palestra_u1.html (esercizi + tab Errori), quiz.html (quiz), archivio_zappulla.html (teoria), matematica1.html (hub). L\'HTML è la fonte: chiedimi PRIMA quale file serve e UNO solo, e io lo allego. Dopo ogni modifica dimmi in 1-2 righe a cosa serve ogni pagina toccata.');
+    out.push('I progressi stanno nel localStorage del dispositivo (palestra_u1_v1, tutor_v2, mat1hub_v1, fao_custom_v1, fao_quiz_v1); l\'export/import sta in index.html. Sostituire un file HTML non cancella i progressi. La struttura dei tre corsi è copiata da Ariel (5/10/2026): se Ariel cambia, aggiorna LES/UNITS nel Tutor.');
+    out.push('STATO ATTUALE ('+d+'):\n'+stateSummary());out.push('ERRORI EMERSI DI RECENTE:\n'+recentOSS());
+    out.push('SLIDE RICEVUTE: Matematica I (asincrone). Matematica II e Programmazione I: solo struttura dei corsi.');
+  }else{
+    out.push('PROMPT DI CHIUSURA (da incollare quando la chat sta per riempirsi)');
+    out.push('Stiamo per chiudere questa chat. Fammi, in questo ordine: (1) la riga FAO2: con TUTTO ciò che è emerso in questa chat e che non è ancora stato importato (formato qui sotto); (2) un PROMPT DI PASSAGGIO per la prossima chat dello stesso tipo, già pronto da incollare: dove siamo arrivati, cosa è pendente, quali file devo allegare e in che ordine, quali decisioni abbiamo preso; (3) tre righe su cosa ti sembra che io stia assimilando bene e su cosa no.');
+    out.push(FMT);
+  }
+  return out.join('\n\n');
+}
+function drawPrompt(){
+  var tb=document.getElementById('ptype');tb.innerHTML='';
+  [['ex','Esercizi'],['th','Teoria / PDF'],['qz','Quiz'],['co','Compito'],['root','Root / portale'],['cl','Chiusura chat']].forEach(function(x){var p=mk('button','pill'+(PT===x[0]?' on':''),x[1]);p.addEventListener('click',function(){PT=x[0];drawPrompt();});tb.appendChild(p);});
+  var o=document.getElementById('popt');o.innerHTML='';var bar=mk('div','bar','');
+  if(PT==='ex'){['G1','G2','G3','G4','G5','G6','U4'].forEach(function(a){var p=mk('button','pill'+(PSEL.ex[a]?' on':''),a+' '+AN[a]);p.addEventListener('click',function(){PSEL.ex[a]=!PSEL.ex[a];drawPrompt();});bar.appendChild(p);});o.appendChild(bar);}
+  if(PT==='th'){
+    pillRow(bar,[['M1','Mate I'],['M2','Mate II'],['P1','Prog I']],PSEL.tm,function(v){PSEL.tm=v;var u=UNITS.filter(function(x){return x.m===v;})[0];PSEL.tu=u.id;PSEL.th=u.L.filter(function(L){return LES[L].s;})[0];drawPrompt();});o.appendChild(bar);
+    var b2=mk('div','bar','');pillRow(b2,UNITS.filter(function(x){return x.m===PSEL.tm;}).map(function(u){return [u.id,u.id.slice(-2)];}),PSEL.tu,function(v){PSEL.tu=v;var u=UNITS.filter(function(x){return x.id===v;})[0];PSEL.th=u.L.filter(function(L){return LES[L].s;})[0];drawPrompt();});o.appendChild(b2);
+    var b3=mk('div','bar','');var un=UNITS.filter(function(x){return x.id===PSEL.tu;})[0];pillRow(b3,un.L.filter(function(L){return LES[L].s;}).map(function(L){return [L,L];}),PSEL.th,function(v){PSEL.th=v;drawPrompt();});o.appendChild(b3);
+  }
+  if(PT==='qz'){['G1','G2','G3','G4','G5','G6','U4','U2L2','M2','P1'].forEach(function(a){var p=mk('button','pill'+(PSEL.qz[a]?' on':''),a);p.addEventListener('click',function(){PSEL.qz[a]=!PSEL.qz[a];drawPrompt();});bar.appendChild(p);});o.appendChild(bar);}
+  if(PT==='co'){var cl=[];UNITS.forEach(function(u){(u.C||[]).forEach(function(x){cl.push([x.id,x.id]);});});pillRow(bar,cl,PSEL.co,function(v){PSEL.co=v;drawPrompt();});o.appendChild(bar);}
+  document.getElementById('pout').value=buildPrompt();
+}
+
+/* ---------- importazione ---------- */
+function extractJson(s){
+  var i=s.indexOf('{');if(i<0)throw new Error('nessun JSON dopo FAO2:');
+  var dp=0,str=false,esc=false;
+  for(var j=i;j<s.length;j++){var ch=s[j];
+    if(str){if(esc)esc=false;else if(ch==='\\')esc=true;else if(ch==='"')str=false;continue;}
+    if(ch==='"')str=true;else if(ch==='{')dp++;else if(ch==='}'){dp--;if(dp===0)return s.slice(i,j+1);}
+  }
+  throw new Error('JSON incompleto: copia la riga per intero');
+}
+function hash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return String(h);}
+function importBlock(txt){
+  var m=txt.indexOf('FAO2:');if(m<0)throw new Error('manca FAO2: all\'inizio');
+  var js=extractJson(txt.slice(m+5)),o=JSON.parse(js),hs=hash(js);
+  if(C.imp.indexOf(hs)>=0)return 'Questo blocco era già stato importato: non ho cambiato niente.';
+  var d=/^\d{4}-\d{2}-\d{2}$/.test(o.d||'')?o.d:TODAY,res={ex:0,unk:0,oss:0,err:0,nex:0,free:0,notes:0,skip:0};
+  var pal=jl(PK);if(!pal.r)pal.r={};if(!pal.d)pal.d={};if(!pal.h)pal.h={};pal.n=pal.n||0;
+  var fd=Object.keys(pal.d).sort()[0]||'2026-10-04';
+  Object.keys(pal.r).forEach(function(id){if(!pal.h[id]||!pal.h[id].length){pal.n++;pal.h[id]=[{r:pal.r[id],d:fd,n:pal.n}];}});
+  Object.keys(o.areas||{}).forEach(function(k){if(typeof o.areas[k]==='string')C.areas[k]=o.areas[k];});
+  var known={};BANK.forEach(function(e){known[e.id]=1;});
+  (o.newex||[]).forEach(function(e){
+    if(!e||typeof e.id!=='string'||typeof e.a!=='string'||typeof e.q!=='string'||!(e.l>=1&&e.l<=10)){res.skip++;return;}
+    if(known[e.id]){res.skip++;return;}
+    C.ex.push({id:e.id,a:e.a,l:Math.round(e.l),q:e.q,sol:String(e.sol||''),b:String(e.b||''),s:'C'});known[e.id]=1;res.nex++;
+  });
+  function mark(id,r){var H=pal.h[id]||(pal.h[id]=[]),la=H[H.length-1];
+    if(la&&la.d===d){la.r=r;}else{pal.n++;H.push({r:r,d:d,n:pal.n});pal.d[d]=(pal.d[d]||0)+1;}pal.r[id]=r;}
+  (o.ex||[]).forEach(function(x){if(x&&known[x.id]&&(x.r==='ok'||x.r==='ko')){mark(x.id,x.r);res.ex++;}else res.unk++;});
+  (o.free||[]).forEach(function(f){if(f&&(f.r==='ok'||f.r==='ko')){pal.n++;pal.d[d]=(pal.d[d]||0)+1;C.free.push({a:String(f.a||''),q:String(f.q||''),r:f.r,d:d,n:pal.n});res.free++;}});
+  (o.oss||[]).forEach(function(x){if(!x||!x.c)return;var key=d+'|'+x.c+'|'+(x.ex||'')+'|'+(x.n||'');var dup=C.oss.some(function(y){return y.d+'|'+y.c+'|'+(y.ex||'')+'|'+(y.n||'')===key;});if(!dup){C.oss.push({d:d,c:String(x.c),tp:x.tp==='riemerso'?'riemerso':'nuovo',ex:x.ex||null,n:String(x.n||'')});res.oss++;}});
+  var codes={};ERRS.forEach(function(e){codes[e.c]=1;});
+  (o.errnew||[]).forEach(function(e){if(!e||!e.c||codes[e.c])return;C.errs.push({c:String(e.c),a:String(e.a||''),t:String(e.t||''),d:String(e.d||''),w:String(e.w||''),k:String(e.k||''),g:String(e.g||'')});codes[e.c]=1;res.err++;});
+  (o.notes||[]).forEach(function(t){if(typeof t==='string'&&t){C.notes.push({d:d,t:t});res.notes++;}});
+  (o.quiz||[]).forEach(function(q){
+    if(!q||typeof q.id!=='string'||typeof q.t!=='string'||!Array.isArray(q.q)||!q.q.length){res.skip++;return;}
+    var good=q.q.filter(function(x){return x&&typeof x.q==='string'&&((x.t==='mc'&&Array.isArray(x.o)&&x.o.length>=2&&x.c>=0&&x.c<x.o.length)||(x.t==='tf'&&typeof x.c==='boolean')||(x.t==='num'&&Array.isArray(x.a)&&x.a.length)||(x.t==='self'));});
+    res.skip+=q.q.length-good.length;if(!good.length){res.skip++;return;}
+    C.quiz=C.quiz.filter(function(z){return z.id!==q.id;});C.quiz.push({id:q.id,t:q.t,q:good});res.quiz=(res.quiz||0)+1;
+  });
+  if(o.quizres&&o.quizres.id&&typeof o.quizres.s==='number'&&o.quizres.nq>0){
+    var qr=jl('fao_quiz_v1'),e=qr[o.quizres.id]||(qr[o.quizres.id]={h:[]});if(!e.h)e.h=[];
+    if(!e.h.some(function(x){return x.d===o.quizres.d&&x.s===o.quizres.s&&x.nq===o.quizres.nq;})){e.h.push({d:o.quizres.d||d,s:o.quizres.s,nq:o.quizres.nq,tags:o.quizres.tags||{}});wl('fao_quiz_v1',qr);res.qr=1;}
+  }
+  Object.keys(o.rec||{}).forEach(function(k){C.rec[k]=!!o.rec[k];});
+  Object.keys(o.cal||{}).forEach(function(k){C.cal[k]=Object.assign(C.cal[k]||{},o.cal[k]);});
+  Object.keys(o.units||{}).forEach(function(k){C.units[k]=Object.assign(C.units[k]||{},o.units[k]);});
+  C.imp.push(hs);wl(PK,pal);wl(CK,C);
+  return 'Importato ('+d+'): '+res.ex+' risultati ✓/✗, '+res.free+' dal quaderno, '+res.oss+' osservazioni sugli errori, '+res.err+' errori nuovi in catalogo, '+res.nex+' esercizi nuovi, '+res.notes+' appunti'+(res.quiz?', '+res.quiz+' quiz':'')+(res.qr?', esito quiz':'')+(res.unk?'; '+res.unk+' ID non riconosciuti (ignorati)':'')+(res.skip?'; '+res.skip+' scartati':'')+'.';
+}
+
+function drawAll(){
+  S0=snapshot();var la=lastActivity(S0);GAP=la?Math.max(0,diffd(TODAY,la)):0;
+  SIM=simulate(S0,GAP);RD=readiness(S0,SIM);
+  drawAvail();drawJudge();drawGoal();drawPlan();drawDone();drawMats();drawTopics();drawRoute();drawQuiz();drawHow();drawPrompt();
+}
+document.getElementById('pcopy').addEventListener('click',function(){
+  var ta=document.getElementById('pout'),m=document.getElementById('pmsg');
+  function fb(){ta.removeAttribute('readonly');ta.select();try{document.execCommand('copy');m.textContent='Copiato.';}catch(e){m.textContent='Tieni premuto sul testo e scegli Copia.';}ta.setAttribute('readonly','');}
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(ta.value).then(function(){m.textContent='Copiato.';},fb);else fb();
+});
+document.getElementById('iokb').addEventListener('click',function(){
+  var m=document.getElementById('imsg');
+  try{m.textContent=importBlock(document.getElementById('iin').value);document.getElementById('iin').value='';setTimeout(function(){if(!window.__NORELOAD__)location.reload();},1200);}
+  catch(e){m.textContent='Non riesco a importare: '+e.message;}
+});
+drawAll();
+window.addEventListener('pageshow',function(){drawAll();});
+window.addEventListener('load',function(){render(document.getElementById('plan'));});
 </script>
 </body>
 </html>
