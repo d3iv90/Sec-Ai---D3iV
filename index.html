@@ -1,35 +1,21 @@
 <!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FAO — Hub di studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Università · Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#10151c;--panel:#18202b;--line:#2a3646;--tx:#e8edf3;--mut:#93a1b3;--ok:#5ec49a;--new:#f0b35a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:'Crimson Pro',Georgia,serif;font-size:19px;line-height:1.5;padding:22px 16px 60px;max-width:720px;margin:0 auto}
-h1{font-family:'JetBrains Mono',monospace;font-size:21px;margin:0 0 4px}
-.sub{color:var(--mut);margin-bottom:18px}
-h2{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mut);font-weight:400;margin:22px 2px 8px;text-transform:uppercase;letter-spacing:.06em}
-a.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;color:var(--tx);text-decoration:none}
-a.card b{font-family:'JetBrains Mono',monospace;font-size:15px}
-a.card span{display:block;color:var(--mut);font-size:16px;margin-top:2px}
-.tag{font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:4px;margin-left:6px;background:var(--ok);color:#10151c}
-.soon{opacity:.55;pointer-events:none}
-.soon .tag{background:var(--new)}
-</style>
-</head>
-<body>
-<h1>FAO — Hub di studio</h1>
-<div class="sub">Sicurezza informatica e Intelligenza artificiale · La Statale Open · primo cluster</div>
-
-<h2>Cluster 1 — Matematica e fondamenti di programmazione</h2>
-<a class="card" href="matematica1.html"><b>Matematica I</b><span class="tag">attivo</span><span>Piano, test d'ingresso, ripassi, errori, calendario sincrone</span></a>
-<a class="card soon" href="#"><b>Matematica II</b><span class="tag">in arrivo</span><span>Derivate, studio di funzione, integrali. Slide da caricare</span></a>
-<a class="card soon" href="#"><b>Programmazione e Algoritmi I</b><span class="tag">in arrivo</span><span>Python e C. Slide da caricare</span></a>
-
-<h2>Altro</h2>
-<a class="card soon" href="#"><b>Catalogo errori unico</b><span class="tag">in arrivo</span><span>Tutti gli errori di tutti i moduli in un solo posto</span></a>
-</body>
-</html>
+:root{--bg:#0f1115;--card:#171a21;--line:#2a2f3a;--tx:#e6e3da;--mut:#9aa0ac;--ac:#d4b25c}
+*{box-sizing:border-box}body{margin:0 auto;background:var(--bg);color:var(--tx);font-family:'Crimson Pro',Georgia,serif;font-size:19px;line-height:1.45;padding:18px;max-width:560px}
+h1{font-family:'JetBrains Mono',monospace;font-size:20px;margin:6px 0 4px}.sub{color:var(--mut);margin-bottom:16px}
+a.b{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0;color:var(--tx);text-decoration:none}
+a.b:hover,a.b:focus-visible{border-color:var(--ac);outline:none}
+.t{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ac);font-size:15px}.d{color:var(--mut);font-size:16px;margin-top:4px}
+.s{opacity:.55;border-style:dashed;pointer-events:none}
+</style></head><body>
+<h1>Università · Menu</h1><div class="sub">Quattro pagine per Matematica I. Le altre arrivano dopo.</div>
+<a class="b" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Piano giorno per giorno: teoria da leggere, esercizi dal più semplice, errore di oggi.</div></a>
+<a class="b" href="matematica1.html"><div class="t">Piano e calendario</div><div class="d">Il tuo hub: piano a fasi, test d'ingresso, lezioni, calendario.</div></a>
+<a class="b" href="palestra_u1.html"><div class="t">Esercizi</div><div class="d">Allenamento: esercizi dal più facile al più difficile, per argomento.</div></a>
+<a class="b" href="archivio_zappulla.html"><div class="t">Teoria</div><div class="d">Procedure dalla A alla Z, formule, Ruffini, cerchio goniometrico, funzioni.</div></a>
+<a class="b s"><div class="t">Matematica II</div><div class="d">In arrivo.</div></a>
+<a class="b s"><div class="t">Programmazione I</div><div class="d">In arrivo.</div></a>
+</body></html>
