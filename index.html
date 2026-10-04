@@ -10,6 +10,14 @@ a.b{display:block;background:var(--card);border:1px solid var(--line);border-rad
 a.b:hover,a.b:focus-visible{border-color:var(--ac);outline:none}
 .t{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ac);font-size:15px}.d{color:var(--mut);font-size:16px;margin-top:4px}
 .s{opacity:.55;border-style:dashed;pointer-events:none}
+
+details.sy{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:22px 0 10px}
+details.sy summary{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ac);font-size:15px;cursor:pointer}
+details.sy p{color:var(--mut);font-size:16px;margin:10px 0}
+details.sy textarea{width:100%;height:110px;background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px;font-family:'JetBrains Mono',monospace;font-size:12px}
+details.sy button{padding:10px 14px;margin:6px 6px 6px 0;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer}
+details.sy button:hover{border-color:var(--ac)}
+#sy-msg{color:var(--ac);font-size:16px;margin-top:6px;white-space:pre-line}
 </style></head><body>
 <h1>Università · Menu</h1><div class="sub">Quattro pagine per Matematica I. Le altre arrivano dopo.</div>
 <a class="b" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Piano giorno per giorno: teoria da leggere, esercizi dal più semplice, errore di oggi.</div></a>
@@ -18,4 +26,46 @@ a.b:hover,a.b:focus-visible{border-color:var(--ac);outline:none}
 <a class="b" href="archivio_zappulla.html"><div class="t">Teoria</div><div class="d">Procedure dalla A alla Z, formule, Ruffini, cerchio goniometrico, funzioni.</div></a>
 <a class="b s"><div class="t">Matematica II</div><div class="d">In arrivo.</div></a>
 <a class="b s"><div class="t">Programmazione I</div><div class="d">In arrivo.</div></a>
+
+<details class="sy" id="sy"><summary>Salva e trasferisci i progressi</summary>
+<p>Copia TUTTO (✓/✗ degli esercizi, Tutor, Piano) da un dispositivo e incollalo sull'altro. Si uniscono ai dati che ci sono già: non si cancella niente.</p>
+<div><b>1 · Esporta (dal dispositivo con i dati)</b></div>
+<button id="sy-gen">Genera testo</button><button id="sy-copy">Copia</button><button id="sy-dl">Scarica file</button>
+<textarea id="sy-out" readonly placeholder="Qui compare il testo da copiare"></textarea>
+<div style="margin-top:14px"><b>2 · Importa (sull'altro dispositivo)</b></div>
+<textarea id="sy-in" placeholder="Incolla qui il testo che inizia con FAO1:"></textarea>
+<button id="sy-imp">Importa e unisci</button>
+<div id="sy-msg"></div></details>
+<script>
+(function(){
+var K=['palestra_u1_v1','tutor_v1','mat1hub_v1'];
+function rd(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return {};}}
+function wr(k,o){try{localStorage.setItem(k,JSON.stringify(o));}catch(e){}}
+function $(i){return document.getElementById(i);}
+function summ(p){var r=(p&&p.r)||{},ok=0,ko=0;Object.keys(r).forEach(function(i){if(r[i]==='ok')ok++;else if(r[i]==='ko')ko++;});return ok+' esercizi \u2713, '+ko+' \u2717';}
+function gen(){var o={};K.forEach(function(k){o[k]=rd(k);});var t='FAO1:'+JSON.stringify(o);$('sy-out').value=t;$('sy-msg').textContent='Generato. Dentro: '+summ(o.palestra_u1_v1)+'.';return t;}
+$('sy-gen').addEventListener('click',gen);
+$('sy-copy').addEventListener('click',function(){var t=$('sy-out').value||gen();
+ function fb(){var o=$('sy-out');o.removeAttribute('readonly');o.select();try{document.execCommand('copy');$('sy-msg').textContent='Copiato.';}catch(e){$('sy-msg').textContent='Copia manuale: tieni premuto sul testo e scegli Copia.';}o.setAttribute('readonly','');}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){$('sy-msg').textContent='Copiato. Dentro: '+summ(rd('palestra_u1_v1'))+'.';},fb);}else fb();});
+$('sy-dl').addEventListener('click',function(){var t=$('sy-out').value||gen();var b=new Blob([t],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='progressi_fao.txt';document.body.appendChild(a);a.click();a.remove();});
+$('sy-imp').addEventListener('click',function(){
+ var m=$('sy-msg'),raw=$('sy-in').value.trim();
+ try{
+  if(raw.indexOf('FAO1:')!==0)throw 0;
+  var n=JSON.parse(raw.slice(5));
+  var p=rd('palestra_u1_v1');if(!p.r)p.r={};if(!p.d)p.d={};var np=n.palestra_u1_v1||{};
+  Object.keys(np.r||{}).forEach(function(i){p.r[i]=np.r[i];});
+  Object.keys(np.d||{}).forEach(function(d){p.d[d]=Math.max(p.d[d]||0,np.d[d]);});
+  wr('palestra_u1_v1',p);
+  var t=rd('tutor_v1');if(!t.c)t.c={};var nt=n.tutor_v1||{};
+  Object.keys(nt.c||{}).forEach(function(k){t.c[k]=!!(t.c[k]||nt.c[k]);});
+  Object.keys(nt).forEach(function(k){if(k!=='c')t[k]=nt[k];});
+  wr('tutor_v1',t);
+  var h=rd('mat1hub_v1'),nh=n.mat1hub_v1||{};Object.keys(nh).forEach(function(k){h[k]=nh[k];});wr('mat1hub_v1',h);
+  m.textContent='Importato. Ora qui ci sono: '+summ(p)+'.';
+ }catch(e){m.textContent='Testo non valido: deve iniziare con FAO1: e va copiato per intero.';}
+});
+})();
+</script>
 </body></html>
