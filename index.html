@@ -19,13 +19,14 @@ details.sy button{padding:10px 14px;margin:6px 6px 6px 0;border:1px solid var(--
 details.sy button:hover{border-color:var(--ac)}
 #sy-msg{color:var(--ac);font-size:16px;margin-top:6px;white-space:pre-line}
 </style></head><body>
-<h1>Università · Menu</h1><div class="sub">Matematica I, e il Tutor che segue anche Matematica II e Programmazione I.</div>
+<h1>Università · Menu</h1><div class="sub">Matematica I, II e Programmazione I: il Tutor le segue tutte e tre.</div>
 <a class="b" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Si adatta ai tuoi ✓/✗: ripasso degli errori, argomenti nuovi, giudizio e calendario fino al 27/11.</div></a>
 <a class="b" href="matematica1.html"><div class="t">Piano e calendario</div><div class="d">Il tuo hub: piano a fasi, test d'ingresso, lezioni, calendario.</div></a>
 <a class="b" href="palestra_u1.html"><div class="t">Esercizi</div><div class="d">Allenamento per argomento. Segna ✓/✗: ogni esercizio ricorda se l'hai già fatto e quante volte. Tab Errori: cosa è emerso da FAO.</div></a>
 <a class="b" href="archivio_zappulla.html"><div class="t">Teoria</div><div class="d">Procedure dalla A alla Z, formule, Ruffini, cerchio goniometrico, funzioni.</div></a>
 <a class="b" href="quiz.html"><div class="t">Quiz</div><div class="d">Mettiti alla prova sui concetti; l'esito va al Tutor da solo.</div></a>
-<a class="b s"><div class="t">Matematica II · Programmazione I</div><div class="d">Per ora si seguono dal Tutor (piano e scadenze). Pagine dedicate: dopo aver caricato le slide.</div></a>
+<a class="b" href="matematica2.html"><div class="t">Matematica II</div><div class="d">Unità, lezioni, compiti e sincrone di Ariel; esercizi ed errori quando arrivano dalle chat.</div></a>
+<a class="b" href="programmazione1.html"><div class="t">Programmazione I</div><div class="d">Unità, lezioni, quiz e consegne di Ariel; esercizi ed errori quando arrivano dalle chat.</div></a>
 
 <details class="sy" id="sy"><summary>Salva e trasferisci i progressi</summary>
 <p>Copia TUTTO (✓/✗ degli esercizi, Tutor, Piano) da un dispositivo e incollalo sull'altro. Si uniscono ai dati che ci sono già: non si cancella niente.</p>
@@ -68,6 +69,7 @@ $('sy-imp').addEventListener('click',function(){
   var t2=rd('tutor_v2');['c','f','av','sl'].forEach(function(q){if(!t2[q])t2[q]={};});var nt2=n.tutor_v2||{};
   ['c','f','sl'].forEach(function(q){Object.keys(nt2[q]||{}).forEach(function(k){t2[q][k]=!!(t2[q][k]||nt2[q][k]);});});
   Object.keys(nt2.av||{}).forEach(function(k){t2.av[k]=nt2.av[k];});
+  ['hw','vel','maint','tg','c2'].forEach(function(k){if(nt2[k]!==undefined)t2[k]=nt2[k];});
   wr('tutor_v2',t2);
   var cu=rd('fao_custom_v1');['ex','errs','oss','notes','free','imp','quiz'].forEach(function(q){if(!cu[q])cu[q]=[];});['areas','rec','cal','units'].forEach(function(q){if(!cu[q])cu[q]={};});var nc=n.fao_custom_v1||{};
   (nc.ex||[]).forEach(function(e){if(!cu.ex.some(function(x){return x.id===e.id;}))cu.ex.push(e);});

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programmazione e Algoritmi I · hub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--card:#171a21;--line:#2a2f3a;--tx:#e6e3da;--mut:#9aa0ac;--ok:#5fbf8a;--ko:#e0705f;--ac:#d4b25c;--bl:#7aa7e0}
+*{box-sizing:border-box}
+body{margin:0 auto;background:var(--bg);color:var(--tx);font-family:'Crimson Pro',Georgia,serif;font-size:19px;line-height:1.5;padding:14px;max-width:780px}
+h1,h2,.mono{font-family:'JetBrains Mono',monospace}
+h1{font-size:19px;margin:4px 0 2px}h2{font-size:14px;color:var(--ac);margin:14px 0 6px}
+.sub{color:var(--mut);font-size:16px;margin-bottom:8px}
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+a.pill,button.pill{border:1px solid var(--line);background:var(--card);color:var(--tx);padding:8px 12px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12.5px;cursor:pointer;text-decoration:none;display:inline-block}
+.pill.on{border-color:var(--ac);color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px;margin:11px 0}
+.meta{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut)}
+.mut{color:var(--mut);font-size:16px}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;margin-right:6px;border:1px solid var(--line);color:var(--mut)}
+.tag.ok{border-color:var(--ok);color:var(--ok)}.tag.ko{border-color:var(--ko);color:var(--ko)}.tag.ac{border-color:var(--ac);color:var(--ac)}.tag.bl{border-color:var(--bl);color:var(--bl)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{border-top:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+th{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);font-weight:500;border-top:0}
+td input[type=checkbox],label.chk input{width:20px;height:20px;accent-color:var(--ok)}
+label.chk{display:flex;gap:8px;align-items:center;font-size:17px;margin:6px 0;cursor:pointer}
+.tw{overflow-x:auto}
+.prog{height:8px;background:var(--line);border-radius:4px;margin:8px 0}.prog>div{height:8px;background:var(--ac);border-radius:4px}
+.q{overflow-x:auto;white-space:pre-wrap}
+ul{margin:6px 0;padding-left:20px}li{margin:4px 0}
+a.lnk{color:var(--bl)}
+.go{display:inline-block;margin-top:8px;background:var(--ac);color:#0f1115;text-decoration:none;padding:9px 13px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="bar" style="margin-top:0"><a class="pill" href="index.html">← Menu</a><a class="pill" href="tutor.html">Tutor</a><a class="pill" href="palestra_u1.html">Esercizi</a><a class="pill" href="quiz.html">Quiz</a></div>
+<h1>Programmazione e Algoritmi I</h1>
+<div class="sub" id="sub"></div>
+<div class="bar" id="tabs"></div>
+<div id="view"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+var MOD='P1',NAME='Programmazione e Algoritmi I',DOC='Docente: Marco Anisetti',MAN='';
+var INFO=["Struttura da Ariel (5/10/2026): 6 unità da 10 ore ciascuna (sincrone comprese): U1 Fondamenti di programmazione · U2 Introduzione al linguaggio C · U3 Strutture dati e funzioni · U4 Puntatori e memoria dinamica · U5 Introduzione agli algoritmi · U6 Algoritmi: approfondimenti e teoria della complessità.", "Sincrone (mercoledì 17:00, 2 ore): 21/10, 28/10, 4/11, 11/11, 18/11, 25/11. Quella del 4/11 cade nella settimana di lavoro: nel piano è saltata finché non la liberi.", "Per completare ogni unità: quiz di fine unità con almeno 16/30 (tentativi illimitati, conta il voto più alto, domande diverse a ogni tentativo) e consegna di due compiti al tutor didattico. Nel Tutor ogni unità conta quiz (stimato 30′) + i due compiti (1,5 h e 2 h).", "Ogni lezione ha anche uno «Studio guidato con discussione nel forum»: non è contato nelle ore dichiarate.", "Dispense e guide: Primi programmi in C, Input e Output, Stream, Compilatori, appunti di fine unità; nell'Unità 2 c'è la guida per installare la Virtual Machine delle esercitazioni di C: da fare presto.", "Nei PDF di Ariel compare solo il C: Python non risulta (il dossier lo citava). Se lo vedi comparire, dimmelo.", "Dalla memoria: basi di Python (Mimo) e C a livello hobby; esiste un piano a 8 settimane a parte, mentre questo hub segue l'ordine di Ariel.", "Materiali: il Tutor ha l'indice del corso ma non le slide. Una chat per ogni PDF con il prompt «Teoria / PDF»."];
+var LES={"P1U1L1": {"id": "P1U1L1", "t": "Linguaggi formali e automi a stati finiti", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L2": {"id": "P1U1L2", "t": "Macchina di Turing e architettura dell'elaboratore", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L3": {"id": "P1U1L3", "t": "Sincrona: semantica, grammatica, algoritmo, indecidibilità (+ e-tivity BNF)", "v": 0, "s": 0, "e": 30, "x": 0, "sd": "2026-10-21", "m": "P1", "sinc": true}, "P1U1L4": {"id": "P1U1L4", "t": "Programmazione non strutturata", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L5": {"id": "P1U1L5", "t": "Programmazione strutturata: costrutti fondamentali", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U1L6": {"id": "P1U1L6", "t": "Eliminazione dei salti (+ appunti di fine unità)", "v": 30, "s": 1, "e": 0, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U2L1": {"id": "P1U2L1", "t": "Introduzione al linguaggio C", "v": 30, "s": 1, "e": 75, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U2L2": {"id": "P1U2L2", "t": "Tipi di operatori e macro (+ dispensa primi programmi)", "v": 30, "s": 1, "e": 0, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U2L3": {"id": "P1U2L3", "t": "Sincrona: input, switch e cicli (+ dispensa Input/Output)", "v": 0, "s": 0, "e": 0, "x": 15, "sd": "2026-10-28", "m": "P1", "sinc": true}, "P1U2L4": {"id": "P1U2L4", "t": "Tipi enum e typedef", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U2L5": {"id": "P1U2L5", "t": "Gestione della memoria e vettori", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U2L6": {"id": "P1U2L6", "t": "Stringhe (+ appunti di fine unità)", "v": 30, "s": 1, "e": 45, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U3L1": {"id": "P1U3L1", "t": "Funzioni", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L2": {"id": "P1U3L2", "t": "Parametri e macro", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L3": {"id": "P1U3L3", "t": "Sincrona: call and return", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-04", "m": "P1", "sinc": true}, "P1U3L4": {"id": "P1U3L4", "t": "Puntatori e vettori", "v": 30, "s": 1, "e": 45, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L5": {"id": "P1U3L5", "t": "Strutture dati e union", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U3L6": {"id": "P1U3L6", "t": "Approfondimento puntatori (+ dispensa Stream, appunti)", "v": 30, "s": 1, "e": 45, "x": 35, "sd": null, "m": "P1", "sinc": false}, "P1U4L1": {"id": "P1U4L1", "t": "Memoria dinamica", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L2": {"id": "P1U4L2", "t": "Ricorsione", "v": 30, "s": 1, "e": 45, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L3": {"id": "P1U4L3", "t": "Sincrona: puntatori a funzione (+ e-tivity indirizzo→esecuzione)", "v": 0, "s": 0, "e": 45, "x": 0, "sd": "2026-11-11", "m": "P1", "sinc": true}, "P1U4L4": {"id": "P1U4L4", "t": "Controllo dello scope: const e static", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L5": {"id": "P1U4L5", "t": "Paradigma imperativo", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U4L6": {"id": "P1U4L6", "t": "Paradigmi funzionale e logico (+ appunti)", "v": 30, "s": 1, "e": 30, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U5L1": {"id": "P1U5L1", "t": "Astrazione", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L2": {"id": "P1U5L2", "t": "Astrazione dei dati", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L3": {"id": "P1U5L3", "t": "Astrazione ad oggetti", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L4": {"id": "P1U5L4", "t": "Sincrona: approfondimenti astrazione", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-18", "m": "P1", "sinc": true}, "P1U5L5": {"id": "P1U5L5", "t": "Costo computazionale", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U5L6": {"id": "P1U5L6", "t": "Progettazione del software (+ appunti)", "v": 30, "s": 1, "e": 0, "x": 20, "sd": null, "m": "P1", "sinc": false}, "P1U6L1": {"id": "P1U6L1", "t": "Liste", "v": 30, "s": 1, "e": 30, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U6L2": {"id": "P1U6L2", "t": "Pile, code, alberi", "v": 30, "s": 1, "e": 60, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U6L3": {"id": "P1U6L3", "t": "Sincrona: ordinamento e ricerca avanzata", "v": 0, "s": 0, "e": 0, "x": 0, "sd": "2026-11-25", "m": "P1", "sinc": true}, "P1U6L4": {"id": "P1U6L4", "t": "Ricerca applicata a grafi", "v": 30, "s": 1, "e": 0, "x": 0, "sd": null, "m": "P1", "sinc": false}, "P1U6L5": {"id": "P1U6L5", "t": "Tabelle di hash (+ dispensa compilatori, appunti)", "v": 60, "s": 1, "e": 30, "x": 40, "sd": null, "m": "P1", "sinc": false}};
+var UNITS=[{"id": "P1U1", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 1 · Fondamenti di programmazione", "L": ["P1U1L1", "P1U1L2", "P1U1L3", "P1U1L4", "P1U1L5", "P1U1L6"], "C": [{"id": "P1C1", "t": "Quiz di fine unità 1 + 2 compiti: La Macchina di Turing e Triangoli numerici validati", "min": 240, "date": "2026-10-22", "known": "no", "after": ["P1A"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «La Macchina di Turing» (1,5 h) e «Triangoli numerici validati» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U2", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 2 · Introduzione al linguaggio C", "L": ["P1U2L1", "P1U2L2", "P1U2L3", "P1U2L4", "P1U2L5", "P1U2L6"], "C": [{"id": "P1C2", "t": "Quiz di fine unità 2 + 2 compiti: Introduzione al linguaggio C - Parte 1 e Parte 2", "min": 240, "date": "2026-10-29", "known": "no", "after": ["P1B"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Introduzione al linguaggio C - Parte 1» (1,5 h) e «Parte 2» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U3", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 3 · Strutture dati e funzioni", "L": ["P1U3L1", "P1U3L2", "P1U3L3", "P1U3L4", "P1U3L5", "P1U3L6"], "C": [{"id": "P1C3", "t": "Quiz di fine unità 3 + 2 compiti: Forza 4 in C e Strutture dati e funzioni", "min": 240, "date": "2026-11-09", "known": "no", "after": ["P1C"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Forza 4 in C» (1,5 h) e «Strutture dati e funzioni» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U4", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 4 · Puntatori e memoria dinamica", "L": ["P1U4L1", "P1U4L2", "P1U4L3", "P1U4L4", "P1U4L5", "P1U4L6"], "C": [{"id": "P1C4", "t": "Quiz di fine unità 4 + 2 compiti: Puntatori e memoria dinamica e Potenze in ordine inverso", "min": 240, "date": "2026-11-12", "known": "no", "after": ["P1D"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Puntatori e memoria dinamica» (1,5 h) e «Potenze in ordine inverso» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U5", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 5 · Introduzione agli algoritmi", "L": ["P1U5L1", "P1U5L2", "P1U5L3", "P1U5L4", "P1U5L5", "P1U5L6"], "C": [{"id": "P1C5", "t": "Quiz di fine unità 5 + 2 compiti: Analisi di complessità e MasterMind", "min": 240, "date": "2026-11-19", "known": "no", "after": ["P1E"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «Analisi di complessità» (1,5 h) e «MasterMind» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}, {"id": "P1U6", "m": "P1", "nm": "Programmazione e Algoritmi I · Unità 6 · Algoritmi: approfondimenti e complessità", "L": ["P1U6L1", "P1U6L2", "P1U6L3", "P1U6L4", "P1U6L5"], "C": [{"id": "P1C6", "t": "Quiz di fine unità 6 + 2 compiti: BubbleBlast e Ricerca su grafi", "min": 240, "date": "2026-11-26", "known": "no", "after": ["P1F"], "n": "Per completare l'unità: quiz con almeno 16/30 (tentativi illimitati, conta il voto più alto) e consegna dei due compiti al tutor didattico: «BubbleBlast» (1,5 h) e «Ricerca su grafi» (2 h). Se vuoi che calibri gli esercizi, mandami le tracce in una chat «compito».", "m": "P1"}]}];
+var SYNC=[{"d": "2026-10-21", "m": "P1", "s": "U1 1.3", "min": 120}, {"d": "2026-10-28", "m": "P1", "s": "U2 2.3 input, switch, cicli", "min": 120}, {"d": "2026-11-04", "m": "P1", "s": "U3 3.3 call and return", "min": 120}, {"d": "2026-11-11", "m": "P1", "s": "U4 4.3 puntatori a funzione", "min": 120}, {"d": "2026-11-18", "m": "P1", "s": "U5 5.4 astrazione", "min": 120}, {"d": "2026-11-25", "m": "P1", "s": "U6 6.3 ordinamento e ricerca", "min": 120}];
+var TOPICS=[{"id": "P1A", "k": "hub", "nm": "Programmazione · U1 Fondamenti", "lessons": ["P1U1L1", "P1U1L2", "P1U1L3", "P1U1L4", "P1U1L5", "P1U1L6"], "by": "2026-10-22", "m": "P1"}, {"id": "P1B", "k": "hub", "nm": "Programmazione · U2 Linguaggio C", "lessons": ["P1U2L1", "P1U2L2", "P1U2L3", "P1U2L4", "P1U2L5", "P1U2L6"], "by": "2026-10-29", "m": "P1"}, {"id": "P1C", "k": "hub", "nm": "Programmazione · U3 Strutture dati e funzioni", "lessons": ["P1U3L1", "P1U3L2", "P1U3L3", "P1U3L4", "P1U3L5", "P1U3L6"], "by": "2026-11-09", "m": "P1"}, {"id": "P1D", "k": "hub", "nm": "Programmazione · U4 Puntatori e memoria dinamica", "lessons": ["P1U4L1", "P1U4L2", "P1U4L3", "P1U4L4", "P1U4L5", "P1U4L6"], "by": "2026-11-12", "m": "P1"}, {"id": "P1E", "k": "hub", "nm": "Programmazione · U5 Algoritmi", "lessons": ["P1U5L1", "P1U5L2", "P1U5L3", "P1U5L4", "P1U5L5", "P1U5L6"], "by": "2026-11-19", "m": "P1"}, {"id": "P1F", "k": "hub", "nm": "Programmazione · U6 Strutture e complessità", "lessons": ["P1U6L1", "P1U6L2", "P1U6L3", "P1U6L4", "P1U6L5"], "by": "2026-11-26", "m": "P1"}];
+var BASE={"v": {"U1L1": 1, "U1L2": 1, "U1L3": 1, "U1L4": 1, "U1L5": 1, "U2L1": 1, "U2L2": 1}, "s": {"U1L1": 1, "U1L2": 1, "U1L3": 1, "U1L4": 1, "U1L5": 1}, "e": {"U1L2": 1, "U1L3": 1, "U1L4": 1}};
+var HK='mat1hub_v1',TK='tutor_v2',CK='fao_custom_v1',PK='palestra_u1_v1';
+function jl(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return {};}}
+function wl(k,o){try{localStorage.setItem(k,JSON.stringify(o));}catch(e){}}
+function mk(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
+function render(el){if(window.renderMathInElement){renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],strict:false,throwOnError:false});}}
+function ds(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function pd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function fmt(s){var g=['dom','lun','mar','mer','gio','ven','sab'];var d=pd(s);return g[d.getDay()]+' '+s.slice(8)+'/'+s.slice(5,7);}
+function hh(m){var h=m/60;return (Math.round(h*10)/10).toString().replace('.',',')+' h';}
+var TODAY=(window.__TODAY__)||ds(new Date());
+var H,T,C,P;
+function load(){H=jl(HK);T=jl(TK);if(!T.sl)T.sl={};if(!T.f)T.f={};C=jl(CK);['ex','errs','oss'].forEach(function(k){if(!C[k])C[k]=[];});P=jl(PK);}
+function vc(L){return Math.round((LES[L].v||0)/(T.vel||1));}
+function sc(L){var le=LES[L];return (le.s?10:0)+(le.x||0);}
+function ec(L){return LES[L].e||0;}
+function vD(L){var k=L+'|video';if(H[k]!==undefined)return !!H[k];return !!BASE.v[L];}
+function sD(L){if(T.sl[L]!==undefined)return !!T.sl[L];return !!BASE.s[L];}
+function aD(L){var k=L+'|activity';if(H[k]!==undefined)return !!H[k];return !!BASE.e[L];}
+function setHub(k,v){var h=jl(HK);h[k]=v;wl(HK,h);}
+function chk(v,fn){var i=document.createElement('input');i.type='checkbox';i.checked=v;i.addEventListener('change',function(){fn(i.checked);});return i;}
+function endLabel(){var e=T.tg||'2026-11-27';return e.slice(8)+'/'+e.slice(5,7)+(e.slice(0,4)!=='2026'?'/'+e.slice(0,4):'');}
+function unitBy(u){var b='';TOPICS.forEach(function(tp){if(tp.lessons.some(function(L){return u.L.indexOf(L)>=0;})&&(!b||tp.by>b))b=tp.by;});return b;}
+function totals(){
+  var tot=0,done=0;
+  UNITS.forEach(function(u){u.L.forEach(function(L){
+    if(vc(L)>0){tot+=vc(L);if(vD(L))done+=vc(L);}
+    if(sc(L)>0){tot+=sc(L);if(sD(L))done+=sc(L);}
+    if(ec(L)>0){tot+=ec(L);if(aD(L))done+=ec(L);}
+  });(u.C||[]).forEach(function(c){tot+=c.min;if(T.f[c.id])done+=c.min;});});
+  return {tot:tot,done:done};
+}
+var TAB='piano';
+var TABS=[['piano','Piano'],['lezioni','Lezioni'],['compiti','Compiti'],['esercizi','Esercizi'],['errori','Errori'],['info','Info']];
+function drawTabs(){var b=document.getElementById('tabs');b.innerHTML='';TABS.forEach(function(x){var p=mk('button','pill'+(TAB===x[0]?' on':''),x[1]);p.addEventListener('click',function(){TAB=x[0];location.hash='t='+x[0];draw();});b.appendChild(p);});}
+function lessonRows(u){
+  var w=mk('div','tw'),t=mk('table','');var hd=mk('tr','');['Lezione','Video','Slide','E-tivity'].forEach(function(x){hd.appendChild(mk('th','',x));});t.appendChild(hd);
+  u.L.forEach(function(L){var le=LES[L],r=mk('tr','');var c0=mk('td','',L+' · '+le.t);if(le.sinc)c0.appendChild(mk('span','tag bl',fmt(le.sd)+' 17:00'));r.appendChild(c0);
+    var tv=mk('td','');if(le.v>0){tv.appendChild(chk(vD(L),function(v){setHub(L+'|video',v);load();draw();}));tv.appendChild(document.createTextNode(' '+le.v+'′'));}else tv.textContent='—';r.appendChild(tv);
+    var ts=mk('td','');if(sc(L)>0){ts.appendChild(chk(sD(L),function(v){T.sl[L]=v;wl(TK,T);load();draw();}));ts.appendChild(document.createTextNode(' '+sc(L)+'′'));}else ts.textContent='—';r.appendChild(ts);
+    var ta=mk('td','');if(le.e>0){ta.appendChild(chk(aD(L),function(v){setHub(L+'|activity',v);load();draw();}));ta.appendChild(document.createTextNode(' '+le.e+'′'));}else ta.textContent='—';r.appendChild(ta);t.appendChild(r);});
+  w.appendChild(t);return w;
+}
+function viewPiano(v){
+  var tt=totals(),pc=tt.tot?Math.round(100*tt.done/tt.tot):0;
+  var c=mk('div','card');c.appendChild(mk('div','meta',DOC+(MAN?' · '+MAN:'')));
+  c.appendChild(mk('div','',pc+'% fatto · '+hh(tt.done)+' su '+hh(tt.tot)+' di lavoro autonomo (video, slide, e-tivity, compiti; sincrone escluse)'));
+  var pg=mk('div','prog'),pi=mk('div','');pi.style.width=pc+'%';pg.appendChild(pi);c.appendChild(pg);
+  c.appendChild(mk('div','mut','Obiettivo che stai puntando: '+endLabel()+' (si cambia nel Tutor). Il piano giorno per giorno lo fa il Tutor: qui vedi lo stato del modulo.'));
+  var a=mk('a','go','Apri il Tutor');a.href='tutor.html';c.appendChild(a);v.appendChild(c);
+  var c2=mk('div','card');c2.appendChild(mk('h2','','Unità'));
+  var w=mk('div','tw'),t=mk('table','');var hd=mk('tr','');['Unità','Pronta entro','Video','Slide','E-tivity','Compito'].forEach(function(x){hd.appendChild(mk('th','',x));});t.appendChild(hd);
+  UNITS.forEach(function(u){
+    var nv=0,dv=0,ns=0,ds_=0,na=0,da=0;u.L.forEach(function(L){if(vc(L)>0){nv++;if(vD(L))dv++;}if(sc(L)>0){ns++;if(sD(L))ds_++;}if(ec(L)>0){na++;if(aD(L))da++;}});
+    var r=mk('tr','');r.appendChild(mk('td','',u.nm.split(' · ').slice(1).join(' · ')));r.appendChild(mk('td','',unitBy(u)?fmt(unitBy(u)):'—'));
+    r.appendChild(mk('td','',dv+'/'+nv));r.appendChild(mk('td','',ds_+'/'+ns));r.appendChild(mk('td','',da+'/'+na));
+    var cs=(u.C||[]),dn=cs.filter(function(c){return T.f[c.id];}).length;var td=mk('td','');td.appendChild(mk('span','tag '+(dn===cs.length&&cs.length?'ok':'ac'),dn+'/'+cs.length+' consegnati'));r.appendChild(td);t.appendChild(r);});
+  w.appendChild(t);c2.appendChild(w);v.appendChild(c2);
+  var c3=mk('div','card');c3.appendChild(mk('h2','','Sincrone'));
+  SYNC.forEach(function(s){var p=s.d<TODAY;var l=mk('div','',(p?'✓ ':'')+fmt(s.d)+' 17:00 · '+s.s+(T.maint!==false&&s.d>='2026-11-02'&&s.d<='2026-11-08'?' · cade nella settimana di lavoro (saltata)':''));l.style.opacity=p?0.55:1;c3.appendChild(l);});
+  v.appendChild(c3);
+  var c4=mk('div','card');c4.appendChild(mk('h2','','Prossimi passi'));
+  var steps=[];
+  UNITS.forEach(function(u){u.L.forEach(function(L){
+    if(vc(L)>0&&!vD(L))steps.push('Video '+L+' · '+LES[L].t+' ('+vc(L)+'′)');
+    if(sc(L)>0&&!sD(L))steps.push('Slide e letture '+L+' · '+LES[L].t+' ('+sc(L)+'′)');
+    if(ec(L)>0&&!aD(L))steps.push('E-tivity '+L+' · '+LES[L].t+' ('+ec(L)+'′)');
+  });});
+  if(!steps.length)c4.appendChild(mk('div','mut','Tutto spuntato.'));
+  steps.slice(0,8).forEach(function(s){c4.appendChild(mk('div','',s));});
+  if(steps.length>8)c4.appendChild(mk('div','mut','…e altri '+(steps.length-8)+'. L\'ordine giusto lo decide il Tutor in base alle scadenze.'));
+  v.appendChild(c4);
+}
+function viewLezioni(v){
+  v.appendChild(mk('div','mut','Spunti qui ciò che fai su Ariel: video, slide, e-tivity. Le spunte sono le stesse del Tutor. Le e-tivity con scenario hanno quiz di ripasso → scenario → peer review → forum: le scadenze sono su Ariel.'));
+  UNITS.forEach(function(u){var c=mk('div','card');c.appendChild(mk('h2','',u.nm));c.appendChild(lessonRows(u));v.appendChild(c);});
+}
+function viewCompiti(v){
+  v.appendChild(mk('div','mut','Ogni compito è «Vincolante: Sì» su Ariel. Il docente verifica originalità e uso di strumenti di IA: io correggo il tuo lavoro, non risolvo. Le scadenze di consegna non compaiono nei PDF: controllale su Ariel.'));
+  UNITS.forEach(function(u){(u.C||[]).forEach(function(cc){
+    var c=mk('div','card');c.appendChild(mk('div','meta',u.nm));c.appendChild(mk('div','',cc.t+' · '+cc.min+'′'));
+    c.appendChild(mk('div','mut',{completa:'Traccia con gli esercizi visibile nel PDF di Ariel.',scenario:'Visto solo lo scenario: i quesiti sono in un file da scaricare su Ariel.',no:'Traccia non ancora vista.'}[cc.known]));
+    c.appendChild(mk('div','mut',cc.n));
+    var l=mk('label','chk');l.appendChild(chk(!!T.f[cc.id],function(x){T.f[cc.id]=x;wl(TK,T);load();draw();}));l.appendChild(mk('span','','Consegnato'));c.appendChild(l);v.appendChild(c);});});
+}
+function viewEsercizi(v){
+  var list=C.ex.filter(function(e){return e.a.indexOf(MOD+'U')===0;});
+  var c=mk('div','card');
+  if(!list.length){c.appendChild(mk('div','','Nessun esercizio ancora per questo modulo.'));
+    c.appendChild(mk('div','mut','Gli esercizi nascono dalle slide: nel Tutor → «Chat e prompt» → «Teoria / PDF» scegli la lezione, apri una chat nuova con il PDF allegato e importa la riga FAO2 che ti restituisco. Compariranno qui e nella palestra.'));}
+  else{c.appendChild(mk('div','mut',list.length+' esercizi scritti per questo modulo. ✓/✗ si segnano nella palestra.'));
+    var ids=list.map(function(e){return e.id;}).join(',');var a=mk('a','go','Apri nella palestra');a.href='palestra_u1.html#ids='+ids;c.appendChild(a);
+    list.forEach(function(e){var h=(P.h&&P.h[e.id])||[],l=h.length?h[h.length-1]:null;var w=mk('div','');w.style.cssText='border-top:1px solid var(--line);padding:8px 0';
+      w.appendChild(mk('div','meta',e.a+' · livello '+e.l+(l?' · ultimo: '+(l.r==='ok'?'✓':'✗')+' ('+h.length+'×)':' · mai fatto')));w.appendChild(mk('div','q',e.q));c.appendChild(w);});}
+  v.appendChild(c);render(c);
+}
+function viewErrori(v){
+  var errs=C.errs.filter(function(e){return (e.a||'').indexOf(MOD)===0;}),codes={};errs.forEach(function(e){codes[e.c]=1;});
+  var oss=C.oss.filter(function(o){return codes[o.c];});
+  var c=mk('div','card');
+  if(!errs.length){c.appendChild(mk('div','','Nessun errore catalogato per questo modulo.'));c.appendChild(mk('div','mut','Gli errori entrano così: mandi le foto del quaderno in una chat «Esercizi» (o «Compito»), a fine chat scrivi CHIUDI e importi la riga FAO2 nel Tutor. Gli errori nuovi vengono numerati con l\'area del modulo (per esempio '+MOD+') e compaiono qui.'));}
+  errs.forEach(function(e){var w=mk('div','');w.style.cssText='border-top:1px solid var(--line);padding:8px 0';w.appendChild(mk('div','meta',e.c+' · '+e.a+' · '+(e.t||'')));w.appendChild(mk('div','',e.d));if(e.w)w.appendChild(mk('div','mut','Sbagliato: '+e.w));if(e.k)w.appendChild(mk('div','mut','Corretto: '+e.k));if(e.g)w.appendChild(mk('div','mut','Regola: '+e.g));c.appendChild(w);});
+  if(oss.length){c.appendChild(mk('h2','','Osservazioni'));oss.forEach(function(o){c.appendChild(mk('div','mut',fmt(o.d)+' · '+o.c+' ('+o.tp+') '+(o.ex||'')+': '+o.n));});}
+  v.appendChild(c);render(c);
+}
+function viewInfo(v){var c=mk('div','card');var ul=mk('ul','');INFO.forEach(function(x){ul.appendChild(mk('li','',x));});c.appendChild(ul);v.appendChild(c);}
+function draw(){
+  document.getElementById('sub').textContent=DOC+' · stato letto dal browser, condiviso con il Tutor';
+  drawTabs();var v=document.getElementById('view');v.innerHTML='';
+  ({piano:viewPiano,lezioni:viewLezioni,compiti:viewCompiti,esercizi:viewEsercizi,errori:viewErrori,info:viewInfo})[TAB](v);
+}
+load();
+var mm=(location.hash||'').match(/t=(\w+)/);if(mm&&TABS.some(function(x){return x[0]===mm[1];}))TAB=mm[1];
+draw();
+window.addEventListener('pageshow',function(){load();draw();});
+</script>
+</body>
+</html>
