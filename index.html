@@ -10,6 +10,10 @@ a.b{display:block;background:var(--card);border:1px solid var(--line);border-rad
 a.b:hover,a.b:focus-visible{border-color:var(--ac);outline:none}
 .t{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ac);font-size:15px}.d{color:var(--mut);font-size:16px;margin-top:4px}
 .s{opacity:.55;border-style:dashed;pointer-events:none}
+a.b.main{border-color:var(--ac);padding:20px 16px}
+a.b.main .t{font-size:17px}
+.arch{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mut);margin:26px 2px 4px}
+a.b.sm{padding:11px 14px;margin:8px 0}a.b.sm .d{font-size:15px;margin-top:2px}
 
 details.sy{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:22px 0 10px}
 details.sy summary{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ac);font-size:15px;cursor:pointer}
@@ -19,14 +23,15 @@ details.sy button{padding:10px 14px;margin:6px 6px 6px 0;border:1px solid var(--
 details.sy button:hover{border-color:var(--ac)}
 #sy-msg{color:var(--ac);font-size:16px;margin-top:6px;white-space:pre-line}
 </style></head><body>
-<h1>Università · Menu</h1><div class="sub">Matematica I, II e Programmazione I: il Tutor le segue tutte e tre.</div>
-<a class="b" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Si adatta ai tuoi ✓/✗: ripasso degli errori, argomenti nuovi, giudizio e calendario fino al 27/11.</div></a>
-<a class="b" href="matematica1.html"><div class="t">Piano e calendario</div><div class="d">Il tuo hub: piano a fasi, test d'ingresso, lezioni, calendario.</div></a>
-<a class="b" href="palestra_u1.html"><div class="t">Esercizi</div><div class="d">Allenamento per argomento. Segna ✓/✗: ogni esercizio ricorda se l'hai già fatto e quante volte. Tab Errori: cosa è emerso da FAO.</div></a>
-<a class="b" href="archivio_zappulla.html"><div class="t">Teoria</div><div class="d">Procedure dalla A alla Z, formule, Ruffini, cerchio goniometrico, funzioni.</div></a>
-<a class="b" href="quiz.html"><div class="t">Quiz</div><div class="d">Mettiti alla prova sui concetti; l'esito va al Tutor da solo.</div></a>
-<a class="b" href="matematica2.html"><div class="t">Matematica II</div><div class="d">Unità, lezioni, compiti e sincrone di Ariel; esercizi ed errori quando arrivano dalle chat.</div></a>
-<a class="b" href="programmazione1.html"><div class="t">Programmazione I</div><div class="d">Unità, lezioni, quiz e consegne di Ariel; esercizi ed errori quando arrivano dalle chat.</div></a>
+<h1>Università · Menu</h1><div class="sub">Il Tutor ti dice cosa fare ogni giorno. Primo appello: 23/01/2027.</div>
+<a class="b main" href="tutor.html"><div class="t">Tutor · cosa fare oggi</div><div class="d">Programma di oggi e dei prossimi giorni, mescolando le tre materie e preparandoti prima di ogni sincrona.</div></a>
+<a class="b" href="matematica1.html"><div class="t">Matematica 1</div><div class="d">Lezioni, esercizi per unità, errori e test d'ingresso.</div></a>
+<a class="b" href="matematica2.html"><div class="t">Matematica 2</div><div class="d">Unità, lezioni, compiti e sincrone di Ariel.</div></a>
+<a class="b" href="programmazione1.html"><div class="t">Programmazione 1</div><div class="d">Unità, lezioni, quiz e consegne di Ariel.</div></a>
+<div class="arch">Archivio · ci vai dai link del Tutor</div>
+<a class="b sm" href="palestra_u1.html"><div class="t">Esercizi</div><div class="d">Palestra per argomento, con ✓/✗ e soluzioni.</div></a>
+<a class="b sm" href="archivio_zappulla.html"><div class="t">Teoria</div><div class="d">Procedure, formule, Ruffini, cerchio goniometrico, funzioni.</div></a>
+<a class="b sm" href="quiz.html"><div class="t">Quiz</div><div class="d">Concetti; l'esito va al Tutor da solo.</div></a>
 
 <details class="sy" id="sy"><summary>Salva e trasferisci i progressi</summary>
 <p>Copia TUTTO (✓/✗ degli esercizi, Tutor, Piano) da un dispositivo e incollalo sull'altro. Si uniscono ai dati che ci sono già: non si cancella niente.</p>
@@ -69,7 +74,9 @@ $('sy-imp').addEventListener('click',function(){
   var t2=rd('tutor_v2');['c','f','av','sl'].forEach(function(q){if(!t2[q])t2[q]={};});var nt2=n.tutor_v2||{};
   ['c','f','sl'].forEach(function(q){Object.keys(nt2[q]||{}).forEach(function(k){t2[q][k]=!!(t2[q][k]||nt2[q][k]);});});
   Object.keys(nt2.av||{}).forEach(function(k){t2.av[k]=nt2.av[k];});
-  ['hw','vel','maint','tg','c2'].forEach(function(k){if(nt2[k]!==undefined)t2[k]=nt2[k];});
+  ['hw','vel','maint','tg','c2','buf','hw14','tg23'].forEach(function(k){if(nt2[k]!==undefined)t2[k]=nt2[k];});
+  if(nt2.hr){if(!t2.hr)t2.hr={};Object.keys(nt2.hr).forEach(function(d){var a=t2.hr[d]||{s:0,e:0},b=nt2.hr[d]||{};t2.hr[d]={s:Math.max(a.s||0,b.s||0),e:Math.max(a.e||0,b.e||0)};});}
+  if(nt2.iva){if(!t2.iva)t2.iva={};Object.keys(nt2.iva).forEach(function(m){var a=t2.iva[m]||[];(nt2.iva[m]||[]).forEach(function(x){if(!a.some(function(y){return y.d===x.d&&y.v===x.v;}))a.push(x);});a.sort(function(p,q){return p.d<q.d?-1:p.d>q.d?1:0;});t2.iva[m]=a;});}
   wr('tutor_v2',t2);
   var cu=rd('fao_custom_v1');['ex','errs','oss','notes','free','imp','quiz'].forEach(function(q){if(!cu[q])cu[q]=[];});['areas','rec','cal','units'].forEach(function(q){if(!cu[q])cu[q]={};});var nc=n.fao_custom_v1||{};
   (nc.ex||[]).forEach(function(e){if(!cu.ex.some(function(x){return x.id===e.id;}))cu.ex.push(e);});

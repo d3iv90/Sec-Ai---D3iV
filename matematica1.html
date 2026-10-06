@@ -78,6 +78,7 @@ var LS='mat1hub_v1';
 var state={};
 try{state=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){state={}}
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
+(function(){var ch=false;['U1L1', 'U1L2', 'U1L3', 'U1L4', 'U1L5', 'U2L1', 'U2L2', 'U2L3'].forEach(function(L){var k=L+'|video';if(state[k]===undefined){state[k]=true;ch=true;}});['U1L2', 'U1L3', 'U1L4', 'U2L2'].forEach(function(L){var k=L+'|activity';if(state[k]===undefined){state[k]=true;ch=true;}});if(ch)save();})();
 
 var TAG={new:['NUOVO','t-new'],ok:['GIÀ FATTO','t-ok'],part:['IN PARTE','t-part'],miss:['PDF MANCANTE','t-miss']};
 
@@ -229,7 +230,7 @@ var P=[
  `2 – 8 nov → SETTIMANA DI LAVORO: solo palestra, almeno 3 giorni da 5 esercizi, niente argomenti nuovi, niente video. Salti senza sensi di colpa le sincrone di Prog (4/11) e M2 (6/11).`,
  `9 – 15 nov → Unità 3 esercizi (L3–L6: applicazioni lineari, sistemi, geometria dello spazio).`,
  `16 – 22 nov → Unità 2 esercizi (induzione, complessi con De Moivre, relazioni, insiemi).`,
- `23 – 27 nov → simulazione M1 cronometrata + solo recidivi (se l'appello fosse davvero il 28/11, un sabato). U4 solo se G6 non superato.`]},
+ `23 – 27 nov → simulazione M1 cronometrata + solo recidivi (piano pensato per il 28/11, non più valido: segui il Tutor). U4 solo se G6 non superato.`]},
 {id:'s4',t:`Tre moduli insieme — come ripartisco`,d:`Matematica I, Matematica II e Programmazione I vanno all'appello insieme. Non conosco la data né il formato. Proposta di partenza, da rivedere appena li sai.`,
  steps:[`M1: è il blocco più pesante (U2 e U3 nuovi). Tempo maggiore.`,
  `Programmazione I: parti con meno base che su M2. Almeno 2 sessioni a settimana dal 12 ottobre, rispettando il tuo piano già impostato; sincrone 21/10, 28/10, 11/11, 18/11, 25/11.`,
@@ -281,7 +282,7 @@ function palHTML(){
 
 function renderPiano(){
  var s=document.getElementById('s-piano');var h=palHTML();
- h+='<div class="card"><h3>Come lavoriamo</h3><ul><li>Test d\'ingresso: se superi un blocco (4/4 o 3/4), lo salti e vai a ciò che è nuovo.</li><li>ESERCIZI OGNI GIORNO, anche solo 5. Non si salta mai: all\'appello conta la mano, non aver capito il video.</li><li>Due passate: PASSATA 1 = video e slide veloci, SEMPRE con la palestra quotidiana. PASSATA 2 = volume di esercizi (novembre).</li><li>2 sere feriali da 1–1,5 h + 2 sessioni nel weekend, mai oltre 1,5 h di fila. Max 15 esercizi al giorno.</li><li>Regola 60/40 nella passata 2: almeno 60% esercizi. Un esercizio è chiuso solo con il risultato esplicito scritto.</li><li>Il primo appello vale per M1, M2 e Programmazione; la data circolante è il 28/11 (un sabato), NON confermata. Se serve, scenario B: prima M1+M2, poi Programmazione (da verificare sul regolamento).</li></ul></div>';
+ h+='<div class="card"><h3>Come lavoriamo</h3><ul><li>Test d\'ingresso: se superi un blocco (4/4 o 3/4), lo salti e vai a ciò che è nuovo.</li><li>ESERCIZI OGNI GIORNO, anche solo 5. Non si salta mai: all\'appello conta la mano, non aver capito il video.</li><li>Due passate: PASSATA 1 = video e slide veloci, SEMPRE con la palestra quotidiana. PASSATA 2 = volume di esercizi (novembre).</li><li>2 sere feriali da 1–1,5 h + 2 sessioni nel weekend, mai oltre 1,5 h di fila. Max 15 esercizi al giorno.</li><li>Regola 60/40 nella passata 2: almeno 60% esercizi. Un esercizio è chiuso solo con il risultato esplicito scritto.</li><li>Primo appello: 23/01/2027, confermato (vale per M1, M2 e Programmazione). Da verificare: scritto o orale, moduli separabili, voti mantenuti. Il programma giorno per giorno è nel Tutor: questo piano a fasi è di riferimento.</li></ul></div>';
  P.forEach(function(p){
   h+='<div class="card"><h3>'+p.t+'</h3><div class="mut">'+p.d+'</div>';
   p.steps.forEach(function(t,i){
